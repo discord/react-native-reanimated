@@ -26,7 +26,7 @@ std::optional<MountingTransaction> LayoutAnimationsProxy::pullTransaction(
 #ifdef LAYOUT_ANIMATIONS_LOGS
   LOG(INFO) << std::endl;
   LOG(INFO) << "\npullTransaction " << std::this_thread::get_id() << " "
-            << surfaceId << std::endl;
+             << surfaceId << std::endl;
 #endif
   auto lock = std::unique_lock<std::recursive_mutex>(mutex);
   PropsParserContext propsParserContext{surfaceId, *contextContainer_};
@@ -46,7 +46,6 @@ std::optional<MountingTransaction> LayoutAnimationsProxy::pullTransaction(
     updateMap.erase(tag);
   }
   finishedAnimationTags_.clear();
-
   parseRemoveMutations(movedViews, mutations, roots);
 
   handleRemovals(filteredMutations, roots);
@@ -326,10 +325,11 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
           auto layoutAnimationIt = layoutAnimations_.find(tag);
           if (layoutAnimationIt == layoutAnimations_.end()) {
             if (oldShadowViewsForReparentings.contains(tag)) {
-              filteredMutations.push_back(ShadowViewMutation::InsertMutation(
-                  mutationParent,
-                  oldShadowViewsForReparentings[tag],
-                  mutation.index));
+              filteredMutations.push_back(
+                  ShadowViewMutation::InsertMutation(
+                      mutationParent,
+                      oldShadowViewsForReparentings[tag],
+                      mutation.index));
             } else {
               filteredMutations.push_back(mutation);
             }
@@ -337,8 +337,9 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
           }
 
           auto oldView = *layoutAnimationIt->second.currentView;
-          filteredMutations.push_back(ShadowViewMutation::InsertMutation(
-              mutationParent, oldView, mutation.index));
+          filteredMutations.push_back(
+              ShadowViewMutation::InsertMutation(
+                  mutationParent, oldView, mutation.index));
           if (movedViews.contains(tag)) {
             layoutAnimationIt->second.parentTag = movedViews.at(tag);
           }
@@ -360,8 +361,9 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
         std::shared_ptr<ShadowView> newView =
             cloneViewWithoutOpacity(mutation, propsParserContext);
 
-        filteredMutations.push_back(ShadowViewMutation::UpdateMutation(
-            mutation.newChildShadowView, *newView, mutationParent));
+        filteredMutations.push_back(
+            ShadowViewMutation::UpdateMutation(
+                mutation.newChildShadowView, *newView, mutationParent));
         break;
       }
 
@@ -452,15 +454,16 @@ void LayoutAnimationsProxy::addOngoingAnimations(
     newView->props = updateValues.newProps;
     updateLayoutMetrics(newView->layoutMetrics, updateValues.frame);
 
-    mutations.push_back(ShadowViewMutation::UpdateMutation(
-        *layoutAnimation.currentView,
-        *newView,
+    mutations.push_back(
+        ShadowViewMutation::UpdateMutation(
+            *layoutAnimation.currentView,
+            *newView,
 #if REACT_NATIVE_MINOR_VERSION >= 78
-        layoutAnimation.parentTag
+            layoutAnimation.parentTag
 #else
-        *layoutAnimation.parentView
+            *layoutAnimation.parentView
 #endif // REACT_NATIVE_MINOR_VERSION >= 78
-        ));
+            ));
     layoutAnimation.currentView = newView;
   }
   updateMap.clear();
@@ -585,8 +588,9 @@ bool LayoutAnimationsProxy::startAnimationsRecursively(
 #ifdef LAYOUT_ANIMATIONS_LOGS
       LOG(INFO) << "delete " << subNode->tag << std::endl;
 #endif
-      mutations.push_back(ShadowViewMutation::DeleteMutation(
-          subNode->mutation.oldChildShadowView));
+      mutations.push_back(
+          ShadowViewMutation::DeleteMutation(
+              subNode->mutation.oldChildShadowView));
     } else {
       subNode->state = WAITING;
     }
@@ -729,15 +733,16 @@ void LayoutAnimationsProxy::startEnteringAnimation(
       auto &mutex = strongThis->mutex;
       auto lock = std::unique_lock<std::recursive_mutex>(mutex);
       strongThis->layoutAnimations_.insert_or_assign(
-          tag, LayoutAnimation {
-            finalView, current,
+          tag,
+          LayoutAnimation{
+              finalView,
+              current,
 #if REACT_NATIVE_MINOR_VERSION >= 78
-                mutation.parentTag,
+              mutation.parentTag,
 #else
               parent,
 #endif // REACT_NATIVE_MINOR_VERSION >= 78
-                opacity
-          });
+              opacity});
       window = strongThis->surfaceManager.getWindow(
           mutation.newChildShadowView.surfaceId);
     }
