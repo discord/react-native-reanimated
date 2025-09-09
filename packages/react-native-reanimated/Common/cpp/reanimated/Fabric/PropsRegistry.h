@@ -56,6 +56,11 @@ class PropsRegistry {
   void unmarkNodeAsRemovable(Tag viewTag);
   void handleNodeRemovals(const RootShadowNode &rootShadowNode);
 
+  // Custom discord added for removing nodes once they seem in sync with the shadow tree
+  void markNodeAsImmediateRemovable(Tag tag);
+  void unmarkNodeAsImmediateRemovable(Tag viewTag);
+  void removeImmediateRemovableNodes();
+
  private:
   using RemovableShadowNodes =
       std::unordered_map<Tag, std::shared_ptr<const ShadowNode>>;
@@ -65,6 +70,7 @@ class PropsRegistry {
       std::pair<std::shared_ptr<const ShadowNode>, folly::dynamic>>
       map_;
   RemovableShadowNodes removableShadowNodes_;
+  std::unordered_set<Tag> immediateRemovableShadowNodes_;
 
   mutable std::mutex mutex_; // Protects `map_`.
 
