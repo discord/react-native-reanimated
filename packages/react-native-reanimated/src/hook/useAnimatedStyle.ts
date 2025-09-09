@@ -261,6 +261,9 @@ function styleUpdater(
           if (Array.isArray(updates[propName])) {
             updates[propName].forEach((obj: StyleProps) => {
               for (const prop in obj) {
+                if (!last[propName] || typeof last[propName] !== 'object') {
+                  last[propName] = {};
+                }
                 last[propName][prop] = obj[prop];
               }
             });
