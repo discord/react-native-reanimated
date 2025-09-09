@@ -24,6 +24,7 @@
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <jsi/JSIDynamic.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
 #include <functional>
@@ -65,6 +66,8 @@ ReanimatedModuleProxy::ReanimatedModuleProxy(
           std::make_shared<LayoutAnimationsManager>(jsLogger_)),
 #ifdef RCT_NEW_ARCH_ENABLED
       propsRegistry_(std::make_shared<PropsRegistry>()),
+      synchronouslyUpdateUIPropsFunction_(
+              platformDepMethodsHolder.synchronouslyUpdateUIPropsFunction),
 #else
       obtainPropFunction_(platformDepMethodsHolder.obtainPropFunction),
       configurePropsPlatformFunction_(
@@ -75,6 +78,12 @@ ReanimatedModuleProxy::ReanimatedModuleProxy(
           platformDepMethodsHolder.subscribeForKeyboardEvents),
       unsubscribeFromKeyboardEventsFunction_(
           platformDepMethodsHolder.unsubscribeFromKeyboardEvents) {
+
+#ifdef RCT_NEW_ARCH_ENABLED
+    // Enable that when a shadow node gets cloned its reference will be updated
+    // on the JS thread (back to JS react fiber):
+    ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
+#endif
 }
 
 void ReanimatedModuleProxy::init(
@@ -486,6 +495,7 @@ jsi::Value ReanimatedModuleProxy::configureProps(
   auto nativePropsArray = nativeProps.asObject(rt).asArray(rt);
   for (size_t i = 0; i < nativePropsArray.size(rt); ++i) {
     auto name = nativePropsArray.getValueAtIndex(rt, i).asString(rt).utf8(rt);
+    nativePropNames_.insert(name);
     animatablePropNames_.insert(name);
   }
 #else
@@ -610,6 +620,33 @@ void ReanimatedModuleProxy::unmarkNodeAsRemovable(
   propsRegistry_->unmarkNodeAsRemovable(viewTag.asNumber());
 }
 
+/**
+ * Returns false if there are no layout props, true if there are.
+ */
+ bool ReanimatedModuleProxy::updateNoneLayoutProps(const folly::dynamic &props, Tag tag) {
+  folly::dynamic nonLayoutProps = nullptr;
+  bool hasLayoutProps = false;
+  for (const auto& prop : props.items()) {
+      const std::string propName = prop.first.asString();
+      bool isLayoutProp = collection::contains(nativePropNames_, propName);
+      if (isLayoutProp) {
+          hasLayoutProps = true;
+          continue;
+      }
+
+      if (nonLayoutProps == nullptr) {
+          nonLayoutProps = folly::dynamic::object();
+      }
+      nonLayoutProps.insert(propName, prop.second);
+  }
+
+  if (nonLayoutProps.isObject())  {
+      synchronouslyUpdateUIPropsFunction_(tag, nonLayoutProps);
+  }
+
+  return hasLayoutProps;
+}
+
 jsi::Value ReanimatedModuleProxy::filterNonAnimatableProps(
     jsi::Runtime &rt,
     const jsi::Value &props) {
@@ -712,6 +749,7 @@ void ReanimatedModuleProxy::performOperations() {
 
   jsi::Runtime &rt = uiWorkletRuntime_->getJSIRuntime();
 
+  bool hasLayoutUpdates = false;
   {
     auto lock = propsRegistry_->createLock();
 
@@ -734,7 +772,9 @@ void ReanimatedModuleProxy::performOperations() {
     // way but backgroundColor, shadowOpacity etc. would get overwritten (see
     // `_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN`).
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
-      propsRegistry_->update(shadowNode, dynamicFromValue(rt, *props));
+      folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
+      hasLayoutUpdates = updateNoneLayoutProps(propsDynamic, shadowNode->getTag());
+      propsRegistry_->update(shadowNode, std::move(propsDynamic));
     }
   }
 
@@ -752,6 +792,13 @@ void ReanimatedModuleProxy::performOperations() {
     jsi::Function jsPropsUpdater =
         maybeJSPropsUpdater.asObject(rt).asFunction(rt);
     jsPropsUpdater.call(rt, viewTag, nonAnimatableProps);
+  }
+
+  if (!hasLayoutUpdates) {
+    // None layout updates have been handled synchronously directly already
+    // TODO: not sure if this causes issues where the gesture system can break as the shadow nodes aren't updated.
+    // However we have a commit coming from JS now once the animation is done - so i think this should be good and fixed now
+    return;
   }
 
   if (propsRegistry_->shouldReanimatedSkipCommit()) {
@@ -785,7 +832,7 @@ void ReanimatedModuleProxy::performOperations() {
             }
 
             auto rootNode =
-                cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap);
+              std::move(cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot);
 
             // Mark the commit as Reanimated commit so that we can distinguish
             // it in ReanimatedCommitHook.

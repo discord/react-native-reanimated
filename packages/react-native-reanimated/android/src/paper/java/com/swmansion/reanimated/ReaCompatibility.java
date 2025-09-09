@@ -1,6 +1,7 @@
 package com.swmansion.reanimated;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableMap;
 
 class ReaCompatibility {
   public ReaCompatibility(ReactApplicationContext reactApplicationContext) {}
@@ -8,4 +9,8 @@ class ReaCompatibility {
   public void registerFabricEventListener(NodesManager nodesManager) {}
 
   public void unregisterFabricEventListener(NodesManager nodesManager) {}
+
+  public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
+    throw new AssertionError("This function can't be called in the old architecture");
+  }
 }

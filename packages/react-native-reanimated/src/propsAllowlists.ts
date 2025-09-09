@@ -26,6 +26,11 @@ export const PropsAllowlists: AllowlistsHolder = {
     scaleY: true,
     translateX: true,
     translateY: true,
+    /* text color */
+    color: true,
+    tintColor: true,
+    shadowColor: true,
+    placeholderTextColor: true,
   },
   /**
    * Whitelist of view props that can be updated in native thread via
@@ -117,10 +122,5 @@ export const PropsAllowlists: AllowlistsHolder = {
     flexWrap: true,
     justifyContent: true,
     position: true,
-    /* text color */
-    color: true,
-    tintColor: true,
-    shadowColor: true,
-    placeholderTextColor: true,
   },
 };

@@ -3,6 +3,7 @@
 #include <jsi/jsi.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
+#include <folly/dynamic.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #endif
 
@@ -20,6 +21,8 @@ namespace reanimated {
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
+using SynchronouslyUpdateUIPropsFunction =
+    std::function<void(Tag tag, const folly::dynamic &props)>;
 using UpdatePropsFunction =
     std::function<void(jsi::Runtime &rt, const jsi::Value &operations)>;
 using ObtainPropFunction = std::function<jsi::Value(
@@ -75,7 +78,7 @@ using MaybeFlushUIUpdatesQueueFunction = std::function<void()>;
 struct PlatformDepMethodsHolder {
   RequestRenderFunction requestRender;
 #ifdef RCT_NEW_ARCH_ENABLED
-  // nothing
+  SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction;
 #else
   UpdatePropsFunction updatePropsFunction;
   ScrollToFunction scrollToFunction;

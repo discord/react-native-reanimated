@@ -63,6 +63,21 @@ void PropsRegistry::remove(const Tag tag) {
   map_.erase(tag);
 }
 
+void PropsRegistry::markNodeAsImmediateRemovable(Tag tag) {
+  immediateRemovableShadowNodes_.emplace(tag);
+}
+
+void PropsRegistry::unmarkNodeAsImmediateRemovable(Tag tag) {
+  immediateRemovableShadowNodes_.erase(tag);
+}
+
+void PropsRegistry::removeImmediateRemovableNodes() {
+  for (auto& tag : immediateRemovableShadowNodes_) {
+      map_.erase(tag);
+  }
+  immediateRemovableShadowNodes_.clear();
+}
+
 } // namespace reanimated
 
 #endif // RCT_NEW_ARCH_ENABLED

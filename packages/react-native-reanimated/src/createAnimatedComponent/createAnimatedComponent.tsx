@@ -13,7 +13,7 @@ import type {
 } from 'react';
 import React from 'react';
 import type { FlatList, FlatListProps } from 'react-native';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { getReduceMotionFromConfig } from '../animation/util';
 import { maybeBuild } from '../animationBuilder';
@@ -196,6 +196,8 @@ export function createAnimatedComponent(
       this._attachAnimatedStyles();
       this._InlinePropManager.attachInlineProps(this, this._getViewInfo());
 
+      const viewTag = this.getComponentViewTag();
+
       const layout = this.props.layout;
       if (layout) {
         this._configureLayoutTransition();
@@ -227,7 +229,6 @@ export function createAnimatedComponent(
         }
       }
 
-      const viewTag = this._viewInfo?.viewTag;
       if (
         !SHOULD_BE_USE_WEB &&
         isFabric() &&

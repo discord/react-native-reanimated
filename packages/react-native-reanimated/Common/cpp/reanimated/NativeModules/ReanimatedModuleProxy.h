@@ -201,6 +201,7 @@ class ReanimatedModuleProxy
   void requestAnimationFrame(jsi::Runtime &rt, const jsi::Value &callback);
 
 #ifdef RCT_NEW_ARCH_ENABLED
+  bool updateNoneLayoutProps(const folly::dynamic &props, Tag tag);
   jsi::Value filterNonAnimatableProps(
       jsi::Runtime &rt,
       const jsi::Value &props);
@@ -235,6 +236,9 @@ class ReanimatedModuleProxy
   std::shared_ptr<ReanimatedMountHook> mountHook_;
 
   std::vector<Tag> tagsToRemove_; // from `propsRegistry_`
+
+  const SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction_;
+  std::unordered_set<std::string> nativePropNames_; // filled by configureProps
 #else
   const ObtainPropFunction obtainPropFunction_;
   const ConfigurePropsFunction configurePropsPlatformFunction_;

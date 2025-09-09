@@ -4,6 +4,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.bridge.ReadableMap;
 
 class ReaCompatibility {
   private FabricUIManager fabricUIManager;
@@ -23,6 +24,12 @@ class ReaCompatibility {
   public void unregisterFabricEventListener(NodesManager nodesManager) {
     if (fabricUIManager != null) {
       fabricUIManager.getEventDispatcher().removeListener(nodesManager);
+    }
+  }
+
+  public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
+    if (fabricUIManager != null) {
+      fabricUIManager.synchronouslyUpdateViewOnUIThread(viewTag, uiProps);
     }
   }
 }

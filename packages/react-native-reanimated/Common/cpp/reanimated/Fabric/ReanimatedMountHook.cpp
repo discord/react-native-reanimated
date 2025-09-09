@@ -19,6 +19,14 @@ ReanimatedMountHook::~ReanimatedMountHook() noexcept {
 void ReanimatedMountHook::shadowTreeDidMount(
     const RootShadowNode::Shared &rootShadowNode,
     double) noexcept {
+
+  // Nodes marked earlier in ReanimatedCommitHook for removal (if there props were the same) are removed here
+  // because here we know that the commit is finished and we can safely remove
+  {
+    auto lock = propsRegistry_->createLock();
+    propsRegistry_->removeImmediateRemovableNodes();
+  }
+
   auto reaShadowNode =
       std::reinterpret_pointer_cast<ReanimatedCommitShadowNode>(
           std::const_pointer_cast<RootShadowNode>(rootShadowNode));
@@ -64,7 +72,7 @@ void ReanimatedMountHook::shadowTreeDidMount(
                 });
 
                 rootNode =
-                    cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap);
+                    std::move(cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot);
               }
 
               // Mark the commit as Reanimated commit so that we can

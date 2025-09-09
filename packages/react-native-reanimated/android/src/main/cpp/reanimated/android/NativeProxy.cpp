@@ -223,7 +223,21 @@ void NativeProxy::maybeFlushUIUpdatesQueue() {
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-// nothing
+inline jni::local_ref<ReadableMap::javaobject> castReadableMap(
+        jni::local_ref<ReadableNativeMap::javaobject> const &nativeMap) {
+    return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
+}
+
+void NativeProxy::synchronouslyUpdateUIProps(
+        Tag tag,
+        const folly::dynamic &props) {
+    static const auto method =
+            getJniMethod<void(int, jni::local_ref<ReadableMap::javaobject>)>(
+                    "synchronouslyUpdateUIProps");
+    jni::local_ref<ReadableMap::javaobject> uiProps =
+            castReadableMap(ReadableNativeMap::newObjectCxxArgs(props));
+    method(javaPart_.get(), tag, uiProps);
+}
 #else
 jsi::Value NativeProxy::obtainProp(
     jsi::Runtime &rt,
@@ -418,7 +432,8 @@ void NativeProxy::progressLayoutAnimation(
 
 PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
 #ifdef RCT_NEW_ARCH_ENABLED
-  // nothing
+    auto synchronouslyUpdateUIPropsFunction =
+            bindThis(&NativeProxy::synchronouslyUpdateUIProps);
 #else
   auto updatePropsFunction = bindThis(&NativeProxy::updateProps);
 
@@ -470,7 +485,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
   return {
       requestRender,
 #ifdef RCT_NEW_ARCH_ENABLED
-  // nothing
+      synchronouslyUpdateUIPropsFunction,
 #else
       updatePropsFunction,
       scrollToFunction,

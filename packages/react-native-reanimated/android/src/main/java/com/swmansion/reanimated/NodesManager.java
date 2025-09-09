@@ -114,6 +114,11 @@ public class NodesManager implements EventDispatcherListener {
   private ReaCompatibility compatibility;
   private @Nullable Runnable mUnsubscribe = null;
 
+  private boolean isPerformOperationsActive;
+  public boolean isPerformOperationsActive() {
+    return isPerformOperationsActive;
+  }
+
   public NativeProxy getNativeProxy() {
     return mNativeProxy;
   }
@@ -239,7 +244,9 @@ public class NodesManager implements EventDispatcherListener {
   public void performOperations() {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       if (mNativeProxy != null) {
+        isPerformOperationsActive = true;
         mNativeProxy.performOperations();
+        isPerformOperationsActive = false;
       }
     } else if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
@@ -438,6 +445,10 @@ public class NodesManager implements EventDispatcherListener {
         sendEvent("onReanimatedPropsChange", evt);
       }
     }
+  }
+
+  public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
+    compatibility.synchronouslyUpdateUIProps(viewTag, uiProps);
   }
 
   public String obtainProp(int viewTag, String propName) {
