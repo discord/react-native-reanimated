@@ -358,7 +358,36 @@ public class NodesManager implements EventDispatcherListener {
     // UI thread.
     if (UiThreadUtil.isOnUiThread()) {
       handleEvent(event);
-      performOperations();
+     /*
+      * Discord edit:
+      * Directly calling performOperations will cause animation to run immediately which helps e.g.
+      * when animating gestures that need to be updated in the same frame. So this schedules a sync react commit & mount.
+      * The problem is that this happens for _every_ event in our whole app. However, we only really need this for
+      * events that we dispatch to JS, which update a shared value, which is used in something like useAnimatedStyle
+      * to update the UI in that very frame. As a rule of thumb this is true for libraries using
+      * [useEvent](https://docs.swmansion.com/react-native-reanimated/docs/advanced/useEvent/) (e.g. RNGH).
+      *
+      * In discord there are as of writing this only three such libraries that need sync events:
+      * - react-native-gesture-handler
+      * - react-native-keyboard-controller (sync animations)
+      * - react-native ScrollView (sync scroll events)
+      *
+      * Now, we only enable perform operations directly for distinct events and explicitly _not_ for RNKC.
+      * Why:
+      *   There is a condition that can cause a crash in RNKC, where its dispatched event will trigger
+      *   a reanimated height change, which is a layout change, while we are in the middle of a preDraw phase.
+      *   See this ticket for details: https://app.asana.com/1/236888843494340/project/1199705967702853/task/1210922776998968
+      *
+      *   Overall, this isn't terrible as reanimated will schedule the UI update for the next frame.
+      *   Opening the keyboard is a fast animation so a potentially missed frame isn't that noticeable.
+      *
+      * Additionally only enabling this for events that really need it is a good performance optimization.
+      * Otherwise we might execute multiple updates per frame, which can lead to frame jank.
+      */
+      String eventName = event.getEventName();
+      if (eventName.contains("GestureHandler") || eventName.contains("Scroll")) {
+        performOperations();
+      }
     } else {
       String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
       int viewTag = event.getViewTag();
