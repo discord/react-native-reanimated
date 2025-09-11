@@ -44,6 +44,12 @@ void PropsRegistry::handleNodeRemovals(const RootShadowNode &rootShadowNode) {
   for (auto it = removableShadowNodes_.begin();
        it != removableShadowNodes_.end();) {
     const auto &shadowNode = it->second;
+    if (!shadowNode) {
+      // Stopgap for bad shadowNode
+      map_.erase(it->first);
+      it = removableShadowNodes_.erase(it);
+      continue;
+    }
     const auto &family = shadowNode->getFamily();
     const auto &ancestors = family.getAncestors(rootShadowNode);
 
