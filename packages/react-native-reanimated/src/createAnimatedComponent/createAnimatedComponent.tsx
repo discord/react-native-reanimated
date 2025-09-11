@@ -67,6 +67,7 @@ import { NativeEventsManager } from './NativeEventsManager';
 import { PropsFilter } from './PropsFilter';
 import setAndForwardRef from './setAndForwardRef';
 import { flattenArray } from './utils';
+import { ComponentRegistry } from '../updateProps/ComponentRegistry';
 
 const IS_WEB = isWeb();
 const IS_JEST = isJest();
@@ -136,7 +137,7 @@ export function createAnimatedComponent(
   }
 
   class AnimatedComponent
-    extends React.Component<AnimatedComponentProps<InitialComponentProps>>
+    extends React.Component<AnimatedComponentProps<InitialComponentProps>, { reanimatedProps: {[key: string]: unknown}; }>
     implements IAnimatedComponentInternal
   {
     _styles: StyleProps[] | null = null;
@@ -168,6 +169,10 @@ export function createAnimatedComponent(
         this.jestAnimatedProps = { value: {} };
       }
 
+      this.state = {
+        reanimatedProps: {},
+      }
+
       const entering = this.props.entering;
       const skipEntering = this.context?.current;
       if (
@@ -197,6 +202,9 @@ export function createAnimatedComponent(
       this._InlinePropManager.attachInlineProps(this, this._getViewInfo());
 
       const viewTag = this.getComponentViewTag();
+      if (viewTag !== -1) {
+        ComponentRegistry.register(viewTag, this);
+      }
 
       const layout = this.props.layout;
       if (layout) {
@@ -255,6 +263,10 @@ export function createAnimatedComponent(
       );
 
       const exiting = this.props.exiting;
+      const viewTag = this.getComponentViewTag();
+      if (viewTag !== -1) {
+        ComponentRegistry.unregister(viewTag);
+      }
 
       if (
         IS_WEB &&
@@ -325,6 +337,15 @@ export function createAnimatedComponent(
       } else {
         (this._componentRef as AnimatedComponentRef)?.setNativeProps?.(props);
       }
+    }
+
+    /**
+     * Mechanism to update this component's props from native.Add commentMore actions
+     * (As reanimated is changing the props only on the UI thread at some point we want to sync with the JS thread).
+     * Reanimated props can be animatedProps but also animated styles. Note that styles are flattened and passed as top level props.
+     */
+    _updateReanimatedProps(props: {[key: string]: unknown}) {
+      this.setState({ reanimatedProps: props });
     }
 
     _getViewInfo(): ViewInfo {
@@ -692,6 +713,7 @@ export function createAnimatedComponent(
           nativeID={nativeID}
           {...filteredProps}
           {...jestProps}
+          {...this.state.reanimatedProps}
           // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
           // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
           ref={this._setComponentRef as (ref: Component) => void}

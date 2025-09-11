@@ -212,5 +212,7 @@ export function initializeUIRuntime(ReanimatedModule: IReanimatedModule) {
       setupMicrotasks();
       setupRequestAnimationFrame();
     }
+    global.lastUpdateFrameTimeByTag = {};
+    global.lastUpdateByTag = {};
   })();
 }

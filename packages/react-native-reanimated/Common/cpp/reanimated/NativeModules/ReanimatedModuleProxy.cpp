@@ -749,7 +749,7 @@ void ReanimatedModuleProxy::performOperations() {
 
   jsi::Runtime &rt = uiWorkletRuntime_->getJSIRuntime();
 
-  bool hasLayoutUpdates = false;
+  std::unordered_set<Tag> layoutUpdatesByTag;
   {
     auto lock = propsRegistry_->createLock();
 
@@ -773,7 +773,11 @@ void ReanimatedModuleProxy::performOperations() {
     // `_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN`).
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
       folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
-      hasLayoutUpdates = updateNoneLayoutProps(propsDynamic, shadowNode->getTag());
+      auto tag = shadowNode->getTag();
+      bool hasLayoutUpdates = updateNoneLayoutProps(propsDynamic, tag);
+      if (hasLayoutUpdates) {
+          layoutUpdatesByTag.insert(tag);
+      }
       propsRegistry_->update(shadowNode, std::move(propsDynamic));
     }
   }
@@ -794,13 +798,6 @@ void ReanimatedModuleProxy::performOperations() {
     jsPropsUpdater.call(rt, viewTag, nonAnimatableProps);
   }
 
-  if (!hasLayoutUpdates) {
-    // None layout updates have been handled synchronously directly already
-    // TODO: not sure if this causes issues where the gesture system can break as the shadow nodes aren't updated.
-    // However we have a commit coming from JS now once the animation is done - so i think this should be good and fixed now
-    return;
-  }
-
   if (propsRegistry_->shouldReanimatedSkipCommit()) {
     // It may happen that `performOperations` is called on the UI thread
     // while React Native tries to commit a new tree on the JS thread.
@@ -819,7 +816,11 @@ void ReanimatedModuleProxy::performOperations() {
     SurfaceId surfaceId = shadowNode->getSurfaceId();
     auto family = &shadowNode->getFamily();
     react_native_assert(family->getSurfaceId() == surfaceId);
-    propsMapBySurface[surfaceId][family].emplace_back(rt, std::move(*props));
+    if (layoutUpdatesByTag.contains(shadowNode->getTag())) {
+      // Only push updates for updates that affect layout. Other updates
+      // were already handled by updateNoneLayoutProps above
+      propsMapBySurface[surfaceId][family].emplace_back(rt, std::move(*props));
+    }
   }
 
   for (auto const &[surfaceId, propsMap] : propsMapBySurface) {
