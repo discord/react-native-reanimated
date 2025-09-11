@@ -20,17 +20,24 @@ export const SkipEnteringContext =
 // skipEntering - don't animate entering of children on wrapper mount
 // skipExiting - don't animate exiting of children on wrapper unmount
 interface LayoutAnimationConfigProps {
+  itemKey?: string | number;
   skipEntering?: boolean;
   skipExiting?: boolean;
   children: ReactNode;
 }
 
-function SkipEntering(props: { shouldSkip: boolean; children: ReactNode }) {
+function SkipEntering(props: { shouldSkip: boolean; itemKey?: string | number; children: ReactNode }) {
   const skipValueRef = useRef(props.shouldSkip);
+  const lastItemKey = useRef(props.itemKey);
+
+  if (props.itemKey !== lastItemKey.current) {
+    skipValueRef.current = props.shouldSkip;
+    lastItemKey.current = props.itemKey;
+  }
 
   useEffect(() => {
     skipValueRef.current = false;
-  }, [skipValueRef]);
+  }, [skipValueRef, props.itemKey]);
 
   const Provider = IS_REACT_19
     ? SkipEnteringContext
@@ -59,7 +66,7 @@ export class LayoutAnimationConfig extends Component<LayoutAnimationConfigProps>
   getMaybeWrappedChildren() {
     return Children.count(this.props.children) > 1 && this.props.skipExiting
       ? Children.map(this.props.children, (child) => (
-          <LayoutAnimationConfig skipExiting>{child}</LayoutAnimationConfig>
+          <LayoutAnimationConfig itemKey={this.props.itemKey} skipExiting>{child}</LayoutAnimationConfig>
         ))
       : this.props.children;
   }
@@ -87,7 +94,7 @@ export class LayoutAnimationConfig extends Component<LayoutAnimationConfigProps>
     }
 
     return (
-      <SkipEntering shouldSkip={this.props.skipEntering}>
+      <SkipEntering itemKey={this.props.itemKey} shouldSkip={this.props.skipEntering}>
         {children}
       </SkipEntering>
     );
