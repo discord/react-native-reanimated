@@ -4,6 +4,15 @@ type AllowlistsHolder = {
   NATIVE_THREAD_PROPS_WHITELIST: Record<string, boolean>;
 };
 
+const isFabric = (global as any)?.nativeFabricUIManager != null;
+
+const textProps = {
+    color: true,
+    tintColor: true,
+    shadowColor: true,
+    placeholderTextColor: true,
+}
+
 export const PropsAllowlists: AllowlistsHolder = {
   /** Styles allowed to be direcly updated in UI thread */
   UI_THREAD_PROPS_WHITELIST: {
@@ -26,6 +35,8 @@ export const PropsAllowlists: AllowlistsHolder = {
     scaleY: true,
     translateX: true,
     translateY: true,
+    /* text props */
+    ...(isFabric ? textProps : {})
   },
   /**
    * Whitelist of view props that can be updated in native thread via
@@ -117,10 +128,7 @@ export const PropsAllowlists: AllowlistsHolder = {
     flexWrap: true,
     justifyContent: true,
     position: true,
-    /* text color */
-    color: true,
-    tintColor: true,
-    shadowColor: true,
-    placeholderTextColor: true,
+    /* text props */
+    ...(isFabric ? {} : textProps)
   },
 };
