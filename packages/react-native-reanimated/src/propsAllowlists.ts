@@ -13,6 +13,18 @@ const textProps = {
     placeholderTextColor: true,
 }
 
+const borderRadii = {
+    borderBottomEndRadius: true,
+    borderBottomLeftRadius: true,
+    borderBottomRightRadius: true,
+    borderBottomStartRadius: true,
+    borderRadius: true,
+    borderTopEndRadius: true,
+    borderTopLeftRadius: true,
+    borderTopRightRadius: true,
+    borderTopStartRadius: true,
+}
+
 export const PropsAllowlists: AllowlistsHolder = {
   /** Styles allowed to be direcly updated in UI thread */
   UI_THREAD_PROPS_WHITELIST: {
@@ -30,6 +42,8 @@ export const PropsAllowlists: AllowlistsHolder = {
     /* ios styles */
     shadowOpacity: true,
     shadowRadius: true,
+    /* Border radii  */
+    ...(isFabric ? borderRadii : {}),
     /* legacy android transform properties */
     scaleX: true,
     scaleY: true,
@@ -84,15 +98,6 @@ export const PropsAllowlists: AllowlistsHolder = {
     top: true,
     width: true,
     zIndex: true,
-    borderBottomEndRadius: true,
-    borderBottomLeftRadius: true,
-    borderBottomRightRadius: true,
-    borderBottomStartRadius: true,
-    borderRadius: true,
-    borderTopEndRadius: true,
-    borderTopLeftRadius: true,
-    borderTopRightRadius: true,
-    borderTopStartRadius: true,
     elevation: true,
     fontSize: true,
     lineHeight: true,
@@ -129,6 +134,8 @@ export const PropsAllowlists: AllowlistsHolder = {
     justifyContent: true,
     position: true,
     /* text props */
-    ...(isFabric ? {} : textProps)
+    ...(isFabric ? {} : textProps),
+    /* Border radii  */
+    ...(isFabric ? {} : borderRadii),
   },
 };
