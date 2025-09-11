@@ -41,7 +41,8 @@ def find_config()
 
   pods_root = Pod::Config.instance.project_pods_root
   react_native_common_dir_absolute = File.join(react_native_node_modules_dir, 'react-native', 'ReactCommon')
-  react_native_common_dir_relative = Pathname.new(react_native_common_dir_absolute).relative_path_from(pods_root).to_s
+  # Bug fix: react_native_common_dir_absolute isn't absolute, so make it absolute. This fixes clyde ios sync-pods, see synced_pod_overrides.yaml
+  react_native_common_dir_relative = Pathname.new(File.expand_path(react_native_common_dir_absolute)).relative_path_from(pods_root).to_s
   result[:react_native_common_dir] = react_native_common_dir_relative
 
   react_native_reanimated_dir_absolute = File.join(__dir__, '..')

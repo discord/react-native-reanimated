@@ -293,3 +293,4 @@ export {
   ScreenTransition,
   startScreenTransition,
 } from './screenTransition';
+export { WorkletEventHandler } from './WorkletEventHandler';

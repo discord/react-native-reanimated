@@ -50,7 +50,7 @@ public class NativeMethodsHelper {
         Log.w(
             "REANIMATED",
             "NativeMethodsHelper: Unhandled scroll view type - allowed only {ReactScrollView, ReactHorizontalScrollView}");
-        return;
+        // return;
       }
     }
 
