@@ -13,7 +13,7 @@ import type {
 } from 'react';
 import React from 'react';
 import type { FlatList, FlatListProps } from 'react-native';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import { getReduceMotionFromConfig } from '../animation/util';
 import { maybeBuild } from '../animationBuilder';
@@ -345,7 +345,23 @@ export function createAnimatedComponent(
      * Reanimated props can be animatedProps but also animated styles. Note that styles are flattened and passed as top level props.
      */
     _updateReanimatedProps(props: {[key: string]: unknown}) {
-      this.setState({ reanimatedProps: props });
+      const transformedProps: {[key: string]: unknown} = {};
+      for (const prop in props) {
+        let value = props[prop];
+        if ((prop === 'color' || prop.endsWith('Color')) && value && typeof value === 'string') {
+          value = processColor(value);
+        } else if (
+          prop == 'top'
+          || prop == 'bottom'
+          || prop.startsWith('margin')
+          || prop.startsWith('padding')
+        ) {
+          // if all reanimated props cannot be updated, there is no point in syncing them
+          return;
+        }
+        transformedProps[prop] = value;
+      }
+      this.setState({reanimatedProps: transformedProps});
     }
 
     _getViewInfo(): ViewInfo {
