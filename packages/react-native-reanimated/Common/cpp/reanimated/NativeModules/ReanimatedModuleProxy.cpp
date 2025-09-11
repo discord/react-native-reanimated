@@ -610,6 +610,7 @@ void ReanimatedModuleProxy::cleanupSensors() {
 void ReanimatedModuleProxy::markNodeAsRemovable(
     jsi::Runtime &rt,
     const jsi::Value &shadowNodeWrapper) {
+  auto lock = propsRegistry_->createLock();
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeWrapper);
   propsRegistry_->markNodeAsRemovable(shadowNode);
 }
@@ -617,6 +618,7 @@ void ReanimatedModuleProxy::markNodeAsRemovable(
 void ReanimatedModuleProxy::unmarkNodeAsRemovable(
     jsi::Runtime &rt,
     const jsi::Value &viewTag) {
+  auto lock = propsRegistry_->createLock();
   propsRegistry_->unmarkNodeAsRemovable(viewTag.asNumber());
 }
 
