@@ -56,6 +56,8 @@ class PropsRegistry {
   void unmarkNodeAsRemovable(Tag viewTag);
   void handleNodeRemovals(const RootShadowNode &rootShadowNode);
 
+  // Discord change: made public so that commit hook can lock it:
+  mutable std::mutex mutex_; // Protects `map_`.
  private:
   using RemovableShadowNodes =
       std::unordered_map<Tag, std::shared_ptr<const ShadowNode>>;
@@ -66,7 +68,6 @@ class PropsRegistry {
       map_;
   RemovableShadowNodes removableShadowNodes_;
 
-  mutable std::mutex mutex_; // Protects `map_`.
 
   std::atomic<bool> isPaused_;
   std::atomic<bool> shouldCommitAfterPause_;
