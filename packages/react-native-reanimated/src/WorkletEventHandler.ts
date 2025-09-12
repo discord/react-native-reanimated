@@ -138,6 +138,10 @@ class WorkletEventHandlerWeb<Event extends object>
   }
 }
 
+export type WorkletEventHandlerInstance<Event extends object> =
+  | WorkletEventHandlerNative<Event>
+  | WorkletEventHandlerWeb<Event>;
+
 export const WorkletEventHandler = SHOULD_BE_USE_WEB
   ? WorkletEventHandlerWeb
   : WorkletEventHandlerNative;
