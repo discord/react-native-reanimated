@@ -300,4 +300,7 @@ export {
   ScreenTransition,
   startScreenTransition,
 } from './screenTransition';
-export { WorkletEventHandler } from './WorkletEventHandler';
+export {
+  WorkletEventHandler,
+  type WorkletEventHandlerInstance,
+} from './WorkletEventHandler';
