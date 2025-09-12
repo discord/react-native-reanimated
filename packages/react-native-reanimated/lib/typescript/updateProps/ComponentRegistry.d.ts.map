@@ -1,0 +1,1 @@
+{"version":3,"file":"ComponentRegistry.d.ts","sourceRoot":"","sources":["../../../src/updateProps/ComponentRegistry.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,0BAA0B,EAAE,MAAM,wCAAwC,CAAC;AAKzF,eAAO,MAAM,iBAAiB;oBAEZ,MAAM,GAAG,WAAW,aAAa,0BAA0B;sBAKzD,MAAM,GAAG,WAAW;wBAKlB,MAAM,GAAG,WAAW,KAAG,0BAA0B,GAAG,SAAS;CAGlF,CAAC"}
