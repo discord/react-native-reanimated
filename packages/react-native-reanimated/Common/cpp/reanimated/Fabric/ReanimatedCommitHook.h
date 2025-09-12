@@ -32,7 +32,11 @@ class ReanimatedCommitHook
   RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,
       RootShadowNode::Shared const &oldRootShadowNode,
-      RootShadowNode::Unshared const &newRootShadowNode) noexcept override;
+      RootShadowNode::Unshared const &newRootShadowNode,
+      const ShadowTreeCommitOptions& commitOptions) noexcept override;
+
+  void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) override;
+  void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) override;
 
  private:
   std::shared_ptr<PropsRegistry> propsRegistry_;
@@ -44,6 +48,15 @@ class ReanimatedCommitHook
   SurfaceId currentMaxSurfaceId_ = -1;
 
   std::mutex mutex_; // Protects `currentMaxSurfaceId_`.
+
+  // We lock the prop registry as long as our commit is in progress
+  // A commit can either succeed of fail. When it succeeds we eventually
+  // want to remove nodes from the registry, thus we want to control when to release
+  std::optional<std::unique_lock<std::mutex>> propRegistryLock_;
+
+  // Nodes that reanimated maintains that have become synced with React we want to remove
+  // in case our commit succeeds:
+  std::vector<Tag> tagsToRemove;
 };
 
 } // namespace reanimated

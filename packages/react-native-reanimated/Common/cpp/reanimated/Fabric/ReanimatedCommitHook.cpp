@@ -52,7 +52,8 @@ void ReanimatedCommitHook::maybeInitializeLayoutAnimations(
 RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
     ShadowTree const &,
     RootShadowNode::Shared const &,
-    RootShadowNode::Unshared const &newRootShadowNode) noexcept {
+    RootShadowNode::Unshared const &newRootShadowNode,
+    const ShadowTreeCommitOptions& commitOptions) noexcept {
   maybeInitializeLayoutAnimations(newRootShadowNode->getSurfaceId());
 
   auto reaShadowNode =
@@ -73,7 +74,7 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
   PropsMap propsMap;
 
   {
-    auto lock = propsRegistry_->createLock();
+    propRegistryLock_ = std::unique_lock(propsRegistry_->mutex_);
 
     propsRegistry_->for_each(
         [&](const ShadowNodeFamily &family, const folly::dynamic &props) {
@@ -83,9 +84,7 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
     const auto& result = cloneShadowTreeWithNewProps(*rootNode, propsMap);
 
     rootNode = std::move(result.newRoot);
-    for (const auto& tag : result.tagsToRemove) {
-      propsRegistry_->markNodeAsImmediateRemovable(tag);
-    }
+    tagsToRemove = result.tagsToRemove;
 
     // If the commit comes from React Native then pause commits from
     // Reanimated since the ShadowTree to be committed by Reanimated may not
@@ -99,6 +98,25 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
   }
 
   return rootNode;
+}
+
+void ReanimatedCommitHook::shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) {
+    if (commitOptions.source != ShadowTreeCommitSource::React) {
+        // It is a reanimated commit that will Sync the component's props
+        // with the props in the registry, so we don't want to do anything if not from react
+        return;
+    }
+
+    for (const auto &tag: tagsToRemove) {
+        propsRegistry_->markNodeAsImmediateRemovable(tag);
+    }
+    propsRegistry_->removeImmediateRemovableNodes();
+
+}
+
+void ReanimatedCommitHook::shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) {
+    // Once the shadow tree commit is done, whether failed or succeeded, we release the lock
+    propRegistryLock_ = std::nullopt;
 }
 
 } // namespace reanimated
