@@ -7,6 +7,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #endif
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +24,8 @@ namespace reanimated {
 
 using SynchronouslyUpdateUIPropsFunction =
     std::function<void(Tag tag, const folly::dynamic &props)>;
+using PreserveMountedTagsFunction =
+    std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
 using UpdatePropsFunction =
     std::function<void(jsi::Runtime &rt, const jsi::Value &operations)>;
 using ObtainPropFunction = std::function<jsi::Value(
@@ -78,6 +81,7 @@ using MaybeFlushUIUpdatesQueueFunction = std::function<void()>;
 struct PlatformDepMethodsHolder {
   RequestRenderFunction requestRender;
 #ifdef RCT_NEW_ARCH_ENABLED
+  PreserveMountedTagsFunction filterUnmountedTagsFunction;
   SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction;
 #else
   UpdatePropsFunction updatePropsFunction;

@@ -130,6 +130,11 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
+  public boolean preserveMountedTags(int[] tags) {
+    return mNodesManager.preserveMountedTags(tags);
+  }
+
+  @DoNotStrip
   public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
     mNodesManager.synchronouslyUpdateUIProps(viewTag, uiProps);
   }

@@ -476,6 +476,20 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
+  public boolean preserveMountedTags(int[] tags) {
+    if (!UiThreadUtil.isOnUiThread()) {
+      return false;
+    }
+
+    for (int i = 0; i < tags.length; i++) {
+      if (mUIManager.resolveView(tags[i]) == null) {
+        tags[i] = -1;
+      }
+    }
+
+    return true;
+  }
+
   public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
     compatibility.synchronouslyUpdateUIProps(viewTag, uiProps);
   }

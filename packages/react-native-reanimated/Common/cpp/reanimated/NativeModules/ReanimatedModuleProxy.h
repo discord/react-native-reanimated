@@ -241,6 +241,7 @@ class ReanimatedModuleProxy
   std::vector<Tag> tagsToRemove_; // from `propsRegistry_`
 
   const SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction_;
+  const PreserveMountedTagsFunction filterUnmountedTagsFunction_;
   std::unordered_set<std::string> nativePropNames_; // filled by configureProps
 #else
   const ObtainPropFunction obtainPropFunction_;
