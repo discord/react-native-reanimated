@@ -4,6 +4,7 @@
 #include <reanimated/Fabric/PropsRegistry.h>
 #include <reanimated/LayoutAnimations/LayoutAnimationsManager.h>
 #include <reanimated/LayoutAnimations/LayoutAnimationsUtils.h>
+#include <reanimated/Tools/PlatformDepMethodsHolder.h>
 
 #include <worklets/Tools/UIScheduler.h>
 
@@ -50,17 +51,30 @@ struct LayoutAnimationsProxy
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   jsi::Runtime &uiRuntime_;
   const std::shared_ptr<UIScheduler> uiScheduler_;
+  PreserveMountedTagsFunction preserveMountedTags_;
+
   LayoutAnimationsProxy(
       std::shared_ptr<LayoutAnimationsManager> layoutAnimationsManager,
       SharedComponentDescriptorRegistry componentDescriptorRegistry,
       ContextContainer::Shared contextContainer,
       jsi::Runtime &uiRuntime,
-      const std::shared_ptr<UIScheduler> uiScheduler)
+      const std::shared_ptr<UIScheduler> uiScheduler
+#ifdef ANDROID
+      ,
+      PreserveMountedTagsFunction filterUnmountedTagsFunction
+#endif
+      )
       : layoutAnimationsManager_(layoutAnimationsManager),
         contextContainer_(contextContainer),
         componentDescriptorRegistry_(componentDescriptorRegistry),
         uiRuntime_(uiRuntime),
-        uiScheduler_(uiScheduler) {}
+        uiScheduler_(uiScheduler)
+#ifdef ANDROID
+        ,
+        preserveMountedTags_(filterUnmountedTagsFunction)
+#endif
+  {
+  }
 
   void startEnteringAnimation(const int tag, ShadowViewMutation &mutation)
       const;

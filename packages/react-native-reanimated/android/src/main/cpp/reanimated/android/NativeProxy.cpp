@@ -228,6 +228,26 @@ inline jni::local_ref<ReadableMap::javaobject> castReadableMap(
     return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
 }
 
+std::optional<std::unique_ptr<int[]>> NativeProxy::preserveMountedTags(
+    std::vector<int> &tags) {
+  if (tags.empty()) {
+    return {};
+  }
+
+  static const auto method =
+      getJniMethod<jboolean(jni::alias_ref<jni::JArrayInt>)>(
+          "preserveMountedTags");
+  auto jArrayInt = jni::JArrayInt::newArray(tags.size());
+  jArrayInt->setRegion(0, tags.size(), tags.data());
+
+  if (!method(javaPart_.get(), jArrayInt)) {
+    return {};
+  }
+
+  auto region = jArrayInt->getRegion(0, tags.size());
+  return region;
+}
+
 void NativeProxy::synchronouslyUpdateUIProps(
         Tag tag,
         const folly::dynamic &props) {
@@ -432,6 +452,8 @@ void NativeProxy::progressLayoutAnimation(
 
 PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
 #ifdef RCT_NEW_ARCH_ENABLED
+    auto preserveMountedTags = bindThis(&NativeProxy::preserveMountedTags);
+
     auto synchronouslyUpdateUIPropsFunction =
             bindThis(&NativeProxy::synchronouslyUpdateUIProps);
 #else
@@ -485,6 +507,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
   return {
       requestRender,
 #ifdef RCT_NEW_ARCH_ENABLED
+      preserveMountedTags,
       synchronouslyUpdateUIPropsFunction,
 #else
       updatePropsFunction,

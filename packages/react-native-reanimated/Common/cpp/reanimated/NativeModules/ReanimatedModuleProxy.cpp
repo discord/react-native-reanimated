@@ -69,6 +69,8 @@ ReanimatedModuleProxy::ReanimatedModuleProxy(
       propsRegistry_(std::make_shared<PropsRegistry>()),
       synchronouslyUpdateUIPropsFunction_(
               platformDepMethodsHolder.synchronouslyUpdateUIPropsFunction),
+      filterUnmountedTagsFunction_(
+              platformDepMethodsHolder.filterUnmountedTagsFunction),
 #else
       obtainPropFunction_(platformDepMethodsHolder.obtainPropFunction),
       configurePropsPlatformFunction_(
@@ -983,7 +985,12 @@ void ReanimatedModuleProxy::initializeLayoutAnimationsProxy() {
         componentDescriptorRegistry,
         scheduler->getContextContainer(),
         uiWorkletRuntime_->getJSIRuntime(),
-        workletsModuleProxy_->getUIScheduler());
+        workletsModuleProxy_->getUIScheduler()
+#ifdef ANDROID
+            ,
+        filterUnmountedTagsFunction_
+#endif
+    );
   }
 }
 
