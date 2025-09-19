@@ -102,7 +102,25 @@ RequestRenderFunction makeRequestRender(REANodesManager *nodesManager)
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-// nothing
+PreserveMountedTagsFunction makePreserveMountedTagsFunction()
+{
+    //std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
+    auto preserveMountedTagsFunction = [](std::vector<int> &tags) -> std::optional<std::unique_ptr<int[]>> {
+        // TODO: Implement me
+        return nullptr;
+    };
+    return preserveMountedTagsFunction;
+}
+
+SynchronouslyUpdateUIPropsFunction makeSynchronouslyUpdateUIPropsFunction(REANodesManager *nodesManager)
+{
+  auto synchronouslyUpdateUIPropsFunction = [nodesManager](jsi::Runtime &rt, Tag tag, const jsi::Object &props) -> void {
+    NSNumber *viewTag = @(tag);
+    NSDictionary *uiProps = convertJSIObjectToNSDictionary(rt, props);
+    [nodesManager synchronouslyUpdateViewOnUIThread:viewTag props:uiProps];
+  };
+  return synchronouslyUpdateUIPropsFunction;
+}
 #else // RCT_NEW_ARCH_ENABLED
 UpdatePropsFunction makeUpdatePropsFunction(REAModule *reaModule)
 {
@@ -279,7 +297,9 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
   auto requestRender = makeRequestRender(nodesManager);
 
 #ifdef RCT_NEW_ARCH_ENABLED
-  // nothing
+  auto preserveMountedTagsFunction = makePreserveMountedTagsFunction();
+    
+  auto synchronouslyUpdateUIPropsFunction = makeSynchronouslyUpdateUIPropsFunction(nodesManager);
 #else
   RCTUIManager *uiManager = nodesManager.uiManager;
   auto updatePropsFunction = makeUpdatePropsFunction(reaModule);
@@ -338,7 +358,8 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
   PlatformDepMethodsHolder platformDepMethodsHolder = {
       requestRender,
 #ifdef RCT_NEW_ARCH_ENABLED
-  // nothing
+      preserveMountedTagsFunction,
+      synchronouslyUpdateUIPropsFunction,
 #else
       updatePropsFunction,
       scrollToFunction,
@@ -367,6 +388,10 @@ PlatformDepMethodsHolder makePlatformDepMethodsHolderBridgeless(
     REAModule *reaModule)
 {
   auto requestRender = makeRequestRender(nodesManager);
+    
+  auto preserveMountedTagsFunction = makePreserveMountedTagsFunction();
+    
+  auto synchronouslyUpdateUIPropsFunction = makeSynchronouslyUpdateUIPropsFunction(nodesManager);
 
   auto getAnimationTimestamp = makeGetAnimationTimestamp();
 
@@ -392,6 +417,8 @@ PlatformDepMethodsHolder makePlatformDepMethodsHolderBridgeless(
 
   PlatformDepMethodsHolder platformDepMethodsHolder = {
       requestRender,
+      preserveMountedTagsFunction,
+      synchronouslyUpdateUIPropsFunction,
       getAnimationTimestamp,
       progressLayoutAnimation,
       endLayoutAnimation,

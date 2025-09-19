@@ -207,7 +207,7 @@ class ReanimatedModuleProxy
   void requestAnimationFrame(jsi::Runtime &rt, const jsi::Value &callback);
 
 #ifdef RCT_NEW_ARCH_ENABLED
-  bool updateNoneLayoutProps(const folly::dynamic &props, Tag tag);
+  bool updateNoneLayoutProps(jsi::Runtime &rt, const jsi::Object &props, Tag tag);
   jsi::Value filterNonAnimatableProps(
       jsi::Runtime &rt,
       const jsi::Value &props);

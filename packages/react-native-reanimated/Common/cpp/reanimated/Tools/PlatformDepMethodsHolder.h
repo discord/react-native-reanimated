@@ -24,7 +24,9 @@ namespace reanimated {
 #ifdef RCT_NEW_ARCH_ENABLED
 
 using SynchronouslyUpdateUIPropsFunction =
-    std::function<void(Tag tag, const folly::dynamic &props)>;
+    std::function<void(jsi::Runtime &rt, Tag tag, const jsi::Object &props)>;
+using PreserveMountedTagsFunction =
+    std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
 using UpdatePropsFunction =
     std::function<void(jsi::Runtime &rt, const jsi::Value &operations)>;
 using ObtainPropFunction = std::function<jsi::Value(
