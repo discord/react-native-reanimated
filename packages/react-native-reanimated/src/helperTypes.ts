@@ -7,7 +7,7 @@ until time comes to refactor the code and get necessary types right.
 This will not be easy though! 
 */
 
-import type { RegisteredStyle, StyleProp } from 'react-native';
+import type { StyleProp } from 'react-native';
 
 import type {
   AnimatedStyle,
@@ -20,7 +20,11 @@ import type { BaseAnimationBuilder } from './layoutReanimation/animationBuilder/
 import type { ReanimatedKeyframe } from './layoutReanimation/animationBuilder/Keyframe';
 import type { SharedTransition } from './layoutReanimation/sharedTransitions';
 
-type EntryOrExitLayoutType =
+// RegisteredStyle was removed from React Native, provide a fallback type
+// This is only used in a deprecated type definition
+type RegisteredStyle<T> = number & { __registeredStyleBrand: T };
+
+export type EntryOrExitLayoutType =
   | BaseAnimationBuilder
   | typeof BaseAnimationBuilder
   | EntryExitAnimationFunction
