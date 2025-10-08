@@ -88,6 +88,9 @@ struct PlatformDepMethodsHolder {
   PreserveMountedTagsFunction filterUnmountedTagsFunction;
 #endif // ANDROID
   SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction;
+#ifdef ANDROID
+  PreserveMountedTagsFunction filterUnmountedTagsFunction;
+#endif // ANDROID
 #else
   UpdatePropsFunction updatePropsFunction;
   ScrollToFunction scrollToFunction;
