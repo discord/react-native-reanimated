@@ -76,7 +76,7 @@ public class ReanimatedPackage extends BaseReactPackage implements ReactPackage 
 
   private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
+    // Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     final ReactInstanceManager reactInstanceManager = getReactInstanceManager(reactContext);
     List<ViewManager> viewManagers = reactInstanceManager.getOrCreateViewManagers(reactContext);
     int minTimeLeftInFrameForNonBatchedOperationMs = -1;
@@ -84,7 +84,7 @@ public class ReanimatedPackage extends BaseReactPackage implements ReactPackage 
       return ReanimatedUIManagerFactory.create(
           reactContext, viewManagers, minTimeLeftInFrameForNonBatchedOperationMs);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      // Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
   }
