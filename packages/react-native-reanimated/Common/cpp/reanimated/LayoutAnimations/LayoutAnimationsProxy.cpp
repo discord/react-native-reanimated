@@ -972,7 +972,7 @@ void LayoutAnimationsProxy::restoreOpacityInCaseOfFlakyEnteringAnimation(
               [=](RootShadowNode const &oldRootShadowNode) {
                 const auto self = weakThis.lock();
                 if (!self) {
-                  return cloneShadowTreeWithNewProps(oldRootShadowNode, {});
+                  return cloneShadowTreeWithNewProps(oldRootShadowNode, {}).newRoot;
                 }
                 const auto &rootShadowNode =
                     static_cast<const ShadowNode &>(oldRootShadowNode);
@@ -985,7 +985,7 @@ void LayoutAnimationsProxy::restoreOpacityInCaseOfFlakyEnteringAnimation(
                         folly::dynamic::object("opacity", opacity));
                   }
                 }
-                return cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap);
+                return cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot;
               },
               {});
         });

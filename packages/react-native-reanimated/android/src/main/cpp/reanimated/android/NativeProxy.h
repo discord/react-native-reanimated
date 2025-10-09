@@ -188,7 +188,6 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
       std::vector<int> &tags);
 #endif // RCT_NEW_ARCH_ENABLED
   void synchronouslyUpdateUIProps(Tag viewTag, const folly::dynamic &props);
-#endif
   std::optional<std::unique_ptr<int[]>> preserveMountedTags(
       std::vector<int> &tags);
 #endif // RCT_NEW_ARCH_ENABLED
