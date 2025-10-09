@@ -23,7 +23,7 @@ export function getShadowNodeWrapperFromRef(
         ((_ref: any) => _ref._internalInstanceHandle);
     } catch (e) {
       getInternalInstanceHandleFromPublicInstance = (_ref: any) =>
-        _ref._internalInstanceHandle;
+        _ref?._internalInstanceHandle;
     }
   }
 
@@ -38,15 +38,15 @@ export function getShadowNodeWrapperFromRef(
 
   let resolvedRef;
   if (scrollViewRef) {
-    resolvedRef = scrollViewRef.__internalInstanceHandle.stateNode.node;
+    resolvedRef = scrollViewRef?.__internalInstanceHandle?.stateNode?.node;
   } else if (otherScrollViewRef) {
-    resolvedRef = otherScrollViewRef.__internalInstanceHandle.stateNode.node;
+    resolvedRef = otherScrollViewRef?.__internalInstanceHandle?.stateNode?.node;
   } else if (textInputRef) {
     resolvedRef = textInputRef;
   } else {
     const instance = hostInstance ?? findHostInstance(ref);
     resolvedRef =
-      getInternalInstanceHandleFromPublicInstance(instance).stateNode.node;
+      getInternalInstanceHandleFromPublicInstance(instance)?.stateNode?.node;
   }
 
   return resolvedRef;
