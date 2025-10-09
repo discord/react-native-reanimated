@@ -6,9 +6,13 @@ let getInternalInstanceHandleFromPublicInstance;
 export function getShadowNodeWrapperFromRef(ref, hostInstance) {
   if (getInternalInstanceHandleFromPublicInstance === undefined) {
     try {
-      getInternalInstanceHandleFromPublicInstance = require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance ?? (_ref => _ref._internalInstanceHandle);
+      getInternalInstanceHandleFromPublicInstance =
+        require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+          .getInternalInstanceHandleFromPublicInstance ??
+        ((_ref) => _ref._internalInstanceHandle);
     } catch (e) {
-      getInternalInstanceHandleFromPublicInstance = _ref => _ref._internalInstanceHandle;
+      getInternalInstanceHandleFromPublicInstance = (_ref) =>
+        _ref?._internalInstanceHandle;
     }
   }
 
@@ -22,14 +26,15 @@ export function getShadowNodeWrapperFromRef(ref, hostInstance) {
   const textInputRef = ref?.__internalInstanceHandle?.stateNode?.node;
   let resolvedRef;
   if (scrollViewRef) {
-    resolvedRef = scrollViewRef.__internalInstanceHandle.stateNode.node;
+    resolvedRef = scrollViewRef?.__internalInstanceHandle?.stateNode?.node;
   } else if (otherScrollViewRef) {
-    resolvedRef = otherScrollViewRef.__internalInstanceHandle.stateNode.node;
+    resolvedRef = otherScrollViewRef?.__internalInstanceHandle?.stateNode?.node;
   } else if (textInputRef) {
     resolvedRef = textInputRef;
   } else {
     const instance = hostInstance ?? findHostInstance(ref);
-    resolvedRef = getInternalInstanceHandleFromPublicInstance(instance).stateNode.node;
+    resolvedRef =
+      getInternalInstanceHandleFromPublicInstance(instance)?.stateNode?.node;
   }
   return resolvedRef;
 }
