@@ -440,8 +440,14 @@ export function createAnimatedComponent(
 
         // otherwise, remove each style that is not present in new styles
         for (const prevStyle of prevStyles) {
-          const isPresent = styles.some((style) => style === prevStyle);
-          if (!isPresent && isStyleAttached(prevStyle)) {
+          const isPresent = styles.some((style) => {
+            if (style === prevStyle && isStyleAttached(style)) {
+              // Skip already attached styles
+              return true;
+            }
+            return false;
+          });
+          if (!isPresent) {
             prevStyle.viewDescriptors.remove(viewTag);
           }
         }
