@@ -7,13 +7,17 @@ export interface ViewDescriptorsSet {
   shareableViewDescriptors: SharedValue<Descriptor[]>;
   add: (item: Descriptor) => void;
   remove: (viewTag: number) => void;
+  has: (viewTag: number) => boolean;
 }
 
 export function makeViewDescriptorsSet(): ViewDescriptorsSet {
   const shareableViewDescriptors = makeMutable<Descriptor[]>([]);
+  const viewTags = new Set<number>();
+
   const data: ViewDescriptorsSet = {
     shareableViewDescriptors,
     add: (item: Descriptor) => {
+      viewTags.add(item.tag as number);
       shareableViewDescriptors.modify((descriptors) => {
         'worklet';
         const index = descriptors.findIndex(
@@ -29,6 +33,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
     },
 
     remove: (viewTag: number) => {
+      viewTags.delete(viewTag);
       shareableViewDescriptors.modify((descriptors) => {
         'worklet';
         const index = descriptors.findIndex(
@@ -40,6 +45,9 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
         return descriptors;
       }, false);
     },
+
+    has: (viewTag: number) => viewTags.has(viewTag),
   };
+
   return data;
 }

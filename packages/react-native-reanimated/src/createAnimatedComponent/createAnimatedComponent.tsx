@@ -432,6 +432,9 @@ export function createAnimatedComponent(
         adaptViewConfig(viewConfig);
       }
 
+      const isStyleAttached = (style: StyleProps) =>
+        style.viewDescriptors.has(viewTag);
+
       // remove old styles
       if (prevStyles) {
         // in most of the cases, views have only a single animated style and it remains unchanged
@@ -440,13 +443,21 @@ export function createAnimatedComponent(
           prevStyles.length === 1 &&
           styles[0] === prevStyles[0];
 
-        if (!hasOneSameStyle) {
-          // otherwise, remove each style that is not present in new styles
-          for (const prevStyle of prevStyles) {
-            const isPresent = styles.some((style) => style === prevStyle);
-            if (!isPresent) {
-              prevStyle.viewDescriptors.remove(viewTag);
+        if (hasOneSameStyle && isStyleAttached(prevStyles[0])) {
+          return;
+        }
+
+        // otherwise, remove each style that is not present in new styles
+        for (const prevStyle of prevStyles) {
+          const isPresent = styles.some((style) => {
+            if (style === prevStyle && isStyleAttached(style)) {
+              // Skip already attached styles
+              return true;
             }
+            return false;
+          });
+          if (!isPresent) {
+            prevStyle.viewDescriptors.remove(viewTag);
           }
         }
       }
