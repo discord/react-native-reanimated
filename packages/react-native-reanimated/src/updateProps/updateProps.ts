@@ -15,8 +15,8 @@ import { isFabric, isJest, shouldBeUseWeb } from '../PlatformChecker';
 import type { ReanimatedHTMLElement } from '../ReanimatedModule/js-reanimated';
 import { _updatePropsJS } from '../ReanimatedModule/js-reanimated';
 import { runOnJS, runOnUIImmediately } from '../threads';
-import { processTransformOrigin } from './processTransformOrigin';
 import { ComponentRegistry } from './ComponentRegistry';
+import { processTransformOrigin } from './processTransformOrigin';
 
 let updateProps: (
   viewDescriptors: ViewDescriptorsWrapper,
@@ -40,12 +40,14 @@ if (shouldBeUseWeb()) {
     // the goal is to use these updates later on react JS to set these as style state to the components.
     // processing is alternating the style props as RN expects them.
     viewDescriptors.value.forEach((viewDescriptor) => {
-      const prevState = global.lastUpdateByTag[viewDescriptor.tag as number] ?? {};
+      const prevState =
+        global.lastUpdateByTag[viewDescriptor.tag as number] ?? {};
       global.lastUpdateByTag[viewDescriptor.tag as number] = {
         ...prevState, // its important to preserve previous state. When multiple style props are animated they might not all appear in one update.
-        ...updates // copy updates as process mutates inline
+        ...updates, // copy updates as process mutates inline
       };
-      global.lastUpdateFrameTimeByTag[viewDescriptor.tag as number] = global.__frameTimestamp;
+      global.lastUpdateFrameTimeByTag[viewDescriptor.tag as number] =
+        global.__frameTimestamp;
     });
 
     processColorsInProps(updates);
@@ -83,7 +85,6 @@ function updatePropsOnReactJS(tag: number, props: StyleProps) {
   }
 }
 
-
 const createUpdatePropsManager = isFabric()
   ? () => {
       'worklet';
@@ -103,10 +104,20 @@ const createUpdatePropsManager = isFabric()
         const currentFrameTime = global.__frameTimestamp;
         const lastUpdateFrameTime = global.lastUpdateFrameTimeByTag[tag];
         if (!currentFrameTime || !lastUpdateFrameTime) {
+          // Handles case where frame timing is unavailable but we still have updates to apply
+          // This can happen during reduced motion animations or when components are frozen/unfrozen
+          // because the animation system may not have proper frame timing context (because there's no animation running).
+          //  In these cases, we should still apply any pending updates immediately rather than skipping them entirely,
+          // as skipping would cause the component to remain in an incorrect visual state.
+          if (global.lastUpdateByTag[tag]) {
+            runOnJS(updatePropsOnReactJS)(tag, global.lastUpdateByTag[tag]);
+            global.lastUpdateByTag[tag] = undefined;
+          }
           return;
         }
 
-        if (currentFrameTime - lastUpdateFrameTime >= 20) { // ~ 2x frames
+        if (currentFrameTime - lastUpdateFrameTime >= 20) {
+          // ~ 2x frames
           // Animation appears to have settled - update component props on JS
           runOnJS(updatePropsOnReactJS)(tag, global.lastUpdateByTag[tag]);
           global.lastUpdateByTag[tag] = undefined;
