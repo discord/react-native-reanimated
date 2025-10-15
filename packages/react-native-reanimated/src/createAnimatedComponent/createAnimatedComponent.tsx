@@ -83,12 +83,11 @@ function onlyAnimatedStyles(styles: StyleProps[]): StyleProps[] {
 }
 
 type Options<P> = {
-  setNativeProps: (ref: AnimatedComponentRef, props: P) => void;
+  setNativeProps?: (ref: AnimatedComponentRef, props: P) => void;
   /**
    * Discord enables a performance improvement, which causes us to sync back any animated props from the UI thread
    * back to react JS.
-   * Switching this to `true` disables this behavior.
-   * @default false
+   * Switching this to `true` disables this behavior. Default is `false`.
    */
   disableReactSync?: boolean;
 };
