@@ -158,7 +158,7 @@ type ManagedAnimatedComponent = React.Component<
   IAnimatedComponentInternal;
 
 type ComponentOptions = {
-  setNativeProps: (
+  setNativeProps?: (
     ref: AnimatedComponentRef,
     props: InitialComponentProps
   ) => void;

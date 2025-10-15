@@ -4,7 +4,13 @@ import type { FlatList, FlatListProps } from 'react-native';
 import type { AnimateProps } from '../helperTypes';
 import type { AnimatedComponentRef } from './commonTypes';
 type Options<P> = {
-    setNativeProps: (ref: AnimatedComponentRef, props: P) => void;
+    setNativeProps?: (ref: AnimatedComponentRef, props: P) => void;
+    /**
+     * Discord enables a performance improvement, which causes us to sync back any animated props from the UI thread
+     * back to react JS.
+     * Switching this to `true` disables this behavior. Default is `false`.
+     */
+    disableReactSync?: boolean;
 };
 /**
  * Lets you create an Animated version of any React Native component.

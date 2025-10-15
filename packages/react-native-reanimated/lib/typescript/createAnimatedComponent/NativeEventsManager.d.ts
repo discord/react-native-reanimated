@@ -10,7 +10,7 @@ export declare class NativeEventsManager implements INativeEventsManager {
 }
 type ManagedAnimatedComponent = React.Component<AnimatedComponentProps<InitialComponentProps>> & IAnimatedComponentInternal;
 type ComponentOptions = {
-    setNativeProps: (ref: AnimatedComponentRef, props: InitialComponentProps) => void;
+    setNativeProps?: (ref: AnimatedComponentRef, props: InitialComponentProps) => void;
 };
 export {};
 //# sourceMappingURL=NativeEventsManager.d.ts.map
