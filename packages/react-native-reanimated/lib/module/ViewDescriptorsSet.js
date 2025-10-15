@@ -1,15 +1,19 @@
 'use strict';
 
-import { makeMutable } from "./core.js";
+import { makeMutable } from './core.js';
 export function makeViewDescriptorsSet() {
   const shareableViewDescriptors = makeMutable([]);
+  const viewTags = new Set();
   const data = {
     shareableViewDescriptors,
-    add: item => {
-      shareableViewDescriptors.modify(descriptors => {
+    add: (item) => {
+      viewTags.add(item.tag);
+      shareableViewDescriptors.modify((descriptors) => {
         'worklet';
 
-        const index = descriptors.findIndex(descriptor => descriptor.tag === item.tag);
+        const index = descriptors.findIndex(
+          (descriptor) => descriptor.tag === item.tag
+        );
         if (index !== -1) {
           descriptors[index] = item;
         } else {
@@ -18,17 +22,21 @@ export function makeViewDescriptorsSet() {
         return descriptors;
       }, false);
     },
-    remove: viewTag => {
-      shareableViewDescriptors.modify(descriptors => {
+    remove: (viewTag) => {
+      viewTags.delete(viewTag);
+      shareableViewDescriptors.modify((descriptors) => {
         'worklet';
 
-        const index = descriptors.findIndex(descriptor => descriptor.tag === viewTag);
+        const index = descriptors.findIndex(
+          (descriptor) => descriptor.tag === viewTag
+        );
         if (index !== -1) {
           descriptors.splice(index, 1);
         }
         return descriptors;
       }, false);
-    }
+    },
+    has: (viewTag) => viewTags.has(viewTag),
   };
   return data;
 }
