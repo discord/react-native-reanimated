@@ -83,7 +83,13 @@ function onlyAnimatedStyles(styles: StyleProps[]): StyleProps[] {
 }
 
 type Options<P> = {
-  setNativeProps: (ref: AnimatedComponentRef, props: P) => void;
+  setNativeProps?: (ref: AnimatedComponentRef, props: P) => void;
+  /**
+   * Discord enables a performance improvement, which causes us to sync back any animated props from the UI thread
+   * back to react JS.
+   * Switching this to `true` disables this behavior. Default is `false`.
+   */
+  disableReactSync?: boolean;
 };
 
 /**
@@ -345,6 +351,10 @@ export function createAnimatedComponent(
      * Reanimated props can be animatedProps but also animated styles. Note that styles are flattened and passed as top level props.
      */
     _updateReanimatedProps(props: {[key: string]: unknown}) {
+      if (options?.disableReactSync) {
+        return;
+      }
+
       const transformedProps: {[key: string]: unknown} = {};
       for (const prop in props) {
         let value = props[prop];
