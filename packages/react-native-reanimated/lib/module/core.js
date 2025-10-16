@@ -2,7 +2,6 @@
 
 import { controlEdgeToEdgeValues, isEdgeToEdge } from 'react-native-is-edge-to-edge';
 import { ReanimatedError } from "./errors.js";
-import { initializeUIRuntime } from "./initializers.js";
 import { isFabric, shouldBeUseWeb } from "./PlatformChecker.js";
 import { ReanimatedModule } from './ReanimatedModule';
 import { SensorContainer } from "./SensorContainer.js";
@@ -98,7 +97,6 @@ export function unregisterSensor(sensorId) {
   const sensorContainer = getSensorContainer();
   return sensorContainer.unregisterSensor(sensorId);
 }
-initializeUIRuntime(ReanimatedModule);
 let featuresConfig = {
   enableLayoutAnimations: false,
   setByUser: false

@@ -11,7 +11,7 @@ import { isReducedMotionEnabledInSystem, ReducedMotionManager } from "../Reduced
  *
  * @param mode - Determines default reduce motion behavior globally in your
  *   application. Configured with {@link ReduceMotion} enum.
- * @see https://docs.swmansion.com/react-native-reanimated/docs/components/ReducedMotionConfig
+ * @see https://docs.swmansion.com/react-native-reanimated/docs/3.x/device/ReducedMotionConfig/
  */
 export function ReducedMotionConfig({
   mode

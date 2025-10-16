@@ -420,12 +420,16 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
     animatedStyleHandle.current = isJest() ? {
       viewDescriptors,
       initial,
-      jestAnimatedValues
+      jestAnimatedValues,
+      toJSON: animatedStyleHandleToJSON
     } : {
       viewDescriptors,
       initial
     };
   }
   return animatedStyleHandle.current;
+}
+function animatedStyleHandleToJSON() {
+  return '{}';
 }
 //# sourceMappingURL=useAnimatedStyle.js.map

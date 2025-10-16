@@ -46,6 +46,7 @@ export type AnimatedComponentProps<P extends Record<string, unknown>> = P & {
     sharedTransitionTag?: string;
     sharedTransitionStyle?: SharedTransition;
 };
+export type LayoutAnimationOrBuilder = (BaseAnimationBuilder | typeof BaseAnimationBuilder | EntryExitAnimationFunction | Keyframe | ILayoutAnimationBuilder) & LayoutAnimationStaticContext;
 export interface AnimatedComponentRef extends Component {
     setNativeProps?: (props: Record<string, unknown>) => void;
     getScrollableNode?: () => AnimatedComponentRef;

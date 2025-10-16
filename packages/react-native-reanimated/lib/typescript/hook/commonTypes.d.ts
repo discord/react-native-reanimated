@@ -10,10 +10,13 @@ export interface Descriptor {
     name: string;
     shadowNodeWrapper: ShadowNodeWrapper;
 }
+export type MaybeObserverCleanup = (() => void) | undefined;
+export type AnimatedRefObserver = (tag: number | null) => MaybeObserverCleanup;
 export interface AnimatedRef<T extends Component> {
     (component?: T): number | ShadowNodeWrapper | HTMLElement;
     current: T | null;
-    getTag: () => number;
+    observe: (observer: AnimatedRefObserver) => void;
+    getTag?: () => number | null;
 }
 export type AnimatedRefOnJS = AnimatedRef<Component>;
 /** `AnimatedRef` is mapped to this type on the UI thread via a shareable handle. */
@@ -21,10 +24,10 @@ export type AnimatedRefOnUI = {
     (): number | ShadowNodeWrapper | null;
     /**
      * @remarks
-     *   `viewName` is required only on iOS with Paper and it's value is null on
-     *   other platforms.
+     *   `viewName` is required only on iOS/macOS with Paper and is undefined on
+     *   other platforms
      */
-    viewName: SharedValue<string | null>;
+    viewName?: SharedValue<string | null>;
 };
 type ReanimatedPayload = {
     eventName: string;
@@ -60,6 +63,7 @@ export interface AnimatedStyleHandle<Style extends DefaultStyle | AnimatedProps 
 }
 export interface JestAnimatedStyleHandle<Style extends DefaultStyle | AnimatedProps = DefaultStyle> extends AnimatedStyleHandle<Style> {
     jestAnimatedValues: MutableRefObject<AnimatedStyle<Style>> | MutableRefObject<AnimatedProps>;
+    toJSON: () => string;
 }
 export type UseAnimatedStyleInternal<Style extends DefaultStyle> = (updater: WorkletFunction<[], Style> | (() => Style), dependencies?: DependencyList | null, adapters?: AnimatedPropsAdapterFunction | AnimatedPropsAdapterFunction[] | null, isAnimatedProps?: boolean) => AnimatedStyleHandle<Style> | JestAnimatedStyleHandle<Style>;
 export {};

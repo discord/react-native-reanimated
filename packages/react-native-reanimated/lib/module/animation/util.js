@@ -20,7 +20,8 @@ const LAYOUT_ANIMATION_SUPPORTED_PROPS = {
   globalOriginX: true,
   globalOriginY: true,
   opacity: true,
-  transform: true
+  transform: true,
+  backgroundColor: true
 };
 export function isValidLayoutAnimationProp(prop) {
   'worklet';
@@ -193,17 +194,18 @@ function decorateAnimation(animation) {
       animation[i].onStart(animation[i], RGBAValue[index], timestamp, previousAnimation ? previousAnimation[i] : undefined);
       res.push(animation[i].current);
     });
+    animation.unroundedCurrent = res;
 
     // We need to clamp the res values to make sure they are in the correct RGBA range
     clampRGBA(res);
     animation.current = rgbaArrayToRGBAColor(toGammaSpace(res));
   };
   const colorOnFrame = (animation, timestamp) => {
-    const RGBACurrent = toLinearSpace(convertToRGBA(animation.current));
     const res = [];
     let finished = true;
-    tab.forEach((i, index) => {
-      animation[i].current = RGBACurrent[index];
+    // We must restore nonscale current to ever end the animation.
+    animation.current = animation.nonscaledCurrent;
+    tab.forEach(i => {
       const result = animation[i].onFrame(animation[i], timestamp);
       // We really need to assign this value to result, instead of passing it directly - otherwise once "finished" is false, onFrame won't be called
       finished = finished && result;
@@ -212,6 +214,7 @@ function decorateAnimation(animation) {
 
     // We need to clamp the res values to make sure they are in the correct RGBA range
     clampRGBA(res);
+    animation.nonscaledCurrent = res;
     animation.current = rgbaArrayToRGBAColor(toGammaSpace(res));
     return finished;
   };

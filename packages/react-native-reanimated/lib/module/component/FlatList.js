@@ -7,11 +7,14 @@ import { componentWithRef } from "../reactUtils.js";
 import { LayoutAnimationConfig } from "./LayoutAnimationConfig.js";
 import { AnimatedView } from "./View.js";
 const AnimatedFlatList = createAnimatedComponent(FlatList);
-const createCellRendererComponent = itemLayoutAnimationRef => {
+const createCellRendererComponent = (itemLayoutAnimationRef, cellRendererComponentStyleRef) => {
   const CellRendererComponent = props => {
     return <AnimatedView
     // TODO TYPESCRIPT This is temporary cast is to get rid of .d.ts file.
-    layout={itemLayoutAnimationRef?.current} onLayout={props.onLayout} style={props.style}>
+    layout={itemLayoutAnimationRef?.current} onLayout={props.onLayout} style={[props.style, typeof cellRendererComponentStyleRef?.current === 'function' ? cellRendererComponentStyleRef?.current({
+      index: props.index,
+      item: props.item
+    }) : cellRendererComponentStyleRef?.current]}>
         {props.children}
       </AnimatedView>;
   };
@@ -27,6 +30,7 @@ const FlatListForwardRefRender = function (props, ref) {
   const {
     itemLayoutAnimation,
     skipEnteringExitingAnimations,
+    CellRendererComponentStyle,
     ...restProps
   } = props;
 
@@ -40,7 +44,9 @@ const FlatListForwardRefRender = function (props, ref) {
   }
   const itemLayoutAnimationRef = useRef(itemLayoutAnimation);
   itemLayoutAnimationRef.current = itemLayoutAnimation;
-  const CellRendererComponent = React.useMemo(() => createCellRendererComponent(itemLayoutAnimationRef), [itemLayoutAnimationRef]);
+  const cellRendererComponentStyleRef = useRef(CellRendererComponentStyle);
+  cellRendererComponentStyleRef.current = CellRendererComponentStyle;
+  const CellRendererComponent = React.useMemo(() => createCellRendererComponent(itemLayoutAnimationRef, cellRendererComponentStyleRef), []);
   const animatedFlatList =
   // @ts-expect-error In its current type state, createAnimatedComponent cannot create generic components.
   <AnimatedFlatList ref={ref} {...restProps} CellRendererComponent={CellRendererComponent} />;

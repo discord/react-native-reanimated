@@ -40,7 +40,7 @@ function setNativePropsPaper(animatedRef, updates) {
     return;
   }
   const tag = animatedRef();
-  const name = animatedRef.viewName.value;
+  const name = animatedRef.viewName?.value ?? null;
   processColorsInProps(updates);
   global._updatePropsPaper([{
     tag,
