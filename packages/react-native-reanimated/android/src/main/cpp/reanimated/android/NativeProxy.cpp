@@ -220,25 +220,6 @@ void NativeProxy::maybeFlushUIUpdatesQueue() {
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-std::optional<std::unique_ptr<int[]>> NativeProxy::preserveMountedTags(
-    std::vector<int> &tags) {
-  if (tags.empty()) {
-    return {};
-  }
-
-  static const auto method =
-      getJniMethod<jboolean(jni::alias_ref<jni::JArrayInt>)>(
-          "preserveMountedTags");
-  auto jArrayInt = jni::JArrayInt::newArray(tags.size());
-  jArrayInt->setRegion(0, tags.size(), tags.data());
-
-  if (!method(javaPart_.get(), jArrayInt)) {
-    return {};
-  }
-
-  auto region = jArrayInt->getRegion(0, tags.size());
-  return region;
-}
 
 inline jni::local_ref<ReadableMap::javaobject> castReadableMap(
         jni::local_ref<ReadableNativeMap::javaobject> const &nativeMap) {
@@ -526,7 +507,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
 #ifdef RCT_NEW_ARCH_ENABLED
       preserveMountedTags,
       synchronouslyUpdateUIPropsFunction,
-      preserveMountedTags,
+
 #else
       updatePropsFunction,
       scrollToFunction,

@@ -184,8 +184,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
 #endif // RCT_NEW_ARCH_ENABLED
   void installJSIBindings();
 #ifdef RCT_NEW_ARCH_ENABLED
-  std::optional<std::unique_ptr<int[]>> preserveMountedTags(
-      std::vector<int> &tags);
+
 #endif // RCT_NEW_ARCH_ENABLED
   void synchronouslyUpdateUIProps(Tag viewTag, const folly::dynamic &props);
   std::optional<std::unique_ptr<int[]>> preserveMountedTags(

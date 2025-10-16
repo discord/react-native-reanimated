@@ -43,7 +43,7 @@ Props::Shared mergeProps(
   return newProps;
 }
 
-std::shared_ptr<ShadowNode> cloneShadowTreeWithNewPropsRecursive(
+
 /**
  * Checks it the props of a are identical to the props in b.
  * Doesn't mean they are deeply the same, just that b has everything that a has.
@@ -67,7 +67,7 @@ bool checkPropsEqual(const folly::dynamic& a, const folly::dynamic& b) {
     return true;
 }
 
-ShadowNode::Unshared cloneShadowTreeWithNewPropsRecursive(
+std::shared_ptr<ShadowNode> cloneShadowTreeWithNewPropsRecursive(
     const ShadowNode &shadowNode,
     const ChildrenMap &childrenMap,
     const PropsMap &propsMap,
