@@ -202,6 +202,11 @@ export function createAnimatedComponent(
       this._attachAnimatedStyles();
       this._InlinePropManager.attachInlineProps(this, this._getViewInfo());
 
+      const viewTag = this.getComponentViewTag();
+      if (viewTag !== -1) {
+        ComponentRegistry.register(viewTag, this);
+      }
+
       this._configureLayoutAnimation(
         LayoutAnimationType.LAYOUT,
         this.props.layout
