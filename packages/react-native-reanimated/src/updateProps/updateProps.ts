@@ -40,6 +40,7 @@ if (shouldBeUseWeb()) {
     // the goal is to use these updates later on react JS to set these as style state to the components.
     // processing is alternating the style props as RN expects them.
     viewDescriptors.value.forEach((viewDescriptor) => {
+      // TODO: although its not a lot of data, this global map is never cleared when the component is unmounted.
       const prevState = global.lastUpdateByTag[viewDescriptor.tag as number] ?? {};
       global.lastUpdateByTag[viewDescriptor.tag as number] = {
         ...prevState, // its important to preserve previous state. When multiple style props are animated they might not all appear in one update.
