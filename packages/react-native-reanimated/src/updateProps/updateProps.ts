@@ -15,8 +15,8 @@ import { isFabric, isJest, shouldBeUseWeb } from '../PlatformChecker';
 import type { ReanimatedHTMLElement } from '../ReanimatedModule/js-reanimated';
 import { _updatePropsJS } from '../ReanimatedModule/js-reanimated';
 import { runOnJS, runOnUIImmediately } from '../threads';
-import { processTransformOrigin } from './processTransformOrigin';
 import { ComponentRegistry } from './ComponentRegistry';
+import { processTransformOrigin } from './processTransformOrigin';
 
 let updateProps: (
   viewDescriptors: ViewDescriptorsWrapper,
@@ -76,14 +76,30 @@ export const updatePropsJestWrapper = (
 
 export default updateProps;
 
-// Apply thr changes from UI thread to JS thread.Add commentMore actions
-function updatePropsOnReactJS(tag: number, props: StyleProps) {
-  const component = ComponentRegistry.getComponent(tag);
-  if (component) {
-    component._updateReanimatedProps(props);
-  }
+let updatesToReactJS: { [tag: string]: StyleProps } = {};
+
+function flushUpdatesToReactJS() {
+  Object.keys(updatesToReactJS).forEach((tagStr) => {
+    const tag = Number(tagStr);
+    const props = updatesToReactJS[tag];
+    const component = ComponentRegistry.getComponent(tag);
+    if (component) {
+      component._updateReanimatedProps(props);
+    }
+  })
+  updatesToReactJS = {}
 }
 
+let timeoutId: NodeJS.Timeout | undefined;
+// Apply the changes from UI thread to JS thread.
+function updatePropsOnReactJS(tag: number, props: StyleProps) {
+  updatesToReactJS[tag] = {
+    ...updatesToReactJS[tag],
+    ...props,
+  }
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(flushUpdatesToReactJS, 0) ;
+}
 
 const createUpdatePropsManager = isFabric()
   ? () => {
