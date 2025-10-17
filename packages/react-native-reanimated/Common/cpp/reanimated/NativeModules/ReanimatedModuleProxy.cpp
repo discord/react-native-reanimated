@@ -978,7 +978,7 @@ void ReanimatedModuleProxy::initializeFabric(
   initializeLayoutAnimationsProxy();
 
   mountHook_ =
-      std::make_shared<ReanimatedMountHook>(propsRegistry_, uiManager_);
+      std::make_shared<ReanimatedMountHook>(propsRegistry_, uiManager_, shared_from_this());
   commitHook_ = std::make_shared<ReanimatedCommitHook>(
       propsRegistry_, uiManager_, layoutAnimationsProxy_);
 }
@@ -1062,5 +1062,34 @@ void ReanimatedModuleProxy::unsubscribeFromKeyboardEvents(
     const jsi::Value &listenerId) {
   unsubscribeFromKeyboardEventsFunction_(listenerId.asNumber());
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+void ReanimatedModuleProxy::setNodeRemovalCallback(
+    jsi::Runtime &rt,
+    const jsi::Value &callback) {
+  if (callback.isObject() && callback.asObject(rt).isFunction(rt)) {
+    nodeRemovalCallback_ = std::make_shared<jsi::Function>(
+        callback.asObject(rt).asFunction(rt));
+    nodeRemovalCallbackRuntime_ = &rt;
+  }
+}
+
+void ReanimatedModuleProxy::onNodeRemovalDecision(Tag tag, bool isFrozen) {
+  if (nodeRemovalCallback_ && nodeRemovalCallbackRuntime_) {
+    // Capture callback and runtime by value to ensure they're still valid
+    auto callback = nodeRemovalCallback_;
+    auto runtime = nodeRemovalCallbackRuntime_;
+
+    // Must invoke on JS thread to avoid crashes
+    jsInvoker_->invokeAsync([callback, runtime, tag, isFrozen]() {
+      if (callback && runtime) {
+        callback->call(*runtime,
+                       jsi::Value(static_cast<double>(tag)),
+                       jsi::Value(isFrozen));
+      }
+    });
+  }
+}
+#endif // RCT_NEW_ARCH_ENABLED
 
 } // namespace reanimated

@@ -312,6 +312,14 @@ class JSReanimated implements IReanimatedModule {
       'unmarkNodeAsRemovable is not available in JSReanimated.'
     );
   }
+
+  setNodeRemovalCallback(
+    _callback: (tag: number, isFrozen: boolean) => void
+  ): void {
+    throw new ReanimatedError(
+      'setNodeRemovalCallback is not available in JSReanimated.'
+    );
+  }
 }
 
 // Lack of this export breaks TypeScript generation since

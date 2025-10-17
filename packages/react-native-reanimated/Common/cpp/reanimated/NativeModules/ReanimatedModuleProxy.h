@@ -131,6 +131,10 @@ class ReanimatedModuleProxy
   void unmarkNodeAsRemovable(jsi::Runtime &rt, const jsi::Value &viewTag)
       override;
 
+  void setNodeRemovalCallback(jsi::Runtime &rt, const jsi::Value &callback)
+      override;
+  void onNodeRemovalDecision(Tag tag, bool isFrozen);
+
   void dispatchCommand(
       jsi::Runtime &rt,
       const jsi::Value &shadowNodeValue,
@@ -246,6 +250,10 @@ class ReanimatedModuleProxy
 
   const SynchronouslyUpdateUIPropsFunction synchronouslyUpdateUIPropsFunction_;
   std::unordered_set<std::string> nativePropNames_; // filled by configureProps
+
+  // Node removal callback for freeze detection
+  std::shared_ptr<jsi::Function> nodeRemovalCallback_;
+  jsi::Runtime* nodeRemovalCallbackRuntime_ = nullptr;
 #else
   const ObtainPropFunction obtainPropFunction_;
   const ConfigurePropsFunction configurePropsPlatformFunction_;

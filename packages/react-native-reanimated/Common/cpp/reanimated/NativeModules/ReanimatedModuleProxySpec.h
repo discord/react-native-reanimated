@@ -103,6 +103,9 @@ class JSI_EXPORT ReanimatedModuleProxySpec : public TurboModule {
   virtual void unmarkNodeAsRemovable(
       jsi::Runtime &rt,
       const jsi::Value &viewTag) = 0;
+  virtual void setNodeRemovalCallback(
+      jsi::Runtime &rt,
+      const jsi::Value &callback) = 0;
 #endif // RCT_NEW_ARCH_ENABLED
 };
 
