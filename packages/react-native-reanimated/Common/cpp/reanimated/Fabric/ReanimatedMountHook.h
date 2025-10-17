@@ -35,7 +35,7 @@ class ReanimatedMountHook : public UIManagerMountHook {
  private:
   const std::shared_ptr<PropsRegistry> propsRegistry_;
   const std::shared_ptr<UIManager> uiManager_;
-  const std::shared_ptr<ReanimatedModuleProxy> moduleProxy_;
+  const std::weak_ptr<ReanimatedModuleProxy> moduleProxy_;
 };
 
 } // namespace reanimated

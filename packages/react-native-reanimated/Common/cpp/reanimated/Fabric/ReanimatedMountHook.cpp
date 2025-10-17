@@ -45,8 +45,9 @@ void ReanimatedMountHook::shadowTreeDidMount(
 
     // Create callback to notify JavaScript about node removal decisions
     auto callback = [this](Tag tag, bool isFrozen) {
-      if (moduleProxy_) {
-        moduleProxy_->onNodeRemovalDecision(tag, isFrozen);
+      auto moduleProxy = moduleProxy_.lock();
+      if (moduleProxy) {
+        moduleProxy->onNodeRemovalDecision(tag, isFrozen);
       }
     };
     propsRegistry_->handleNodeRemovals(*rootShadowNode, callback);
