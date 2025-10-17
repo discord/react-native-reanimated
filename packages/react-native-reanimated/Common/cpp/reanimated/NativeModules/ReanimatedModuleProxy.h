@@ -253,7 +253,6 @@ class ReanimatedModuleProxy
 
   // Node removal callback for freeze detection
   std::shared_ptr<jsi::Function> nodeRemovalCallback_;
-  jsi::Runtime* nodeRemovalCallbackRuntime_ = nullptr;
 #else
   const ObtainPropFunction obtainPropFunction_;
   const ConfigurePropsFunction configurePropsPlatformFunction_;

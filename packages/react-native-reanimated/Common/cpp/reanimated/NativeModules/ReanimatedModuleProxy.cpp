@@ -1070,20 +1070,17 @@ void ReanimatedModuleProxy::setNodeRemovalCallback(
   if (callback.isObject() && callback.asObject(rt).isFunction(rt)) {
     nodeRemovalCallback_ = std::make_shared<jsi::Function>(
         callback.asObject(rt).asFunction(rt));
-    nodeRemovalCallbackRuntime_ = &rt;
   }
 }
 
 void ReanimatedModuleProxy::onNodeRemovalDecision(Tag tag, bool isFrozen) {
-  if (nodeRemovalCallback_ && nodeRemovalCallbackRuntime_) {
-    // Capture callback and runtime by value to ensure they're still valid
+  if (nodeRemovalCallback_) {
     auto callback = nodeRemovalCallback_;
-    auto runtime = nodeRemovalCallbackRuntime_;
 
     // Must invoke on JS thread to avoid crashes
-    jsInvoker_->invokeAsync([callback, runtime, tag, isFrozen]() {
-      if (callback && runtime) {
-        callback->call(*runtime,
+    jsInvoker_->invokeAsync([callback, tag, isFrozen](jsi::Runtime& rt) {
+      if (callback) {
+        callback->call(rt,
                        jsi::Value(static_cast<double>(tag)),
                        jsi::Value(isFrozen));
       }
