@@ -32,7 +32,7 @@
     "prepack": "cp ../../README.md ./README.md",
     "postpack": "rm ./README.md"
   },
-  "main": "src/index",
+  "main": "src/index.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
