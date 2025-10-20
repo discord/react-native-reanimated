@@ -1068,22 +1068,18 @@ void ReanimatedModuleProxy::setNodeRemovalCallback(
     jsi::Runtime &rt,
     const jsi::Value &callback) {
   if (callback.isObject() && callback.asObject(rt).isFunction(rt)) {
-    nodeRemovalCallback_ = std::make_shared<jsi::Function>(
-        callback.asObject(rt).asFunction(rt));
+    nodeRemovalCallback_ = react::AsyncCallback<>(
+        rt,
+        callback.asObject(rt).asFunction(rt),
+        jsInvoker_);
   }
 }
 
 void ReanimatedModuleProxy::onNodeRemovalDecision(Tag tag, bool isFrozen) {
   if (nodeRemovalCallback_) {
-    auto callback = nodeRemovalCallback_;
-
-    // Must invoke on JS thread to avoid crashes
-    jsInvoker_->invokeAsync([callback, tag, isFrozen](jsi::Runtime& rt) {
-      if (callback) {
-        callback->call(rt,
-                       jsi::Value(static_cast<double>(tag)),
-                       jsi::Value(isFrozen));
-      }
+    // Use custom lambda to manually convert to JSI values (JSI supports int/bool via jsi::Value)
+    nodeRemovalCallback_->call([tag, isFrozen](jsi::Runtime& rt, jsi::Function& callback) {
+      callback.call(rt, jsi::Value(static_cast<int>(tag)), jsi::Value(isFrozen));
     });
   }
 }

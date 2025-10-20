@@ -10,6 +10,7 @@
 #include <reanimated/Fabric/ReanimatedCommitHook.h>
 #include <reanimated/Fabric/ReanimatedMountHook.h>
 #include <reanimated/LayoutAnimations/LayoutAnimationsProxy.h>
+#include <react/bridging/Function.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
 #include <worklets/NativeModules/WorkletsModuleProxy.h>
@@ -252,7 +253,7 @@ class ReanimatedModuleProxy
   std::unordered_set<std::string> nativePropNames_; // filled by configureProps
 
   // Node removal callback for freeze detection
-  std::shared_ptr<jsi::Function> nodeRemovalCallback_;
+  std::optional<react::AsyncCallback<>> nodeRemovalCallback_;
 #else
   const ObtainPropFunction obtainPropFunction_;
   const ConfigurePropsFunction configurePropsPlatformFunction_;
