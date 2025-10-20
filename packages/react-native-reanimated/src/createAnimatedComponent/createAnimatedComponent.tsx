@@ -365,13 +365,9 @@ export function createAnimatedComponent(
         }
         transformedProps[prop] = value;
       }
-      this.setState((prevState) => ({
-        reanimatedProps: {
-          // its important to preserve previous state. When multiple style props are animated they might not all appear in one update.
-          ...prevState.reanimatedProps,
-          ...transformedProps,
-        },
-      }));
+      this.setState({
+        reanimatedProps: transformedProps,
+      });
     }
 
     _getViewInfo(): ViewInfo {
