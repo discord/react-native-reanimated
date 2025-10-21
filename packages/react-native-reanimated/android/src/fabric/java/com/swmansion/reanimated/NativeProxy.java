@@ -1,5 +1,6 @@
 package com.swmansion.reanimated;
 
+import android.util.Log;
 import androidx.annotation.OptIn;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
