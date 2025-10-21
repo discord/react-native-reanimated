@@ -371,7 +371,7 @@ export function createAnimatedComponent(
         }
         transformedProps[prop] = value;
       }
-      this.setState({reanimatedProps: transformedProps});
+      this.setState((prev) => ({ reanimatedProps: { ...prev.reanimatedProps, ...transformedProps } }));
     }
 
     _getViewInfo(): ViewInfo {
