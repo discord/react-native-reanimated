@@ -18,6 +18,7 @@
 
 #ifdef __ANDROID__
 #include <fbjni/fbjni.h>
+#include <android/log.h>
 #endif // __ANDROID__
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -820,7 +821,14 @@ void ReanimatedModuleProxy::updateProps(
 void ReanimatedModuleProxy::performOperations() {
   ReanimatedSystraceSection s("performOperations");
 
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_DEBUG, "REANIMATED", "performOperations() C++ - start");
+#endif
+
   if (!layoutAnimationFlushRequests_.empty()) {
+#ifdef __ANDROID__
+    __android_log_print(ANDROID_LOG_DEBUG, "REANIMATED", "performOperations() - processing %zu layout animation flush requests", layoutAnimationFlushRequests_.size());
+#endif
     auto flushRequestsCopy = std::move(layoutAnimationFlushRequests_);
     for (const auto surfaceId : flushRequestsCopy) {
       uiManager_->getShadowTreeRegistry().visit(
@@ -832,8 +840,15 @@ void ReanimatedModuleProxy::performOperations() {
 
   if (operationsInBatch_.empty() && tagsToRemove_.empty()) {
     // nothing to do
+#ifdef __ANDROID__
+    __android_log_print(ANDROID_LOG_DEBUG, "REANIMATED", "performOperations() - no operations to perform");
+#endif
     return;
   }
+  
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_DEBUG, "REANIMATED", "performOperations() - operations: %zu, tagsToRemove: %zu", operationsInBatch_.size(), tagsToRemove_.size());
+#endif
 
   auto copiedOperationsQueue = std::move(operationsInBatch_);
   operationsInBatch_.clear();
@@ -865,6 +880,9 @@ void ReanimatedModuleProxy::performOperations() {
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
       folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
       auto tag = shadowNode->getTag();
+#ifdef __ANDROID__
+      __android_log_print(ANDROID_LOG_DEBUG, "REANIMATED", "performOperations() - processing shadowNode with tag: %d", tag);
+#endif
       bool hasLayoutUpdates = updateNoneLayoutProps(propsDynamic, tag);
       if (hasLayoutUpdates) {
           layoutUpdatesByTag.insert(tag);

@@ -4,6 +4,7 @@ import static java.lang.Float.NaN;
 
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -242,13 +243,24 @@ public class NodesManager implements EventDispatcherListener {
   }
 
   public void performOperations() {
+    Log.d("[REANIMATED]", "NodesManager.performOperations() called");
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       if (mNativeProxy != null) {
+        Log.d("[REANIMATED]", "Fabric mode - calling NativeProxy.performOperations()");
         isPerformOperationsActive = true;
-        mNativeProxy.performOperations();
-        isPerformOperationsActive = false;
+        try {
+          mNativeProxy.performOperations();
+        } catch (Exception e) {
+          Log.e("[REANIMATED]", "NativeProxy.performOperations() failed", e);
+          throw e;
+        } finally {
+          isPerformOperationsActive = false;
+        }
+      } else {
+        Log.w("[REANIMATED]", "Fabric mode but mNativeProxy is null");
       }
     } else if (!mOperationsInBatch.isEmpty()) {
+      Log.d("[REANIMATED]", "Paper mode - processing " + mOperationsInBatch.size() + " operations");
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
       mOperationsInBatch = new LinkedList<>();
       final boolean trySynchronously = mTryRunBatchUpdatesSynchronously;
@@ -312,13 +324,20 @@ public class NodesManager implements EventDispatcherListener {
       }
 
       if (!mFrameCallbacks.isEmpty()) {
+        Log.d("[REANIMATED]", "Processing " + mFrameCallbacks.size() + " frame callbacks");
         List<OnAnimationFrame> frameCallbacks = mFrameCallbacks;
         mFrameCallbacks = new ArrayList<>(frameCallbacks.size());
         for (int i = 0, size = frameCallbacks.size(); i < size; i++) {
-          frameCallbacks.get(i).onAnimationFrame(currentFrameTimeMs);
+          try {
+            frameCallbacks.get(i).onAnimationFrame(currentFrameTimeMs);
+          } catch (Exception e) {
+            Log.e("[REANIMATED]", "Frame callback " + i + " failed", e);
+            throw e;
+          }
         }
       }
 
+      Log.d("[REANIMATED]", "Animation frame processing - calling performOperations()");
       performOperations();
     }
 

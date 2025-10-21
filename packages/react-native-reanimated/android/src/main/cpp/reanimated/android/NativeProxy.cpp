@@ -188,7 +188,7 @@ void NativeProxy::registerNatives() {
        makeNativeMethod(
            "isAnyHandlerWaitingForEvent",
            NativeProxy::isAnyHandlerWaitingForEvent),
-       makeNativeMethod("performOperations", NativeProxy::performOperations),
+       makeNativeMethod("performOperationsNative", NativeProxy::performOperations),
        makeNativeMethod("invalidateCpp", NativeProxy::invalidateCpp)});
 }
 

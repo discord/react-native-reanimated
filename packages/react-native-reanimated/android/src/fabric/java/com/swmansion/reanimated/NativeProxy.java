@@ -1,5 +1,6 @@
 package com.swmansion.reanimated;
 
+import android.util.Log;
 import androidx.annotation.OptIn;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -74,21 +75,38 @@ public class NativeProxy extends NativeProxyCommon {
 
   public native boolean isAnyHandlerWaitingForEvent(String eventName, int emitterReactTag);
 
-  public native void performOperations();
+  public void performOperations() {
+    Log.d("[REANIMATED]", "performOperations() called from Java - delegating to native");
+    try {
+      performOperationsNative();
+    } catch (Exception e) {
+      Log.e("[REANIMATED]", "performOperations() failed with exception: " + e.getMessage(), e);
+      throw e;
+    }
+  }
+  
+  private native void performOperationsNative();
 
   @DoNotStrip
   public boolean preserveMountedTags(int[] tags) {
+    Log.d("[REANIMATED]", "preserveMountedTags() called with " + tags.length + " tags");
     if (!UiThreadUtil.isOnUiThread()) {
+      Log.w("[REANIMATED]", "preserveMountedTags() called off UI thread");
       return false;
     }
 
+    int invalidCount = 0;
     for (int i = 0; i < tags.length; i++) {
       if (mFabricUIManager.resolveView(tags[i]) == null) {
-        Log.w("[REANIMATED]", "View not found for tag: " + tags[i] + " in preserveMountedTags");
+        Log.w("[REANIMATED]", "View not found for tag: " + tags[i] + " at index " + i + " in preserveMountedTags");
         tags[i] = -1;
+        invalidCount++;
+      } else {
+        Log.d("[REANIMATED]", "View found for tag: " + tags[i]);
       }
     }
-
+    
+    Log.d("[REANIMATED]", "preserveMountedTags() completed. Invalid views: " + invalidCount + "/" + tags.length);
     return true;
   }
 
