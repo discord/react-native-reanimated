@@ -84,6 +84,7 @@ public class NativeProxy extends NativeProxyCommon {
 
     for (int i = 0; i < tags.length; i++) {
       if (mFabricUIManager.resolveView(tags[i]) == null) {
+        Log.w("[REANIMATED]", "View not found for tag: " + tags[i] + " in preserveMountedTags");
         tags[i] = -1;
       }
     }
