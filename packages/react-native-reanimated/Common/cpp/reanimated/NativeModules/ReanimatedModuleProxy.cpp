@@ -43,8 +43,24 @@ namespace reanimated {
 static inline std::shared_ptr<const ShadowNode> shadowNodeFromValue(
     jsi::Runtime &rt,
     const jsi::Value &shadowNodeWrapper) {
-  return Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
-      rt, shadowNodeWrapper);
+  try {
+    return Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+        rt, shadowNodeWrapper);
+  } catch (const std::exception& e) {
+    // The calling code should handle null shadow nodes gracefully
+    return nullptr;
+  }
+}
+
+// Helper function to log warnings about unmounted components
+static inline void logUnmountedComponentWarning(
+    const std::shared_ptr<JSLogger>& jsLogger,
+    const std::string& functionName,
+    const std::string& details = "") {
+  std::string message = functionName + ": Tried to " + details +
+      " an unmounted component. This may indicate a timing issue with " +
+      "component lifecycle or memory pressure causing premature unmounting.";
+  jsLogger->warn(message);
 }
 #endif // REACT_NATIVE_MINOR_VERSION >= 81
 #endif // RCT_NEW_ARCH_ENABLED
@@ -441,6 +457,19 @@ jsi::Value ReanimatedModuleProxy::getViewProp(
   const auto funPtr = std::make_shared<jsi::Function>(
       callback.getObject(rnRuntime).asFunction(rnRuntime));
   const auto shadowNode = shadowNodeFromValue(rnRuntime, shadowNodeWrapper);
+
+  // Skip if shadow node is null (component was unmounted)
+  if (!shadowNode) {
+    logUnmountedComponentWarning(jsLogger_, "getViewProp",
+        "get property \"" + propNameStr + "\" from");
+    workletsModuleProxy_->getJSScheduler()->scheduleOnJS(
+        [=](jsi::Runtime &rnRuntime) {
+          const auto resultValue = jsi::String::createFromUtf8(rnRuntime, "error:Component was unmounted");
+          funPtr->call(rnRuntime, resultValue);
+        });
+    return;
+  }
+
   workletsModuleProxy_->getUIScheduler()->scheduleOnUI(
       [=, weakThis = weak_from_this()]() {
         auto strongThis = weakThis.lock();
@@ -449,8 +478,14 @@ jsi::Value ReanimatedModuleProxy::getViewProp(
         }
         jsi::Runtime &uiRuntime =
             strongThis->uiWorkletRuntime_->getJSIRuntime();
-        const auto resultStr = strongThis->obtainPropFromShadowNode(
-            uiRuntime, propNameStr, shadowNode);
+
+        std::string resultStr;
+        if (!shadowNode) {
+          resultStr = "error:Component was unmounted";
+        } else {
+          resultStr = strongThis->obtainPropFromShadowNode(
+              uiRuntime, propNameStr, shadowNode);
+        }
 
         strongThis->workletsModuleProxy_->getJSScheduler()->scheduleOnJS(
             [=](jsi::Runtime &rnRuntime) {
@@ -640,6 +675,14 @@ void ReanimatedModuleProxy::markNodeAsRemovable(
     const jsi::Value &shadowNodeWrapper) {
   auto lock = propsRegistry_->createLock();
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeWrapper);
+
+  // Skip if shadow node is null (component was unmounted)
+  if (!shadowNode) {
+    logUnmountedComponentWarning(jsLogger_, "markNodeAsRemovable",
+        "mark");
+    return;
+  }
+
   propsRegistry_->markNodeAsRemovable(shadowNode);
 }
 
@@ -760,6 +803,14 @@ void ReanimatedModuleProxy::updateProps(
     auto item = array.getValueAtIndex(rt, i).asObject(rt);
     auto shadowNodeWrapper = item.getProperty(rt, "shadowNodeWrapper");
     auto shadowNode = shadowNodeFromValue(rt, shadowNodeWrapper);
+
+    // Skip if shadow node is null (component was unmounted)
+    if (!shadowNode) {
+      logUnmountedComponentWarning(jsLogger_, "updateProps",
+          "update props for");
+      continue;
+    }
+
     const jsi::Value &updates = item.getProperty(rt, "updates");
     operationsInBatch_.emplace_back(
         shadowNode, std::make_unique<jsi::Value>(rt, updates));
@@ -897,8 +948,17 @@ void ReanimatedModuleProxy::dispatchCommand(
     const jsi::Value &shadowNodeValue,
     const jsi::Value &commandNameValue,
     const jsi::Value &argsValue) {
+  const auto commandName = stringFromValue(rt, commandNameValue);
   const auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  std::string commandName = stringFromValue(rt, commandNameValue);
+
+  // Early return if shadow node is null (component was unmounted)
+  if (!shadowNode) {
+    // Log warning to help detect if this is masking important issues
+    logUnmountedComponentWarning(jsLogger_, "dispatchCommand",
+        "dispatch command \"" + commandName + "\" to");
+    return;
+  }
+
   folly::dynamic args = commandArgsFromValue(rt, argsValue);
   const auto &scheduler = static_cast<Scheduler *>(uiManager_->getDelegate());
 
@@ -922,8 +982,15 @@ jsi::String ReanimatedModuleProxy::obtainProp(
   jsi::Runtime &uiRuntime = uiWorkletRuntime_->getJSIRuntime();
   const auto propNameStr = propName.asString(rt).utf8(rt);
   const auto shadowNode = shadowNodeFromValue(rt, shadowNodeWrapper);
-  const auto resultStr =
-      obtainPropFromShadowNode(uiRuntime, propNameStr, shadowNode);
+
+  // Return error message if shadow node is null (component was unmounted)
+  if (!shadowNode) {
+    logUnmountedComponentWarning(jsLogger_, "obtainProp",
+        "get property \"" + propNameStr + "\" from");
+    return jsi::String::createFromUtf8(rt, "error:Component was unmounted");
+  }
+
+  const auto resultStr = obtainPropFromShadowNode(uiRuntime, propNameStr, shadowNode);
   return jsi::String::createFromUtf8(rt, resultStr);
 }
 
@@ -933,6 +1000,13 @@ jsi::Value ReanimatedModuleProxy::measure(
   // based on implementation from UIManagerBinding.cpp
 
   auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+
+  // Return null if shadow node is null (component was unmounted)
+  if (!shadowNode) {
+    logUnmountedComponentWarning(jsLogger_, "measure", "measure");
+    return jsi::Value::null();
+  }
+
   auto layoutMetrics = uiManager_->getRelativeLayoutMetrics(
       *shadowNode, nullptr, {/* .includeTransform = */ true});
 
