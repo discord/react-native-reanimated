@@ -39,6 +39,17 @@
 namespace reanimated {
 
 #ifdef RCT_NEW_ARCH_ENABLED
+// Helper function to log warnings about unmounted components
+static inline void logUnmountedComponentWarning(
+    const std::shared_ptr<JSLogger>& jsLogger,
+    const std::string& functionName,
+    const std::string& details = "") {
+  std::string message = functionName + ": Tried to " + details +
+      " an unmounted component. This may indicate a timing issue with " +
+      "component lifecycle or memory pressure causing premature unmounting.";
+  jsLogger->warnOnJS(message);
+}
+
 #if REACT_NATIVE_MINOR_VERSION >= 81
 static inline std::shared_ptr<const ShadowNode> shadowNodeFromValue(
     jsi::Runtime &rt,
@@ -50,17 +61,6 @@ static inline std::shared_ptr<const ShadowNode> shadowNodeFromValue(
     // The calling code should handle null shadow nodes gracefully
     return nullptr;
   }
-}
-
-// Helper function to log warnings about unmounted components
-static inline void logUnmountedComponentWarning(
-    const std::shared_ptr<JSLogger>& jsLogger,
-    const std::string& functionName,
-    const std::string& details = "") {
-  std::string message = functionName + ": Tried to " + details +
-      " an unmounted component. This may indicate a timing issue with " +
-      "component lifecycle or memory pressure causing premature unmounting.";
-  jsLogger->warn(message);
 }
 #endif // REACT_NATIVE_MINOR_VERSION >= 81
 #endif // RCT_NEW_ARCH_ENABLED
@@ -467,7 +467,7 @@ jsi::Value ReanimatedModuleProxy::getViewProp(
           const auto resultValue = jsi::String::createFromUtf8(rnRuntime, "error:Component was unmounted");
           funPtr->call(rnRuntime, resultValue);
         });
-    return;
+    return jsi::Value::undefined();
   }
 
   workletsModuleProxy_->getUIScheduler()->scheduleOnUI(
