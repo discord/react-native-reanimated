@@ -60,7 +60,7 @@ using RequestRenderFunction =
     std::function<void(std::function<void(const double)>)>;
 #ifdef ANDROID
 using PreserveMountedTagsFunction =
-    std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
+    std::function<std::unique_ptr<int[]>(std::vector<int> &)>;
 #endif // ANDROID
 using GetAnimationTimestampFunction = std::function<double(void)>;
 
