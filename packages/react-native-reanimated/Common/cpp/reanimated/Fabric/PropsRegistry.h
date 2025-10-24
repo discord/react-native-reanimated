@@ -13,6 +13,8 @@ using namespace react;
 
 namespace reanimated {
 
+using NodeRemovalCallback = std::function<void(Tag tag, bool isFrozen)>;
+
 class PropsRegistry {
  public:
   std::lock_guard<std::mutex> createLock() const;
@@ -54,7 +56,9 @@ class PropsRegistry {
 
   void markNodeAsRemovable(const std::shared_ptr<const ShadowNode> &shadowNode);
   void unmarkNodeAsRemovable(Tag viewTag);
-  void handleNodeRemovals(const RootShadowNode &rootShadowNode);
+  void handleNodeRemovals(
+      const RootShadowNode &rootShadowNode,
+      const NodeRemovalCallback &callback = nullptr);
 
   // Custom discord added for removing nodes once they seem in sync with the shadow tree
   void markNodeAsImmediateRemovable(Tag tag);
