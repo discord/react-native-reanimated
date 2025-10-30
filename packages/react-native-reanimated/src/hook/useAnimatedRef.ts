@@ -57,7 +57,8 @@ function useAnimatedRefBase<TComponent extends Component>(
         tagOrWrapperRef.current = getWrapper(component);
 
         // We have to unwrap the tag from the shadow node wrapper.
-        fun.getTag = () => findNodeHandle(getComponentOrScrollable(component));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fun.getTag = () => findNodeHandle(ref as any);
         fun.current = component;
 
         if (observers.size) {
@@ -112,7 +113,9 @@ function useAnimatedRefNative<
       ? getShadowNodeWrapperFromRef
       : findNodeHandle;
 
-    tagOrWrapper.value = getTagOrWrapper(getComponentOrScrollable(component));
+    tagOrWrapper.value = getTagOrWrapper(
+      isFabric() ? component : getComponentOrScrollable(component),
+    );
 
     if (viewName) {
       viewName.value =
