@@ -1,7 +1,7 @@
 'use strict';
 
 import { useRef } from 'react';
-import { WorkletEventHandler } from '../WorkletEventHandler.js';
+import { WorkletEventHandler } from "../WorkletEventHandler.js";
 
 /** Worklet to provide as an argument to `useEvent` hook. */
 
@@ -29,13 +29,13 @@ export function useEvent(handler, eventNames = [], rebuild = false) {
   if (initRef.current === null) {
     const workletEventHandler = new WorkletEventHandler(handler, eventNames);
     initRef.current = {
-      workletEventHandler,
+      workletEventHandler
     };
   } else if (rebuild) {
     const workletEventHandler = initRef.current.workletEventHandler;
     workletEventHandler.updateEventHandler(handler, eventNames);
     initRef.current = {
-      workletEventHandler,
+      workletEventHandler
     };
   }
   return initRef.current;

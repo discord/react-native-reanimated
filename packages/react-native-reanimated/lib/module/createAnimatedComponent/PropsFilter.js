@@ -1,11 +1,11 @@
 'use strict';
 
-import { initialUpdaterRun } from '../animation/index.js';
-import { isSharedValue } from '../isSharedValue.js';
-import { isChromeDebugger } from '../PlatformChecker.js';
-import { WorkletEventHandler } from '../WorkletEventHandler.js';
-import { getInlineStyle, hasInlineStyles } from './InlinePropManager.js';
-import { flattenArray, has } from './utils.js';
+import { initialUpdaterRun } from "../animation/index.js";
+import { isSharedValue } from "../isSharedValue.js";
+import { isChromeDebugger } from "../PlatformChecker.js";
+import { WorkletEventHandler } from "../WorkletEventHandler.js";
+import { getInlineStyle, hasInlineStyles } from "./InlinePropManager.js";
+import { flattenArray, has } from "./utils.js";
 function dummyListener() {
   // empty listener we use to assign to listener properties for which animated
   // event is used.
@@ -20,13 +20,13 @@ export class PropsFilter {
       if (key === 'style') {
         const styleProp = inputProps.style;
         const styles = flattenArray(styleProp ?? []);
-        const processedStyle = styles.map((style) => {
+        const processedStyle = styles.map(style => {
           if (style && style.viewDescriptors) {
             const handle = style;
             if (component._isFirstRender) {
               this._initialPropsMap.set(handle, {
                 ...handle.initial.value,
-                ...initialUpdaterRun(handle.initial.updater),
+                ...initialUpdaterRun(handle.initial.updater)
               });
             }
             return this._initialPropsMap.get(handle) ?? {};
@@ -42,20 +42,14 @@ export class PropsFilter {
       } else if (key === 'animatedProps') {
         const animatedProp = inputProps.animatedProps;
         if (animatedProp.initial !== undefined) {
-          Object.keys(animatedProp.initial.value).forEach((initialValueKey) => {
-            props[initialValueKey] =
-              animatedProp.initial?.value[initialValueKey];
+          Object.keys(animatedProp.initial.value).forEach(initialValueKey => {
+            props[initialValueKey] = animatedProp.initial?.value[initialValueKey];
           });
         }
-      } else if (
-        has('workletEventHandler', value) &&
-        value.workletEventHandler instanceof WorkletEventHandler
-      ) {
+      } else if (has('workletEventHandler', value) && value.workletEventHandler instanceof WorkletEventHandler) {
         if (value.workletEventHandler.eventNames.length > 0) {
-          value.workletEventHandler.eventNames.forEach((eventName) => {
-            props[eventName] = has('listeners', value.workletEventHandler)
-              ? value.workletEventHandler.listeners[eventName]
-              : dummyListener;
+          value.workletEventHandler.eventNames.forEach(eventName => {
+            props[eventName] = has('listeners', value.workletEventHandler) ? value.workletEventHandler.listeners[eventName] : dummyListener;
           });
         } else {
           props[key] = dummyListener;

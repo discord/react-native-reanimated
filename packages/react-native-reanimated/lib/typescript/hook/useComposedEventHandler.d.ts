@@ -1,8 +1,5 @@
 import type { EventHandlerProcessed } from './useEvent';
-type ComposedHandlerProcessed<
-  Event extends object,
-  Context extends Record<string, unknown> = Record<string, unknown>,
-> = EventHandlerProcessed<Event, Context>;
+type ComposedHandlerProcessed<Event extends object, Context extends Record<string, unknown> = Record<string, unknown>> = EventHandlerProcessed<Event, Context>;
 /**
  * Lets you compose multiple event handlers based on
  * [useEvent](https://docs.swmansion.com/react-native-reanimated/docs/advanced/useEvent)
@@ -16,11 +13,6 @@ type ComposedHandlerProcessed<
  *   go to `onScroll` prop).
  * @see https://docs.swmansion.com/react-native-reanimated/docs/advanced/useComposedEventHandler
  */
-export declare function useComposedEventHandler<
-  Event extends object,
-  Context extends Record<string, unknown>,
->(
-  handlers: (EventHandlerProcessed<Event, Context> | null)[]
-): ComposedHandlerProcessed<Event, Context>;
+export declare function useComposedEventHandler<Event extends object, Context extends Record<string, unknown>>(handlers: (EventHandlerProcessed<Event, Context> | null)[]): ComposedHandlerProcessed<Event, Context>;
 export {};
 //# sourceMappingURL=useComposedEventHandler.d.ts.map

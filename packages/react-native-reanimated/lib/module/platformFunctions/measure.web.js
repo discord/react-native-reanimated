@@ -1,12 +1,10 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
+import { logger } from "../logger/index.js";
 export function measure(animatedRef) {
   const element = animatedRef();
   if (element === -1) {
-    logger.warn(
-      `The view with tag ${element} is not a valid argument for measure(). This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
-    );
+    logger.warn(`The view with tag ${element} is not a valid argument for measure(). This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`);
     return null;
   }
   const viewportOffset = element.getBoundingClientRect();
@@ -16,7 +14,7 @@ export function measure(animatedRef) {
     x: element.offsetLeft,
     y: element.offsetTop,
     pageX: viewportOffset.left,
-    pageY: viewportOffset.top,
+    pageY: viewportOffset.top
   };
 }
 //# sourceMappingURL=measure.web.js.map

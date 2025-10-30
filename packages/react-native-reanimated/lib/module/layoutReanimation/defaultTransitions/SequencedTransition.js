@@ -1,7 +1,7 @@
 'use strict';
 
-import { withSequence, withTiming } from '../../animation/index.js';
-import { BaseAnimationBuilder } from '../animationBuilder/index.js';
+import { withSequence, withTiming } from "../../animation/index.js";
+import { BaseAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Transforms layout starting from the X-axis and width first, followed by the
@@ -33,10 +33,10 @@ export class SequencedTransition extends BaseAnimationBuilder {
     const delay = this.getDelay();
     const halfDuration = (this.durationV ?? 500) / 2;
     const config = {
-      duration: halfDuration,
+      duration: halfDuration
     };
     const reverse = this.reversed;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
@@ -44,51 +44,15 @@ export class SequencedTransition extends BaseAnimationBuilder {
           originX: values.currentOriginX,
           originY: values.currentOriginY,
           width: values.currentWidth,
-          height: values.currentHeight,
+          height: values.currentHeight
         },
         animations: {
-          originX: delayFunction(
-            delay,
-            withSequence(
-              withTiming(
-                reverse ? values.currentOriginX : values.targetOriginX,
-                config
-              ),
-              withTiming(values.targetOriginX, config)
-            )
-          ),
-          originY: delayFunction(
-            delay,
-            withSequence(
-              withTiming(
-                reverse ? values.targetOriginY : values.currentOriginY,
-                config
-              ),
-              withTiming(values.targetOriginY, config)
-            )
-          ),
-          width: delayFunction(
-            delay,
-            withSequence(
-              withTiming(
-                reverse ? values.currentWidth : values.targetWidth,
-                config
-              ),
-              withTiming(values.targetWidth, config)
-            )
-          ),
-          height: delayFunction(
-            delay,
-            withSequence(
-              withTiming(
-                reverse ? values.targetHeight : values.currentHeight,
-                config
-              ),
-              withTiming(values.targetHeight, config)
-            )
-          ),
+          originX: delayFunction(delay, withSequence(withTiming(reverse ? values.currentOriginX : values.targetOriginX, config), withTiming(values.targetOriginX, config))),
+          originY: delayFunction(delay, withSequence(withTiming(reverse ? values.targetOriginY : values.currentOriginY, config), withTiming(values.targetOriginY, config))),
+          width: delayFunction(delay, withSequence(withTiming(reverse ? values.currentWidth : values.targetWidth, config), withTiming(values.targetWidth, config))),
+          height: delayFunction(delay, withSequence(withTiming(reverse ? values.targetHeight : values.currentHeight, config), withTiming(values.targetHeight, config)))
         },
-        callback,
+        callback
       };
     };
   };

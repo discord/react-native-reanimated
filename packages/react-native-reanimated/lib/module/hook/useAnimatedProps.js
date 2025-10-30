@@ -1,7 +1,7 @@
 'use strict';
 
-import { shouldBeUseWeb } from '../PlatformChecker.js';
-import { useAnimatedStyle } from './useAnimatedStyle.js';
+import { shouldBeUseWeb } from "../PlatformChecker.js";
+import { useAnimatedStyle } from "./useAnimatedStyle.js";
 
 // TODO: we should make sure that when useAP is used we are not assigning styles
 
@@ -24,7 +24,5 @@ const useAnimatedPropsNative = useAnimatedStyle;
  *   property of an Animated component that you want to animate.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/core/useAnimatedProps
  */
-export const useAnimatedProps = shouldBeUseWeb()
-  ? useAnimatedPropsJS
-  : useAnimatedPropsNative;
+export const useAnimatedProps = shouldBeUseWeb() ? useAnimatedPropsJS : useAnimatedPropsNative;
 //# sourceMappingURL=useAnimatedProps.js.map

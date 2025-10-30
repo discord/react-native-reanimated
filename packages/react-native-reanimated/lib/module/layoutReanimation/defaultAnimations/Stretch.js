@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Stretch animation on the X axis. You can modify the behavior by chaining
@@ -27,21 +27,17 @@ export class StretchInX extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scaleX: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            scaleX: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scaleX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scaleX: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -72,21 +68,17 @@ export class StretchInY extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scaleY: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            scaleY: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scaleY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scaleY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -117,21 +109,17 @@ export class StretchOutX extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scaleX: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            scaleX: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scaleX: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scaleX: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -162,21 +150,17 @@ export class StretchOutY extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scaleY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            scaleY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scaleY: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scaleY: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

@@ -1,10 +1,7 @@
 import type { AnimationCallback } from '../../commonTypes';
 import type { DecayConfig } from './utils';
 export type WithDecayConfig = DecayConfig;
-type withDecayType = (
-  userConfig: DecayConfig,
-  callback?: AnimationCallback
-) => number;
+type withDecayType = (userConfig: DecayConfig, callback?: AnimationCallback) => number;
 /**
  * Lets you create animations that mimic objects in motion with friction.
  *

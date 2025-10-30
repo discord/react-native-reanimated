@@ -1,7 +1,7 @@
 'use strict';
 
-import { withSequence, withTiming } from '../../animation/index.js';
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { withSequence, withTiming } from "../../animation/index.js";
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Bounce entering animation. You can modify the behavior by chaining methods
@@ -34,37 +34,25 @@ export class BounceIn extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scale: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(1.2, {
-                    duration: duration * 0.55,
-                  }),
-                  withTiming(0.9, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(1.1, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(1, {
-                    duration: duration * 0.15,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            scale: delayFunction(delay, withSequence(withTiming(1.2, {
+              duration: duration * 0.55
+            }), withTiming(0.9, {
+              duration: duration * 0.15
+            }), withTiming(1.1, {
+              duration: duration * 0.15
+            }), withTiming(1, {
+              duration: duration * 0.15
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -96,42 +84,30 @@ export class BounceInDown extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(-20, {
-                    duration: duration * 0.55,
-                  }),
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(0, {
-                    duration: duration * 0.15,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, withSequence(withTiming(-20, {
+              duration: duration * 0.55
+            }), withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(0, {
+              duration: duration * 0.15
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: values.windowHeight,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: values.windowHeight
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -163,42 +139,30 @@ export class BounceInUp extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(20, {
-                    duration: duration * 0.55,
-                  }),
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(0, {
-                    duration: duration * 0.15,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, withSequence(withTiming(20, {
+              duration: duration * 0.55
+            }), withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(0, {
+              duration: duration * 0.15
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: -values.windowHeight,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: -values.windowHeight
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -230,42 +194,30 @@ export class BounceInLeft extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(20, {
-                    duration: duration * 0.55,
-                  }),
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(0, {
-                    duration: duration * 0.15,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, withSequence(withTiming(20, {
+              duration: duration * 0.55
+            }), withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(0, {
+              duration: duration * 0.15
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: -values.windowWidth,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: -values.windowWidth
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -297,42 +249,30 @@ export class BounceInRight extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(-20, {
-                    duration: duration * 0.55,
-                  }),
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(0, {
-                    duration: duration * 0.15,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, withSequence(withTiming(-20, {
+              duration: duration * 0.55
+            }), withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(0, {
+              duration: duration * 0.15
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: values.windowWidth,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: values.windowWidth
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -369,37 +309,25 @@ export class BounceOut extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scale: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(1.1, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(0.9, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(1.2, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(0, {
-                    duration: duration * 0.55,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            scale: delayFunction(delay, withSequence(withTiming(1.1, {
+              duration: duration * 0.15
+            }), withTiming(0.9, {
+              duration: duration * 0.15
+            }), withTiming(1.2, {
+              duration: duration * 0.15
+            }), withTiming(0, {
+              duration: duration * 0.55
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -431,42 +359,30 @@ export class BounceOutDown extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-20, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(values.windowHeight, {
-                    duration: duration * 0.55,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, withSequence(withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(-20, {
+              duration: duration * 0.15
+            }), withTiming(values.windowHeight, {
+              duration: duration * 0.55
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -498,42 +414,30 @@ export class BounceOutUp extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(20, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-values.windowHeight, {
-                    duration: duration * 0.55,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, withSequence(withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(20, {
+              duration: duration * 0.15
+            }), withTiming(-values.windowHeight, {
+              duration: duration * 0.55
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -565,42 +469,30 @@ export class BounceOutLeft extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(20, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-values.windowWidth, {
-                    duration: duration * 0.55,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, withSequence(withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(20, {
+              duration: duration * 0.15
+            }), withTiming(-values.windowWidth, {
+              duration: duration * 0.55
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -632,42 +524,30 @@ export class BounceOutRight extends ComplexAnimationBuilder {
     const duration = this.getDuration();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                withSequence(
-                  withTiming(-10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(10, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(-20, {
-                    duration: duration * 0.15,
-                  }),
-                  withTiming(values.windowWidth, {
-                    duration: duration * 0.55,
-                  })
-                )
-              ),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, withSequence(withTiming(-10, {
+              duration: duration * 0.15
+            }), withTiming(10, {
+              duration: duration * 0.15
+            }), withTiming(-20, {
+              duration: duration * 0.15
+            }), withTiming(values.windowWidth, {
+              duration: duration * 0.55
+            })))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

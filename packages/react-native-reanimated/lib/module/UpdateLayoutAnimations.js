@@ -1,10 +1,7 @@
 'use strict';
 
-import {
-  configureLayoutAnimationBatch,
-  makeShareableCloneRecursive,
-} from './core.js';
-import { isFabric, shouldBeUseWeb } from './PlatformChecker.js';
+import { configureLayoutAnimationBatch, makeShareableCloneRecursive } from "./core.js";
+import { isFabric, shouldBeUseWeb } from "./PlatformChecker.js";
 function createUpdateManager() {
   const animations = [];
   // When a stack is rerendered we reconfigure all the shared elements.
@@ -26,7 +23,7 @@ function createUpdateManager() {
       configureLayoutAnimationBatch(animations.concat(deferredAnimations));
       animations.length = 0;
       deferredAnimations.length = 0;
-    },
+    }
   };
 }
 
@@ -56,21 +53,11 @@ if (shouldBeUseWeb()) {
   };
 } else {
   const updateLayoutAnimationsManager = createUpdateManager();
-  updateLayoutAnimations = (
+  updateLayoutAnimations = (viewTag, type, config, sharedTransitionTag, isUnmounting) => updateLayoutAnimationsManager.update({
     viewTag,
     type,
-    config,
-    sharedTransitionTag,
-    isUnmounting
-  ) =>
-    updateLayoutAnimationsManager.update(
-      {
-        viewTag,
-        type,
-        config: config ? makeShareableCloneRecursive(config) : undefined,
-        sharedTransitionTag,
-      },
-      isUnmounting
-    );
+    config: config ? makeShareableCloneRecursive(config) : undefined,
+    sharedTransitionTag
+  }, isUnmounting);
 }
 //# sourceMappingURL=UpdateLayoutAnimations.js.map

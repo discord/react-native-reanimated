@@ -1,8 +1,4 @@
-import type {
-  EasingFunction,
-  ILayoutAnimationBuilder,
-  LayoutAnimationFunction,
-} from '../../commonTypes';
+import type { EasingFunction, ILayoutAnimationBuilder, LayoutAnimationFunction } from '../../commonTypes';
 import type { EasingFunctionFactory } from '../../Easing';
 import { BaseAnimationBuilder } from '../animationBuilder';
 /**
@@ -14,36 +10,21 @@ import { BaseAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/layout-transitions#fading-transition
  */
-export declare class CurvedTransition
-  extends BaseAnimationBuilder
-  implements ILayoutAnimationBuilder
-{
-  static presetName: string;
-  easingXV: EasingFunction | EasingFunctionFactory;
-  easingYV: EasingFunction | EasingFunctionFactory;
-  easingWidthV: EasingFunction | EasingFunctionFactory;
-  easingHeightV: EasingFunction | EasingFunctionFactory;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static easingX(
-    easing: EasingFunction | EasingFunctionFactory
-  ): CurvedTransition;
-  easingX(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
-  static easingY(
-    easing: EasingFunction | EasingFunctionFactory
-  ): CurvedTransition;
-  easingY(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
-  static easingWidth(
-    easing: EasingFunction | EasingFunctionFactory
-  ): CurvedTransition;
-  easingWidth(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
-  static easingHeight(
-    easing: EasingFunction | EasingFunctionFactory
-  ): CurvedTransition;
-  easingHeight(
-    easing: EasingFunction | EasingFunctionFactory
-  ): CurvedTransition;
-  build: () => LayoutAnimationFunction;
+export declare class CurvedTransition extends BaseAnimationBuilder implements ILayoutAnimationBuilder {
+    static presetName: string;
+    easingXV: EasingFunction | EasingFunctionFactory;
+    easingYV: EasingFunction | EasingFunctionFactory;
+    easingWidthV: EasingFunction | EasingFunctionFactory;
+    easingHeightV: EasingFunction | EasingFunctionFactory;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static easingX(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    easingX(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    static easingY(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    easingY(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    static easingWidth(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    easingWidth(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    static easingHeight(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    easingHeight(easing: EasingFunction | EasingFunctionFactory): CurvedTransition;
+    build: () => LayoutAnimationFunction;
 }
 //# sourceMappingURL=CurvedTransition.d.ts.map

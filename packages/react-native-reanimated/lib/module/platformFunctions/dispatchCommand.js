@@ -1,12 +1,7 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
-import {
-  isChromeDebugger,
-  isFabric,
-  isJest,
-  shouldBeUseWeb,
-} from '../PlatformChecker.js';
+import { logger } from "../logger/index.js";
+import { isChromeDebugger, isFabric, isJest, shouldBeUseWeb } from "../PlatformChecker.js";
 /**
  * Lets you synchronously call a command of a native component.
  *
@@ -29,9 +24,7 @@ function dispatchCommandFabric(animatedRef, commandName, args = []) {
 
   // This prevents crashes if ref has not been set yet
   if (!shadowNodeWrapper) {
-    logger.warn(
-      `Tried to dispatch command "${commandName}" with an uninitialized ref. Make sure to pass the animated ref to the component before using it.`
-    );
+    logger.warn(`Tried to dispatch command "${commandName}" with an uninitialized ref. Make sure to pass the animated ref to the component before using it.`);
     return;
   }
   global._dispatchCommandFabric(shadowNodeWrapper, commandName, args);
@@ -44,9 +37,7 @@ function dispatchCommandPaper(animatedRef, commandName, args = []) {
   }
   const viewTag = animatedRef();
   if (viewTag < 0) {
-    logger.warn(
-      `Tried to dispatch command "${commandName}" with an uninitialized ref. Make sure to pass the animated ref to the component before using it.`
-    );
+    logger.warn(`Tried to dispatch command "${commandName}" with an uninitialized ref. Make sure to pass the animated ref to the component before using it.`);
     return;
   }
   global._dispatchCommandPaper(viewTag, commandName, args);

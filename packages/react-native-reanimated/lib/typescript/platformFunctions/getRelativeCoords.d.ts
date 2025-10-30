@@ -2,8 +2,8 @@ import type { Component } from 'react';
 import type { AnimatedRef } from '../hook/commonTypes';
 /** An object which contains relative coordinates. */
 export interface ComponentCoords {
-  x: number;
-  y: number;
+    x: number;
+    y: number;
 }
 /**
  * Lets you determines the location on the screen, relative to the given view.
@@ -17,9 +17,5 @@ export interface ComponentCoords {
  *   {@link ComponentCoords}.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/utilities/getRelativeCoords
  */
-export declare function getRelativeCoords(
-  animatedRef: AnimatedRef<Component>,
-  absoluteX: number,
-  absoluteY: number
-): ComponentCoords | null;
+export declare function getRelativeCoords(animatedRef: AnimatedRef<Component>, absoluteX: number, absoluteY: number): ComponentCoords | null;
 //# sourceMappingURL=getRelativeCoords.d.ts.map

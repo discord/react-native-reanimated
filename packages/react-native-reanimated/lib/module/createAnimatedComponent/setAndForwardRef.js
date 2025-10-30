@@ -34,7 +34,10 @@
  */
 /* eslint-enable */
 
-function setAndForwardRef({ getForwardedRef, setLocalRef }) {
+function setAndForwardRef({
+  getForwardedRef,
+  setLocalRef
+}) {
   return function forwardRef(ref) {
     const forwardedRef = getForwardedRef();
     setLocalRef(ref);

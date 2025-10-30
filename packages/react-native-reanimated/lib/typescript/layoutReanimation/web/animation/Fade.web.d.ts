@@ -1,217 +1,217 @@
 export declare const FadeInData: {
-  FadeIn: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-      };
-      100: {
-        opacity: number;
-      };
+    FadeIn: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+            };
+            100: {
+                opacity: number;
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeInRight: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
+    FadeInRight: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeInLeft: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
+    FadeInLeft: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeInUp: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
+    FadeInUp: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeInDown: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
+    FadeInDown: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
 };
 export declare const FadeOutData: {
-  FadeOut: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-      };
-      100: {
-        opacity: number;
-      };
+    FadeOut: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+            };
+            100: {
+                opacity: number;
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeOutRight: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
+    FadeOutRight: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeOutLeft: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateX: string;
-        }[];
-      };
+    FadeOutLeft: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateX: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeOutUp: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
+    FadeOutUp: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
-  FadeOutDown: {
-    name: string;
-    style: {
-      0: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
-      100: {
-        opacity: number;
-        transform: {
-          translateY: string;
-        }[];
-      };
+    FadeOutDown: {
+        name: string;
+        style: {
+            0: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+            100: {
+                opacity: number;
+                transform: {
+                    translateY: string;
+                }[];
+            };
+        };
+        duration: number;
     };
-    duration: number;
-  };
 };
 export declare const FadeIn: {
-  FadeIn: {
-    style: string;
-    duration: number;
-  };
-  FadeInRight: {
-    style: string;
-    duration: number;
-  };
-  FadeInLeft: {
-    style: string;
-    duration: number;
-  };
-  FadeInUp: {
-    style: string;
-    duration: number;
-  };
-  FadeInDown: {
-    style: string;
-    duration: number;
-  };
+    FadeIn: {
+        style: string;
+        duration: number;
+    };
+    FadeInRight: {
+        style: string;
+        duration: number;
+    };
+    FadeInLeft: {
+        style: string;
+        duration: number;
+    };
+    FadeInUp: {
+        style: string;
+        duration: number;
+    };
+    FadeInDown: {
+        style: string;
+        duration: number;
+    };
 };
 export declare const FadeOut: {
-  FadeOut: {
-    style: string;
-    duration: number;
-  };
-  FadeOutRight: {
-    style: string;
-    duration: number;
-  };
-  FadeOutLeft: {
-    style: string;
-    duration: number;
-  };
-  FadeOutUp: {
-    style: string;
-    duration: number;
-  };
-  FadeOutDown: {
-    style: string;
-    duration: number;
-  };
+    FadeOut: {
+        style: string;
+        duration: number;
+    };
+    FadeOutRight: {
+        style: string;
+        duration: number;
+    };
+    FadeOutLeft: {
+        style: string;
+        duration: number;
+    };
+    FadeOutUp: {
+        style: string;
+        duration: number;
+    };
+    FadeOutDown: {
+        style: string;
+        duration: number;
+    };
 };
 //# sourceMappingURL=Fade.web.d.ts.map

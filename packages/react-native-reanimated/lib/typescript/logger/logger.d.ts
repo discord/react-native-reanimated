@@ -1,15 +1,15 @@
 import type { LogData } from './LogBox';
 type LogFunction = (data: LogData) => void;
 export declare enum LogLevel {
-  warn = 1,
-  error = 2,
+    warn = 1,
+    error = 2
 }
 export type LoggerConfig = {
-  level?: LogLevel;
-  strict?: boolean;
+    level?: LogLevel;
+    strict?: boolean;
 };
 export type LoggerConfigInternal = {
-  logFunction: LogFunction;
+    logFunction: LogFunction;
 } & Required<LoggerConfig>;
 export declare const DEFAULT_LOGGER_CONFIG: LoggerConfigInternal;
 /**
@@ -24,17 +24,13 @@ export declare function logToLogBoxAndConsole(data: LogData): void;
  *
  * @param config - The config to register.
  */
-export declare function registerLoggerConfig(
-  config: LoggerConfigInternal
-): void;
+export declare function registerLoggerConfig(config: LoggerConfigInternal): void;
 /**
  * Replaces the default log function with a custom implementation.
  *
  * @param logFunction - The custom log function.
  */
-export declare function replaceLoggerImplementation(
-  logFunction: LogFunction
-): void;
+export declare function replaceLoggerImplementation(logFunction: LogFunction): void;
 /**
  * Updates logger configuration.
  *
@@ -44,15 +40,13 @@ export declare function replaceLoggerImplementation(
  *   - Strict: Whether to log warnings and errors that are not strict. Defaults to
  *       false.
  */
-export declare function updateLoggerConfig(
-  options?: Partial<LoggerConfig>
-): void;
+export declare function updateLoggerConfig(options?: Partial<LoggerConfig>): void;
 type LogOptions = {
-  strict?: boolean;
+    strict?: boolean;
 };
 export declare const logger: {
-  warn(message: string, options?: LogOptions): void;
-  error(message: string, options?: LogOptions): void;
+    warn(message: string, options?: LogOptions): void;
+    error(message: string, options?: LogOptions): void;
 };
 export {};
 //# sourceMappingURL=logger.d.ts.map

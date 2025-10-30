@@ -1,12 +1,8 @@
 'use strict';
 
 import { useEffect, useRef } from 'react';
-import { KeyboardState } from '../commonTypes.js';
-import {
-  makeMutable,
-  subscribeForKeyboardEvents,
-  unsubscribeFromKeyboardEvents,
-} from '../core.js';
+import { KeyboardState } from "../commonTypes.js";
+import { makeMutable, subscribeForKeyboardEvents, unsubscribeFromKeyboardEvents } from "../core.js";
 
 /**
  * Lets you synchronously get the position and state of the keyboard.
@@ -16,19 +12,17 @@ import {
  *   values](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value).
  * @see https://docs.swmansion.com/react-native-reanimated/docs/device/useAnimatedKeyboard
  */
-export function useAnimatedKeyboard(
-  options = {
-    isStatusBarTranslucentAndroid: undefined,
-    isNavigationBarTranslucentAndroid: undefined,
-  }
-) {
+export function useAnimatedKeyboard(options = {
+  isStatusBarTranslucentAndroid: undefined,
+  isNavigationBarTranslucentAndroid: undefined
+}) {
   const ref = useRef(null);
   const listenerId = useRef(-1);
   const isSubscribed = useRef(false);
   if (ref.current === null) {
     const keyboardEventData = {
       state: makeMutable(KeyboardState.UNKNOWN),
-      height: makeMutable(0),
+      height: makeMutable(0)
     };
     listenerId.current = subscribeForKeyboardEvents((state, height) => {
       'worklet';

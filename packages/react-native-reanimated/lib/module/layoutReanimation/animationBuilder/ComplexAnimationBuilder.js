@@ -1,8 +1,8 @@
 'use strict';
 
-import { withSpring, withTiming } from '../../animation/index.js';
-import { assertEasingIsWorklet } from '../../animation/util.js';
-import { BaseAnimationBuilder } from './BaseAnimationBuilder.js';
+import { withSpring, withTiming } from "../../animation/index.js";
+import { assertEasingIsWorklet } from "../../animation/util.js";
+import { BaseAnimationBuilder } from "./BaseAnimationBuilder.js";
 export class ComplexAnimationBuilder extends BaseAnimationBuilder {
   /**
    * Lets you change the easing curve of the animation. Can be chained alongside
@@ -211,46 +211,37 @@ export class ComplexAnimationBuilder extends BaseAnimationBuilder {
     if (type === withTiming) {
       maybeSetConfigValue(easing, 'easing');
     }
-    [
-      {
-        variableName: 'damping',
-        value: damping,
-      },
-      {
-        variableName: 'dampingRatio',
-        value: dampingRatio,
-      },
-      {
-        variableName: 'mass',
-        value: mass,
-      },
-      {
-        variableName: 'stiffness',
-        value: stiffness,
-      },
-      {
-        variableName: 'overshootClamping',
-        value: overshootClamping,
-      },
-      {
-        variableName: 'restDisplacementThreshold',
-        value: restDisplacementThreshold,
-      },
-      {
-        variableName: 'restSpeedThreshold',
-        value: restSpeedThreshold,
-      },
-      {
-        variableName: 'duration',
-        value: duration,
-      },
-      {
-        variableName: 'rotate',
-        value: rotate,
-      },
-    ].forEach(({ value, variableName }) =>
-      maybeSetConfigValue(value, variableName)
-    );
+    [{
+      variableName: 'damping',
+      value: damping
+    }, {
+      variableName: 'dampingRatio',
+      value: dampingRatio
+    }, {
+      variableName: 'mass',
+      value: mass
+    }, {
+      variableName: 'stiffness',
+      value: stiffness
+    }, {
+      variableName: 'overshootClamping',
+      value: overshootClamping
+    }, {
+      variableName: 'restDisplacementThreshold',
+      value: restDisplacementThreshold
+    }, {
+      variableName: 'restSpeedThreshold',
+      value: restSpeedThreshold
+    }, {
+      variableName: 'duration',
+      value: duration
+    }, {
+      variableName: 'rotate',
+      value: rotate
+    }].forEach(({
+      value,
+      variableName
+    }) => maybeSetConfigValue(value, variableName));
     return [animation, config];
   }
 }

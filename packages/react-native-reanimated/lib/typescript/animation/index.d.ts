@@ -1,12 +1,5 @@
 export { withClamp } from './clamp';
-export type {
-  DelayAnimation,
-  HigherOrderAnimation,
-  NextAnimation,
-  RepeatAnimation,
-  SequenceAnimation,
-  StyleLayoutAnimation,
-} from './commonTypes';
+export type { DelayAnimation, HigherOrderAnimation, NextAnimation, RepeatAnimation, SequenceAnimation, StyleLayoutAnimation, } from './commonTypes';
 export type { DecayAnimation, WithDecayConfig } from './decay';
 export { withDecay } from './decay';
 export { withDelay } from './delay';

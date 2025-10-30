@@ -1,17 +1,13 @@
 /* eslint-disable camelcase */
 'use strict';
 
-import { ReanimatedError } from '../errors.js';
-import { isFabric } from '../PlatformChecker.js';
+import { ReanimatedError } from "../errors.js";
+import { isFabric } from "../PlatformChecker.js";
 function findHostInstanceFastPath(maybeNativeRef) {
   if (!maybeNativeRef) {
     return undefined;
   }
-  if (
-    maybeNativeRef.__internalInstanceHandle &&
-    maybeNativeRef.__nativeTag &&
-    maybeNativeRef._viewConfig
-  ) {
+  if (maybeNativeRef.__internalInstanceHandle && maybeNativeRef.__nativeTag && maybeNativeRef._viewConfig) {
     // This is a native ref to a Fabric component
     return maybeNativeRef;
   }
@@ -32,21 +28,15 @@ function resolveFindHostInstance_DEPRECATED() {
       const ReactFabric = require('react-native/Libraries/Renderer/shims/ReactFabric');
       // Since RN 0.77 ReactFabric exports findHostInstance_DEPRECATED in default object so we're trying to
       // access it first, then fallback on named export
-      findHostInstance_DEPRECATED =
-        ReactFabric?.default?.findHostInstance_DEPRECATED ??
-        ReactFabric?.findHostInstance_DEPRECATED;
+      findHostInstance_DEPRECATED = ReactFabric?.default?.findHostInstance_DEPRECATED ?? ReactFabric?.findHostInstance_DEPRECATED;
     } catch (e) {
-      throw new ReanimatedError(
-        'Failed to resolve findHostInstance_DEPRECATED'
-      );
+      throw new ReanimatedError('Failed to resolve findHostInstance_DEPRECATED');
     }
   } else {
     const ReactNative = require('react-native/Libraries/Renderer/shims/ReactNative');
     // Since RN 0.77 ReactFabric exports findHostInstance_DEPRECATED in default object so we're trying to
     // access it first, then fallback on named export
-    findHostInstance_DEPRECATED =
-      ReactNative?.default?.findHostInstance_DEPRECATED ??
-      ReactNative?.findHostInstance_DEPRECATED;
+    findHostInstance_DEPRECATED = ReactNative?.default?.findHostInstance_DEPRECATED ?? ReactNative?.findHostInstance_DEPRECATED;
   }
 }
 let findHostInstance_DEPRECATED;
@@ -63,10 +53,6 @@ export function findHostInstance(component) {
     the ref provided by this method. It is the component's responsibility to ensure that this is 
     a valid React ref.
   */
-  return findHostInstance_DEPRECATED(
-    !isFabric() || component._hasAnimatedRef
-      ? component._componentRef
-      : component
-  );
+  return findHostInstance_DEPRECATED(!isFabric() || component._hasAnimatedRef ? component._componentRef : component);
 }
 //# sourceMappingURL=findHostInstance.js.map

@@ -1,25 +1,16 @@
-import type {
-  AnimatableValue,
-  Animation,
-  AnimationObject,
-  ReduceMotion,
-  RequiredKeys,
-  Timestamp,
-} from '../../commonTypes';
+import type { AnimatableValue, Animation, AnimationObject, ReduceMotion, RequiredKeys, Timestamp } from '../../commonTypes';
 export declare const VELOCITY_EPS: number;
 export declare const SLOPE_FACTOR = 0.1;
 export interface DecayAnimation extends Animation<DecayAnimation> {
-  lastTimestamp: Timestamp;
-  startTimestamp: Timestamp;
-  initialVelocity: number;
-  velocity: number;
-  current: AnimatableValue | undefined;
+    lastTimestamp: Timestamp;
+    startTimestamp: Timestamp;
+    initialVelocity: number;
+    velocity: number;
+    current: AnimatableValue | undefined;
 }
-export interface InnerDecayAnimation
-  extends Omit<DecayAnimation, 'current'>,
-    AnimationObject {
-  current: number;
-  springActive?: boolean;
+export interface InnerDecayAnimation extends Omit<DecayAnimation, 'current'>, AnimationObject {
+    current: number;
+    springActive?: boolean;
 }
 /**
  * The decay animation configuration.
@@ -40,34 +31,23 @@ export interface InnerDecayAnimation
  * @see https://docs.swmansion.com/react-native-reanimated/docs/animations/withDecay#config
  */
 export type DecayConfig = {
-  deceleration?: number;
-  velocityFactor?: number;
-  velocity?: number;
-  reduceMotion?: ReduceMotion;
-} & (
-  | {
-      rubberBandEffect?: false;
-      clamp?: [min: number, max: number];
-    }
-  | {
-      rubberBandEffect: true;
-      clamp: [min: number, max: number];
-      rubberBandFactor?: number;
-    }
-);
-export type DefaultDecayConfig = RequiredKeys<
-  DecayConfig,
-  'deceleration' | 'velocityFactor' | 'velocity'
-> & {
-  rubberBandFactor: number;
+    deceleration?: number;
+    velocityFactor?: number;
+    velocity?: number;
+    reduceMotion?: ReduceMotion;
+} & ({
+    rubberBandEffect?: false;
+    clamp?: [min: number, max: number];
+} | {
+    rubberBandEffect: true;
+    clamp: [min: number, max: number];
+    rubberBandFactor?: number;
+});
+export type DefaultDecayConfig = RequiredKeys<DecayConfig, 'deceleration' | 'velocityFactor' | 'velocity'> & {
+    rubberBandFactor: number;
 };
-export type RubberBandDecayConfig = RequiredKeys<
-  DefaultDecayConfig,
-  'clamp'
-> & {
-  rubberBandEffect: true;
+export type RubberBandDecayConfig = RequiredKeys<DefaultDecayConfig, 'clamp'> & {
+    rubberBandEffect: true;
 };
-export declare function isValidRubberBandConfig(
-  config: DefaultDecayConfig
-): config is RubberBandDecayConfig;
+export declare function isValidRubberBandConfig(config: DefaultDecayConfig): config is RubberBandDecayConfig;
 //# sourceMappingURL=utils.d.ts.map

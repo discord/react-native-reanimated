@@ -1,13 +1,9 @@
 'use strict';
 
 import { useEffect, useMemo, useRef } from 'react';
-import {
-  InterfaceOrientation,
-  IOSReferenceFrame,
-  SensorType,
-} from '../commonTypes.js';
-import { initializeSensor, registerSensor, unregisterSensor } from '../core.js';
-import { callMicrotasks } from '../threads.js';
+import { InterfaceOrientation, IOSReferenceFrame, SensorType } from "../commonTypes.js";
+import { initializeSensor, registerSensor, unregisterSensor } from "../core.js";
+import { callMicrotasks } from "../threads.js";
 
 // euler angles are in order ZXY, z = yaw, x = pitch, y = roll
 // https://github.com/mrdoob/three.js/blob/dev/src/math/Quaternion.js#L237
@@ -20,17 +16,17 @@ function eulerToQuaternion(pitch, roll, yaw) {
   const s2 = Math.sin(roll / 2);
   const c3 = Math.cos(yaw / 2);
   const s3 = Math.sin(yaw / 2);
-  return [
-    s1 * c2 * c3 - c1 * s2 * s3,
-    c1 * s2 * c3 + s1 * c2 * s3,
-    c1 * c2 * s3 + s1 * s2 * c3,
-    c1 * c2 * c3 - s1 * s2 * s3,
-  ];
+  return [s1 * c2 * c3 - c1 * s2 * s3, c1 * s2 * c3 + s1 * c2 * s3, c1 * c2 * s3 + s1 * s2 * c3, c1 * c2 * c3 - s1 * s2 * s3];
 }
 function adjustRotationToInterfaceOrientation(data) {
   'worklet';
 
-  const { interfaceOrientation, pitch, roll, yaw } = data;
+  const {
+    interfaceOrientation,
+    pitch,
+    roll,
+    yaw
+  } = data;
   if (interfaceOrientation === InterfaceOrientation.ROTATION_90) {
     data.pitch = roll;
     data.roll = -pitch;
@@ -54,7 +50,11 @@ function adjustRotationToInterfaceOrientation(data) {
 function adjustVectorToInterfaceOrientation(data) {
   'worklet';
 
-  const { interfaceOrientation, x, y } = data;
+  const {
+    interfaceOrientation,
+    x,
+    y
+  } = data;
   if (interfaceOrientation === InterfaceOrientation.ROTATION_90) {
     data.x = -y;
     data.y = x;
@@ -82,32 +82,25 @@ function adjustVectorToInterfaceOrientation(data) {
 
 export function useAnimatedSensor(sensorType, userConfig) {
   const userConfigRef = useRef(userConfig);
-  const hasConfigChanged =
-    userConfigRef.current?.adjustToInterfaceOrientation !==
-      userConfig?.adjustToInterfaceOrientation ||
-    userConfigRef.current?.interval !== userConfig?.interval ||
-    userConfigRef.current?.iosReferenceFrame !== userConfig?.iosReferenceFrame;
+  const hasConfigChanged = userConfigRef.current?.adjustToInterfaceOrientation !== userConfig?.adjustToInterfaceOrientation || userConfigRef.current?.interval !== userConfig?.interval || userConfigRef.current?.iosReferenceFrame !== userConfig?.iosReferenceFrame;
   if (hasConfigChanged) {
     userConfigRef.current = {
-      ...userConfig,
+      ...userConfig
     };
   }
-  const config = useMemo(
-    () => ({
-      interval: 'auto',
-      adjustToInterfaceOrientation: true,
-      iosReferenceFrame: IOSReferenceFrame.Auto,
-      ...userConfigRef.current,
-    }),
-    [userConfigRef.current]
-  );
+  const config = useMemo(() => ({
+    interval: 'auto',
+    adjustToInterfaceOrientation: true,
+    iosReferenceFrame: IOSReferenceFrame.Auto,
+    ...userConfigRef.current
+  }), [userConfigRef.current]);
   const ref = useRef({
     sensor: initializeSensor(sensorType, config),
     unregister: () => {
       // NOOP
     },
     isAvailable: false,
-    config,
+    config
   });
   useEffect(() => {
     ref.current = {
@@ -116,12 +109,11 @@ export function useAnimatedSensor(sensorType, userConfig) {
         // NOOP
       },
       isAvailable: false,
-      config,
+      config
     };
     const sensorData = ref.current.sensor;
-    const adjustToInterfaceOrientation =
-      ref.current.config.adjustToInterfaceOrientation;
-    const id = registerSensor(sensorType, config, (data) => {
+    const adjustToInterfaceOrientation = ref.current.config.adjustToInterfaceOrientation;
+    const id = registerSensor(sensorType, config, data => {
       'worklet';
 
       if (adjustToInterfaceOrientation) {

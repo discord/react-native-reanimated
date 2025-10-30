@@ -1,22 +1,14 @@
-import type {
-  DependencyList,
-  ReanimatedScrollEvent,
-  RNNativeScrollEvent,
-} from './commonTypes';
+import type { DependencyList, ReanimatedScrollEvent, RNNativeScrollEvent } from './commonTypes';
 import type { EventHandlerInternal, EventHandlerProcessed } from './useEvent';
-export type ScrollHandler<
-  Context extends Record<string, unknown> = Record<string, unknown>,
-> = (event: ReanimatedScrollEvent, context: Context) => void;
+export type ScrollHandler<Context extends Record<string, unknown> = Record<string, unknown>> = (event: ReanimatedScrollEvent, context: Context) => void;
 export interface ScrollHandlers<Context extends Record<string, unknown>> {
-  onScroll?: ScrollHandler<Context>;
-  onBeginDrag?: ScrollHandler<Context>;
-  onEndDrag?: ScrollHandler<Context>;
-  onMomentumBegin?: ScrollHandler<Context>;
-  onMomentumEnd?: ScrollHandler<Context>;
+    onScroll?: ScrollHandler<Context>;
+    onBeginDrag?: ScrollHandler<Context>;
+    onEndDrag?: ScrollHandler<Context>;
+    onMomentumBegin?: ScrollHandler<Context>;
+    onMomentumEnd?: ScrollHandler<Context>;
 }
-export type ScrollHandlerProcessed<
-  Context extends Record<string, unknown> = Record<string, unknown>,
-> = EventHandlerProcessed<RNNativeScrollEvent, Context>;
+export type ScrollHandlerProcessed<Context extends Record<string, unknown> = Record<string, unknown>> = EventHandlerProcessed<RNNativeScrollEvent, Context>;
 export type ScrollHandlerInternal = EventHandlerInternal<RNNativeScrollEvent>;
 /**
  * Lets you run callbacks on ScrollView events. Supports `onScroll`,
@@ -31,10 +23,5 @@ export type ScrollHandlerInternal = EventHandlerInternal<RNNativeScrollEvent>;
  *   `Animated.ScrollView` component.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/scroll/useAnimatedScrollHandler
  */
-export declare function useAnimatedScrollHandler<
-  Context extends Record<string, unknown>,
->(
-  handlers: ScrollHandler<Context> | ScrollHandlers<Context>,
-  dependencies?: DependencyList
-): ScrollHandlerProcessed<Context>;
+export declare function useAnimatedScrollHandler<Context extends Record<string, unknown>>(handlers: ScrollHandler<Context> | ScrollHandlers<Context>, dependencies?: DependencyList): ScrollHandlerProcessed<Context>;
 //# sourceMappingURL=useAnimatedScrollHandler.d.ts.map

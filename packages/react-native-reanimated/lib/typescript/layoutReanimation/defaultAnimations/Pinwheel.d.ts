@@ -1,7 +1,4 @@
-import type {
-  EntryExitAnimationFunction,
-  IEntryExitAnimationBuilder,
-} from '../../commonTypes';
+import type { EntryExitAnimationFunction, IEntryExitAnimationBuilder } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,15 +10,10 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#pinwheel
  */
-export declare class PinwheelIn
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class PinwheelIn extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Exit with change in rotation, scale, and opacity. You can modify the behavior
@@ -32,14 +24,9 @@ export declare class PinwheelIn
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#pinwheel
  */
-export declare class PinwheelOut
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class PinwheelOut extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 //# sourceMappingURL=Pinwheel.d.ts.map

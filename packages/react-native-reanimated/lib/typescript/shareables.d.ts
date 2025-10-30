@@ -1,11 +1,9 @@
 import type { FlatShareableRef, ShareableRef } from './commonTypes';
 interface MakeShareableClone {
-  <T>(value: T, shouldPersistRemote?: boolean, depth?: number): ShareableRef<T>;
+    <T>(value: T, shouldPersistRemote?: boolean, depth?: number): ShareableRef<T>;
 }
 export declare const makeShareableCloneRecursive: MakeShareableClone;
-export declare function makeShareableCloneOnUIRecursive<T>(
-  value: T
-): FlatShareableRef<T>;
+export declare function makeShareableCloneOnUIRecursive<T>(value: T): FlatShareableRef<T>;
 declare function makeShareableJS<T extends object>(value: T): T;
 /**
  * This function creates a value on UI with persistent state - changes to it on

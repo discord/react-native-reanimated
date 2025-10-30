@@ -1,6 +1,6 @@
 'use strict';
 
-import { Bezier } from './Bezier.js';
+import { Bezier } from "./Bezier.js";
 
 /**
  * The `Easing` module implements common easing functions. This module is used
@@ -108,7 +108,7 @@ function cubic(t) {
 function poly(n) {
   'worklet';
 
-  return (t) => {
+  return t => {
     'worklet';
 
     return Math.pow(t, n);
@@ -123,7 +123,7 @@ function poly(n) {
 function sin(t) {
   'worklet';
 
-  return 1 - Math.cos((t * Math.PI) / 2);
+  return 1 - Math.cos(t * Math.PI / 2);
 }
 
 /**
@@ -161,10 +161,10 @@ function elastic(bounciness = 1) {
   'worklet';
 
   const p = bounciness * Math.PI;
-  return (t) => {
+  return t => {
     'worklet';
 
-    return 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
+    return 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p);
   };
 }
 
@@ -179,7 +179,7 @@ function elastic(bounciness = 1) {
 function back(s = 1.70158) {
   'worklet';
 
-  return (t) => {
+  return t => {
     'worklet';
 
     return t * t * ((s + 1) * t - s);
@@ -224,7 +224,7 @@ function bezier(x1, y1, x2, y2) {
       'worklet';
 
       return Bezier(x1, y1, x2, y2);
-    },
+    }
   };
 }
 function bezierFn(x1, y1, x2, y2) {
@@ -244,7 +244,7 @@ function in_(easing) {
 function out(easing) {
   'worklet';
 
-  return (t) => {
+  return t => {
     'worklet';
 
     return 1 - easing(1 - t);
@@ -258,7 +258,7 @@ function out(easing) {
 function inOut(easing) {
   'worklet';
 
-  return (t) => {
+  return t => {
     'worklet';
 
     if (t < 0.5) {
@@ -278,7 +278,7 @@ function inOut(easing) {
 function steps(n = 10, roundToNextStep = true) {
   'worklet';
 
-  return (t) => {
+  return t => {
     'worklet';
 
     const value = Math.min(Math.max(t, 0), 1) * n;
@@ -305,7 +305,7 @@ const EasingObject = {
   steps,
   in: in_,
   out,
-  inOut,
+  inOut
 };
 export const EasingNameSymbol = Symbol('easingName');
 for (const [easingName, easing] of Object.entries(EasingObject)) {
@@ -313,7 +313,7 @@ for (const [easingName, easing] of Object.entries(EasingObject)) {
     value: easingName,
     configurable: false,
     enumerable: false,
-    writable: false,
+    writable: false
   });
 }
 export const Easing = EasingObject;

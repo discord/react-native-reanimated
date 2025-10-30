@@ -1,34 +1,24 @@
 'use strict';
 
-import { _updatePropsJS } from '../../ReanimatedModule/js-reanimated/index.js';
+import { _updatePropsJS } from "../../ReanimatedModule/js-reanimated/index.js";
 export const snapshots = new WeakMap();
 export function makeElementVisible(element, delay) {
   if (delay === 0) {
-    _updatePropsJS(
-      {
-        visibility: 'initial',
-      },
-      element
-    );
+    _updatePropsJS({
+      visibility: 'initial'
+    }, element);
   } else {
     setTimeout(() => {
-      _updatePropsJS(
-        {
-          visibility: 'initial',
-        },
-        element
-      );
+      _updatePropsJS({
+        visibility: 'initial'
+      }, element);
     }, delay * 1000);
   }
 }
 function fixElementPosition(element, parent, snapshot) {
   const parentRect = parent.getBoundingClientRect();
-  const parentBorderTopValue = parseInt(
-    getComputedStyle(parent).borderTopWidth
-  );
-  const parentBorderLeftValue = parseInt(
-    getComputedStyle(parent).borderLeftWidth
-  );
+  const parentBorderTopValue = parseInt(getComputedStyle(parent).borderTopWidth);
+  const parentBorderLeftValue = parseInt(getComputedStyle(parent).borderLeftWidth);
   const dummyRect = element.getBoundingClientRect();
   // getBoundingClientRect returns DOMRect with position of the element with respect to document body.
   // However, using position `absolute` doesn't guarantee, that the dummy will be placed relative to body element.

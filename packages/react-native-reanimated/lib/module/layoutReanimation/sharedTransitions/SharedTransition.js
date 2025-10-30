@@ -1,27 +1,12 @@
 'use strict';
 
-import { withTiming } from '../../animation/index.js';
-import { getReduceMotionFromConfig } from '../../animation/util.js';
-import {
-  LayoutAnimationType,
-  ReduceMotion,
-  SharedTransitionType,
-} from '../../commonTypes.js';
-import { ReanimatedError } from '../../errors.js';
-import { updateLayoutAnimations } from '../../UpdateLayoutAnimations.js';
-import { ProgressTransitionManager } from './ProgressTransitionManager.js';
-const SUPPORTED_PROPS = [
-  'width',
-  'height',
-  'originX',
-  'originY',
-  'transform',
-  'borderRadius',
-  'borderTopLeftRadius',
-  'borderTopRightRadius',
-  'borderBottomLeftRadius',
-  'borderBottomRightRadius',
-];
+import { withTiming } from "../../animation/index.js";
+import { getReduceMotionFromConfig } from "../../animation/util.js";
+import { LayoutAnimationType, ReduceMotion, SharedTransitionType } from "../../commonTypes.js";
+import { ReanimatedError } from "../../errors.js";
+import { updateLayoutAnimations } from "../../UpdateLayoutAnimations.js";
+import { ProgressTransitionManager } from "./ProgressTransitionManager.js";
+const SUPPORTED_PROPS = ['width', 'height', 'originX', 'originY', 'transform', 'borderRadius', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius'];
 /**
  * A SharedTransition builder class.
  *
@@ -75,38 +60,14 @@ export class SharedTransition {
         this._defaultTransitionType = SharedTransitionType.PROGRESS_ANIMATION;
       }
     }
-    const layoutAnimationType =
-      this._defaultTransitionType === SharedTransitionType.ANIMATION
-        ? LayoutAnimationType.SHARED_ELEMENT_TRANSITION
-        : LayoutAnimationType.SHARED_ELEMENT_TRANSITION_PROGRESS;
-    updateLayoutAnimations(
-      viewTag,
-      layoutAnimationType,
-      transitionAnimation,
-      sharedTransitionTag,
-      isUnmounting
-    );
-    SharedTransition._progressTransitionManager.addProgressAnimation(
-      viewTag,
-      progressAnimation
-    );
+    const layoutAnimationType = this._defaultTransitionType === SharedTransitionType.ANIMATION ? LayoutAnimationType.SHARED_ELEMENT_TRANSITION : LayoutAnimationType.SHARED_ELEMENT_TRANSITION_PROGRESS;
+    updateLayoutAnimations(viewTag, layoutAnimationType, transitionAnimation, sharedTransitionTag, isUnmounting);
+    SharedTransition._progressTransitionManager.addProgressAnimation(viewTag, progressAnimation);
   }
   unregisterTransition(viewTag, isUnmounting = false) {
-    const layoutAnimationType =
-      this._defaultTransitionType === SharedTransitionType.ANIMATION
-        ? LayoutAnimationType.SHARED_ELEMENT_TRANSITION
-        : LayoutAnimationType.SHARED_ELEMENT_TRANSITION_PROGRESS;
-    updateLayoutAnimations(
-      viewTag,
-      layoutAnimationType,
-      undefined,
-      undefined,
-      isUnmounting
-    );
-    SharedTransition._progressTransitionManager.removeProgressAnimation(
-      viewTag,
-      isUnmounting
-    );
+    const layoutAnimationType = this._defaultTransitionType === SharedTransitionType.ANIMATION ? LayoutAnimationType.SHARED_ELEMENT_TRANSITION : LayoutAnimationType.SHARED_ELEMENT_TRANSITION_PROGRESS;
+    updateLayoutAnimations(viewTag, layoutAnimationType, undefined, undefined, isUnmounting);
+    SharedTransition._progressTransitionManager.removeProgressAnimation(viewTag, isUnmounting);
   }
   getReduceMotion() {
     return this._reduceMotion;
@@ -127,7 +88,7 @@ export class SharedTransition {
     const animationFactory = this._customAnimationFactory;
     const transitionDuration = this._transitionDuration;
     const reduceMotion = this._reduceMotion;
-    this._animation = (values) => {
+    this._animation = values => {
       'worklet';
 
       let animations = {};
@@ -136,9 +97,7 @@ export class SharedTransition {
         animations = animationFactory(values);
         for (const key in animations) {
           if (!SUPPORTED_PROPS.includes(key)) {
-            throw new ReanimatedError(
-              `The prop '${key}' is not supported yet.`
-            );
+            throw new ReanimatedError(`The prop '${key}' is not supported yet.`);
           }
         }
       } else {
@@ -147,14 +106,14 @@ export class SharedTransition {
             const matrix = values.targetTransformMatrix;
             animations.transformMatrix = withTiming(matrix, {
               reduceMotion,
-              duration: transitionDuration,
+              duration: transitionDuration
             });
           } else {
             const capitalizedPropName = `${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
             const keyToTargetValue = `target${capitalizedPropName}`;
             animations[propName] = withTiming(values[keyToTargetValue], {
               reduceMotion,
-              duration: transitionDuration,
+              duration: transitionDuration
             });
           }
         }
@@ -163,15 +122,14 @@ export class SharedTransition {
         if (propName === 'transform') {
           initialValues.transformMatrix = values.currentTransformMatrix;
         } else {
-          const capitalizedPropName =
-            propName.charAt(0).toUpperCase() + propName.slice(1);
+          const capitalizedPropName = propName.charAt(0).toUpperCase() + propName.slice(1);
           const keyToCurrentValue = `current${capitalizedPropName}`;
           initialValues[propName] = values[keyToCurrentValue];
         }
       }
       return {
         initialValues,
-        animations,
+        animations
       };
     };
   }
@@ -192,21 +150,17 @@ export class SharedTransition {
           const targetMatrix = values.targetTransformMatrix;
           const newMatrix = new Array(9);
           for (let i = 0; i < 9; i++) {
-            newMatrix[i] =
-              progress * (targetMatrix[i] - currentMatrix[i]) +
-              currentMatrix[i];
+            newMatrix[i] = progress * (targetMatrix[i] - currentMatrix[i]) + currentMatrix[i];
           }
           newStyles.transformMatrix = newMatrix;
         } else {
           // PropertyName == propertyName with capitalized fist letter, (width -> Width)
-          const PropertyName =
-            propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
+          const PropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
           const currentPropertyName = `current${PropertyName}`;
           const targetPropertyName = `target${PropertyName}`;
           const currentValue = values[currentPropertyName];
           const targetValue = values[targetPropertyName];
-          newStyles[propertyName] =
-            progress * (targetValue - currentValue) + currentValue;
+          newStyles[propertyName] = progress * (targetValue - currentValue) + currentValue;
         }
       }
       global._notifyAboutProgress(viewTag, newStyles, true);

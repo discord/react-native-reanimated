@@ -1,14 +1,6 @@
 import type { AnimatedPropsAdapterFunction } from '../commonTypes';
 import type { DependencyList } from './commonTypes';
-type UseAnimatedProps = <Props extends object>(
-  updater: () => Partial<Props>,
-  dependencies?: DependencyList | null,
-  adapters?:
-    | AnimatedPropsAdapterFunction
-    | AnimatedPropsAdapterFunction[]
-    | null,
-  isAnimatedProps?: boolean
-) => Partial<Props>;
+type UseAnimatedProps = <Props extends object>(updater: () => Partial<Props>, dependencies?: DependencyList | null, adapters?: AnimatedPropsAdapterFunction | AnimatedPropsAdapterFunction[] | null, isAnimatedProps?: boolean) => Partial<Props>;
 /**
  * Lets you create an animated props object which can be animated using shared
  * values.

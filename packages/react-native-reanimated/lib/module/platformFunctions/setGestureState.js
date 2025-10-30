@@ -1,11 +1,7 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
-import {
-  isChromeDebugger,
-  isJest,
-  shouldBeUseWeb,
-} from '../PlatformChecker.js';
+import { logger } from "../logger/index.js";
+import { isChromeDebugger, isJest, shouldBeUseWeb } from "../PlatformChecker.js";
 export let setGestureState;
 function setGestureStateNative(handlerTag, newState) {
   'worklet';

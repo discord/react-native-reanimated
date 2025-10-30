@@ -21,7 +21,7 @@ export const PropsAllowlists = {
     scaleX: true,
     scaleY: true,
     translateX: true,
-    translateY: true,
+    translateY: true
   },
   /**
    * Whitelist of view props that can be updated in native thread via
@@ -121,7 +121,7 @@ export const PropsAllowlists = {
     color: true,
     tintColor: true,
     shadowColor: true,
-    placeholderTextColor: true,
-  },
+    placeholderTextColor: true
+  }
 };
 //# sourceMappingURL=propsAllowlists.js.map

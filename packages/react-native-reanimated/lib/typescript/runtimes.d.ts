@@ -1,7 +1,7 @@
 import type { WorkletFunction } from './commonTypes';
 export type WorkletRuntime = {
-  __hostObjectWorkletRuntime: never;
-  readonly name: string;
+    __hostObjectWorkletRuntime: never;
+    readonly name: string;
 };
 /**
  * Lets you create a new JS runtime which can be used to run worklets possibly
@@ -15,12 +15,6 @@ export type WorkletRuntime = {
  *   `jsi::HostObject<reanimated::WorkletRuntime>` - {@link WorkletRuntime}
  * @see https://docs.swmansion.com/react-native-reanimated/docs/3.x/threading/createWorkletRuntime
  */
-export declare function createWorkletRuntime(
-  name: string,
-  initializer?: () => void
-): WorkletRuntime;
-export declare function runOnRuntime<Args extends unknown[], ReturnValue>(
-  workletRuntime: WorkletRuntime,
-  worklet: (...args: Args) => ReturnValue
-): WorkletFunction<Args, ReturnValue>;
+export declare function createWorkletRuntime(name: string, initializer?: () => void): WorkletRuntime;
+export declare function runOnRuntime<Args extends unknown[], ReturnValue>(workletRuntime: WorkletRuntime, worklet: (...args: Args) => ReturnValue): WorkletFunction<Args, ReturnValue>;
 //# sourceMappingURL=runtimes.d.ts.map

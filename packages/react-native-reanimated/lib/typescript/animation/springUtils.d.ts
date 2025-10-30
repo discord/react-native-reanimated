@@ -1,9 +1,4 @@
-import type {
-  AnimatableValue,
-  Animation,
-  ReduceMotion,
-  Timestamp,
-} from '../commonTypes';
+import type { AnimatableValue, Animation, ReduceMotion, Timestamp } from '../commonTypes';
 /**
  * Spring animation configuration.
  *
@@ -31,129 +26,97 @@ import type {
  * @see https://docs.swmansion.com/react-native-reanimated/docs/animations/withSpring/#config-
  */
 export type SpringConfig = {
-  stiffness?: number;
-  overshootClamping?: boolean;
-  restDisplacementThreshold?: number;
-  restSpeedThreshold?: number;
-  velocity?: number;
-  reduceMotion?: ReduceMotion;
-} & (
-  | {
-      mass?: number;
-      damping?: number;
-      duration?: never;
-      dampingRatio?: never;
-      clamp?: never;
-    }
-  | {
-      mass?: never;
-      damping?: never;
-      duration?: number;
-      dampingRatio?: number;
-      clamp?: {
+    stiffness?: number;
+    overshootClamping?: boolean;
+    restDisplacementThreshold?: number;
+    restSpeedThreshold?: number;
+    velocity?: number;
+    reduceMotion?: ReduceMotion;
+} & ({
+    mass?: number;
+    damping?: number;
+    duration?: never;
+    dampingRatio?: never;
+    clamp?: never;
+} | {
+    mass?: never;
+    damping?: never;
+    duration?: number;
+    dampingRatio?: number;
+    clamp?: {
         min?: number;
         max?: number;
-      };
-    }
-);
+    };
+});
 export type DefaultSpringConfig = {
-  [K in keyof Required<SpringConfig>]: K extends 'reduceMotion' | 'clamp'
-    ? Required<SpringConfig>[K] | undefined
-    : Required<SpringConfig>[K];
+    [K in keyof Required<SpringConfig>]: K extends 'reduceMotion' | 'clamp' ? Required<SpringConfig>[K] | undefined : Required<SpringConfig>[K];
 };
 export type WithSpringConfig = SpringConfig;
 export interface SpringConfigInner {
-  useDuration: boolean;
-  skipAnimation: boolean;
+    useDuration: boolean;
+    skipAnimation: boolean;
 }
 export interface SpringAnimation extends Animation<SpringAnimation> {
-  current: AnimatableValue;
-  toValue: AnimatableValue;
-  velocity: number;
-  lastTimestamp: Timestamp;
-  startTimestamp: Timestamp;
-  startValue: number;
-  zeta: number;
-  omega0: number;
-  omega1: number;
+    current: AnimatableValue;
+    toValue: AnimatableValue;
+    velocity: number;
+    lastTimestamp: Timestamp;
+    startTimestamp: Timestamp;
+    startValue: number;
+    zeta: number;
+    omega0: number;
+    omega1: number;
 }
-export interface InnerSpringAnimation
-  extends Omit<SpringAnimation, 'toValue' | 'current'> {
-  toValue: number;
-  current: number;
+export interface InnerSpringAnimation extends Omit<SpringAnimation, 'toValue' | 'current'> {
+    toValue: number;
+    current: number;
 }
-export declare function checkIfConfigIsValid(
-  config: DefaultSpringConfig
-): boolean;
-export declare function bisectRoot({
-  min,
-  max,
-  func,
-  maxIterations,
-}: {
-  min: number;
-  max: number;
-  func: (x: number) => number;
-  maxIterations?: number;
+export declare function checkIfConfigIsValid(config: DefaultSpringConfig): boolean;
+export declare function bisectRoot({ min, max, func, maxIterations, }: {
+    min: number;
+    max: number;
+    func: (x: number) => number;
+    maxIterations?: number;
 }): number;
-export declare function initialCalculations(
-  mass: number | undefined,
-  config: DefaultSpringConfig & SpringConfigInner
-): {
-  zeta: number;
-  omega0: number;
-  omega1: number;
+export declare function initialCalculations(mass: number | undefined, config: DefaultSpringConfig & SpringConfigInner): {
+    zeta: number;
+    omega0: number;
+    omega1: number;
 };
 /**
  * We make an assumption that we can manipulate zeta without changing duration
  * of movement. According to theory this change is small and tests shows that we
  * can indeed ignore it.
  */
-export declare function scaleZetaToMatchClamps(
-  animation: SpringAnimation,
-  clamp: {
+export declare function scaleZetaToMatchClamps(animation: SpringAnimation, clamp: {
     min?: number;
     max?: number;
-  }
-): number;
+}): number;
 /** Runs before initial */
-export declare function calculateNewMassToMatchDuration(
-  x0: number,
-  config: DefaultSpringConfig & SpringConfigInner,
-  v0: number
-): number;
-export declare function criticallyDampedSpringCalculations(
-  animation: InnerSpringAnimation,
-  precalculatedValues: {
+export declare function calculateNewMassToMatchDuration(x0: number, config: DefaultSpringConfig & SpringConfigInner, v0: number): number;
+export declare function criticallyDampedSpringCalculations(animation: InnerSpringAnimation, precalculatedValues: {
     v0: number;
     x0: number;
     omega0: number;
     t: number;
-  }
-): {
-  position: number;
-  velocity: number;
+}): {
+    position: number;
+    velocity: number;
 };
-export declare function underDampedSpringCalculations(
-  animation: InnerSpringAnimation,
-  precalculatedValues: {
+export declare function underDampedSpringCalculations(animation: InnerSpringAnimation, precalculatedValues: {
     zeta: number;
     v0: number;
     x0: number;
     omega0: number;
     omega1: number;
     t: number;
-  }
-): {
-  position: number;
-  velocity: number;
+}): {
+    position: number;
+    velocity: number;
 };
-export declare function isAnimationTerminatingCalculation(
-  animation: InnerSpringAnimation,
-  config: DefaultSpringConfig
-): {
-  isOvershooting: boolean;
-  isVelocity: boolean;
-  isDisplacement: boolean;
+export declare function isAnimationTerminatingCalculation(animation: InnerSpringAnimation, config: DefaultSpringConfig): {
+    isOvershooting: boolean;
+    isVelocity: boolean;
+    isDisplacement: boolean;
 };
 //# sourceMappingURL=springUtils.d.ts.map

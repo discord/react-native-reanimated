@@ -1,9 +1,9 @@
 'use strict';
 
-import { withDelay } from '../../animation/index.js';
-import { getReduceMotionFromConfig } from '../../animation/util.js';
-import { ReduceMotion } from '../../commonTypes.js';
-import { ReanimatedError } from '../../errors.js';
+import { withDelay } from "../../animation/index.js";
+import { getReduceMotionFromConfig } from "../../animation/util.js";
+import { ReduceMotion } from "../../commonTypes.js";
+import { ReanimatedError } from "../../errors.js";
 export class BaseAnimationBuilder {
   reduceMotionV = ReduceMotion.System;
   randomizeDelay = false;
@@ -97,9 +97,7 @@ export class BaseAnimationBuilder {
 
   // when randomizeDelay is set to true, randomize delay between 0 and provided value (or 1000ms if delay is not provided)
   getDelay() {
-    return this.randomizeDelay
-      ? Math.random() * (this.delayV ?? 1000)
-      : (this.delayV ?? 0);
+    return this.randomizeDelay ? Math.random() * (this.delayV ?? 1000) : this.delayV ?? 0;
   }
   getReduceMotion() {
     return this.reduceMotionV;
@@ -107,18 +105,16 @@ export class BaseAnimationBuilder {
   getDelayFunction() {
     const isDelayProvided = this.randomizeDelay || this.delayV;
     const reduceMotion = this.getReduceMotion();
-    return isDelayProvided
-      ? (delay, animation) => {
-          'worklet';
+    return isDelayProvided ? (delay, animation) => {
+      'worklet';
 
-          return withDelay(delay, animation, reduceMotion);
-        }
-      : (_, animation) => {
-          'worklet';
+      return withDelay(delay, animation, reduceMotion);
+    } : (_, animation) => {
+      'worklet';
 
-          animation.reduceMotion = getReduceMotionFromConfig(reduceMotion);
-          return animation;
-        };
+      animation.reduceMotion = getReduceMotionFromConfig(reduceMotion);
+      return animation;
+    };
   }
   static build() {
     const instance = this.createInstance();

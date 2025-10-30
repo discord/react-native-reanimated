@@ -1,6 +1,6 @@
 'use strict';
 
-import { runOnUIImmediately } from '../threads.js';
+import { runOnUIImmediately } from "../threads.js";
 export const prepareUIRegistry = runOnUIImmediately(() => {
   'worklet';
 
@@ -10,7 +10,7 @@ export const prepareUIRegistry = runOnUIImmediately(() => {
     previousFrameTimestamp: null,
     nextCallId: 0,
     runCallbacks(callId) {
-      const loop = (timestamp) => {
+      const loop = timestamp => {
         if (callId !== this.nextCallId) {
           return;
         }
@@ -18,23 +18,25 @@ export const prepareUIRegistry = runOnUIImmediately(() => {
           this.previousFrameTimestamp = timestamp;
         }
         const delta = timestamp - this.previousFrameTimestamp;
-        this.activeFrameCallbacks.forEach((callbackId) => {
+        this.activeFrameCallbacks.forEach(callbackId => {
           const callbackDetails = this.frameCallbackRegistry.get(callbackId);
-          const { startTime } = callbackDetails;
+          const {
+            startTime
+          } = callbackDetails;
           if (startTime === null) {
             // First frame
             callbackDetails.startTime = timestamp;
             callbackDetails.callback({
               timestamp,
               timeSincePreviousFrame: null,
-              timeSinceFirstFrame: 0,
+              timeSinceFirstFrame: 0
             });
           } else {
             // Next frame
             callbackDetails.callback({
               timestamp,
               timeSincePreviousFrame: delta,
-              timeSinceFirstFrame: timestamp - startTime,
+              timeSinceFirstFrame: timestamp - startTime
             });
           }
         });
@@ -56,7 +58,7 @@ export const prepareUIRegistry = runOnUIImmediately(() => {
     registerFrameCallback(callback, callbackId) {
       this.frameCallbackRegistry.set(callbackId, {
         callback,
-        startTime: null,
+        startTime: null
       });
     },
     unregisterFrameCallback(callbackId) {
@@ -78,7 +80,7 @@ export const prepareUIRegistry = runOnUIImmediately(() => {
           this.nextCallId += 1;
         }
       }
-    },
+    }
   };
   global._frameCallbackRegistry = frameCallbackRegistry;
 });

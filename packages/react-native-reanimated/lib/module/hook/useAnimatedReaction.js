@@ -1,9 +1,9 @@
 'use strict';
 
 import { useEffect } from 'react';
-import { startMapper, stopMapper } from '../core.js';
-import { shouldBeUseWeb } from '../PlatformChecker.js';
-import { useSharedValue } from './useSharedValue.js';
+import { startMapper, stopMapper } from "../core.js";
+import { shouldBeUseWeb } from "../PlatformChecker.js";
+import { useSharedValue } from "./useSharedValue.js";
 
 /**
  * Lets you to respond to changes in a [shared
@@ -31,12 +31,7 @@ export function useAnimatedReaction(prepare, react, dependencies) {
     }
   }
   if (dependencies === undefined) {
-    dependencies = [
-      ...Object.values(prepare.__closure ?? {}),
-      ...Object.values(react.__closure ?? {}),
-      prepare.__workletHash,
-      react.__workletHash,
-    ];
+    dependencies = [...Object.values(prepare.__closure ?? {}), ...Object.values(react.__closure ?? {}), prepare.__workletHash, react.__workletHash];
   } else {
     dependencies.push(prepare.__workletHash, react.__workletHash);
   }

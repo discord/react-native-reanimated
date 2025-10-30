@@ -1,11 +1,7 @@
 import type { LoggerConfig } from './logger';
 export declare function configureProps(): void;
-export declare function addWhitelistedNativeProps(
-  props: Record<string, boolean>
-): void;
-export declare function addWhitelistedUIProps(
-  props: Record<string, boolean>
-): void;
+export declare function addWhitelistedNativeProps(props: Record<string, boolean>): void;
+export declare function addWhitelistedUIProps(props: Record<string, boolean>): void;
 /**
  * Updates Reanimated logger config with the user-provided configuration. Will
  * affect Reanimated code executed after call to this function so it should be
@@ -17,8 +13,8 @@ export declare function addWhitelistedUIProps(
  */
 export declare function configureReanimatedLogger(config: LoggerConfig): void;
 export interface ViewConfig {
-  uiViewClassName: string;
-  validAttributes: Record<string, unknown>;
+    uiViewClassName: string;
+    validAttributes: Record<string, unknown>;
 }
 /**
  * Updates UI props whitelist for given view host instance this will work just

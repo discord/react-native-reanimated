@@ -11,8 +11,5 @@ import type { DefaultStyle, DependencyList } from './commonTypes';
  *   property of an Animated component you want to animate.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/core/useAnimatedStyle
  */
-export declare function useAnimatedStyle<Style extends DefaultStyle>(
-  updater: () => Style,
-  dependencies?: DependencyList | null
-): Style;
+export declare function useAnimatedStyle<Style extends DefaultStyle>(updater: () => Style, dependencies?: DependencyList | null): Style;
 //# sourceMappingURL=useAnimatedStyle.d.ts.map

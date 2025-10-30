@@ -1,13 +1,13 @@
 'use strict';
 
-import { ReanimatedError } from './errors.js';
-import { logger } from './logger/index.js';
-import { isJest, shouldBeUseWeb } from './PlatformChecker.js';
-import { isFirstReactRender, isReactRendering } from './reactUtils.js';
-import { shareableMappingCache } from './shareableMappingCache.js';
-import { makeShareableCloneRecursive } from './shareables.js';
-import { executeOnUIRuntimeSync, runOnUI } from './threads.js';
-import { valueSetter } from './valueSetter.js';
+import { ReanimatedError } from "./errors.js";
+import { logger } from "./logger/index.js";
+import { isJest, shouldBeUseWeb } from "./PlatformChecker.js";
+import { isFirstReactRender, isReactRendering } from "./reactUtils.js";
+import { shareableMappingCache } from "./shareableMappingCache.js";
+import { makeShareableCloneRecursive } from "./shareables.js";
+import { executeOnUIRuntimeSync, runOnUI } from "./threads.js";
+import { valueSetter } from "./valueSetter.js";
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 const IS_JEST = isJest();
 function shouldWarnAboutAccessDuringRender() {
@@ -15,22 +15,16 @@ function shouldWarnAboutAccessDuringRender() {
 }
 function checkInvalidReadDuringRender() {
   if (shouldWarnAboutAccessDuringRender()) {
-    logger.warn(
-      "Reading from `value` during component render. Please ensure that you don't access the `value` property nor use `get` method of a shared value while React is rendering a component.",
-      {
-        strict: true,
-      }
-    );
+    logger.warn("Reading from `value` during component render. Please ensure that you don't access the `value` property nor use `get` method of a shared value while React is rendering a component.", {
+      strict: true
+    });
   }
 }
 function checkInvalidWriteDuringRender() {
   if (shouldWarnAboutAccessDuringRender()) {
-    logger.warn(
-      "Writing to `value` during component render. Please ensure that you don't access the `value` property nor use `set` method of a shared value while React is rendering a component.",
-      {
-        strict: true,
-      }
-    );
+    logger.warn("Writing to `value` during component render. Please ensure that you don't access the `value` property nor use `set` method of a shared value while React is rendering a component.", {
+      strict: true
+    });
   }
 }
 /**
@@ -51,23 +45,21 @@ function addCompilerSafeGetAndSet(mutable) {
         return mutable.value;
       },
       configurable: false,
-      enumerable: false,
+      enumerable: false
     },
     set: {
       value(newValue) {
-        if (
-          typeof newValue === 'function' &&
-          // If we have an animation definition, we don't want to call it here.
-          !newValue.__isAnimationDefinition
-        ) {
+        if (typeof newValue === 'function' &&
+        // If we have an animation definition, we don't want to call it here.
+        !newValue.__isAnimationDefinition) {
           mutable.value = newValue(mutable.value);
         } else {
           mutable.value = newValue;
         }
       },
       configurable: false,
-      enumerable: false,
-    },
+      enumerable: false
+    }
   });
 }
 /**
@@ -88,7 +80,7 @@ function hideInternalValueProp(mutable) {
 
   Object.defineProperty(mutable, '_value', {
     configurable: false,
-    enumerable: false,
+    enumerable: false
   });
 }
 export function makeMutableUI(initial) {
@@ -108,25 +100,21 @@ export function makeMutableUI(initial) {
     },
     set _value(newValue) {
       value = newValue;
-      listeners.forEach((listener) => {
+      listeners.forEach(listener => {
         listener(newValue);
       });
     },
     modify: (modifier, forceUpdate = true) => {
-      valueSetter(
-        mutable,
-        modifier !== undefined ? modifier(value) : value,
-        forceUpdate
-      );
+      valueSetter(mutable, modifier !== undefined ? modifier(value) : value, forceUpdate);
     },
     addListener: (id, listener) => {
       listeners.set(id, listener);
     },
-    removeListener: (id) => {
+    removeListener: id => {
       listeners.delete(id);
     },
     _animation: null,
-    _isReanimatedSharedValue: true,
+    _isReanimatedSharedValue: true
   };
   hideInternalValueProp(mutable);
   addCompilerSafeGetAndSet(mutable);
@@ -138,12 +126,12 @@ function makeMutableNative(initial) {
       'worklet';
 
       return makeMutableUI(initial);
-    },
+    }
   });
   const mutable = {
     get value() {
       checkInvalidReadDuringRender();
-      const uiValueGetter = executeOnUIRuntimeSync((sv) => {
+      const uiValueGetter = executeOnUIRuntimeSync(sv => {
         return sv.value;
       });
       return uiValueGetter(mutable);
@@ -155,14 +143,10 @@ function makeMutableNative(initial) {
       })();
     },
     get _value() {
-      throw new ReanimatedError(
-        'Reading from `_value` directly is only possible on the UI runtime. Perhaps you passed an Animated Style to a non-animated component?'
-      );
+      throw new ReanimatedError('Reading from `_value` directly is only possible on the UI runtime. Perhaps you passed an Animated Style to a non-animated component?');
     },
     set _value(_newValue) {
-      throw new ReanimatedError(
-        'Setting `_value` directly is only possible on the UI runtime. Perhaps you want to assign to `value` instead?'
-      );
+      throw new ReanimatedError('Setting `_value` directly is only possible on the UI runtime. Perhaps you want to assign to `value` instead?');
     },
     modify: (modifier, forceUpdate = true) => {
       runOnUI(() => {
@@ -170,16 +154,12 @@ function makeMutableNative(initial) {
       })();
     },
     addListener: () => {
-      throw new ReanimatedError(
-        'Adding listeners is only possible on the UI runtime.'
-      );
+      throw new ReanimatedError('Adding listeners is only possible on the UI runtime.');
     },
     removeListener: () => {
-      throw new ReanimatedError(
-        'Removing listeners is only possible on the UI runtime.'
-      );
+      throw new ReanimatedError('Removing listeners is only possible on the UI runtime.');
     },
-    _isReanimatedSharedValue: true,
+    _isReanimatedSharedValue: true
   };
   hideInternalValueProp(mutable);
   addCompilerSafeGetAndSet(mutable);
@@ -203,24 +183,20 @@ function makeMutableWeb(initial) {
     },
     set _value(newValue) {
       value = newValue;
-      listeners.forEach((listener) => {
+      listeners.forEach(listener => {
         listener(newValue);
       });
     },
     modify: (modifier, forceUpdate = true) => {
-      valueSetter(
-        mutable,
-        modifier !== undefined ? modifier(mutable.value) : mutable.value,
-        forceUpdate
-      );
+      valueSetter(mutable, modifier !== undefined ? modifier(mutable.value) : mutable.value, forceUpdate);
     },
     addListener: (id, listener) => {
       listeners.set(id, listener);
     },
-    removeListener: (id) => {
+    removeListener: id => {
       listeners.delete(id);
     },
-    _isReanimatedSharedValue: true,
+    _isReanimatedSharedValue: true
   };
   hideInternalValueProp(mutable);
   addCompilerSafeGetAndSet(mutable);
@@ -229,9 +205,7 @@ function makeMutableWeb(initial) {
   }
   return mutable;
 }
-export const makeMutable = SHOULD_BE_USE_WEB
-  ? makeMutableWeb
-  : makeMutableNative;
+export const makeMutable = SHOULD_BE_USE_WEB ? makeMutableWeb : makeMutableNative;
 function mutableToJSON(value) {
   return JSON.stringify(value);
 }

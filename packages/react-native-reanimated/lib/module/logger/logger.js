@@ -1,14 +1,13 @@
 'use strict';
 
-import { addLogBoxLog } from './LogBox.js';
-const DOCS_URL =
-  'https://docs.swmansion.com/react-native-reanimated/docs/debugging/logger-configuration';
+import { addLogBoxLog } from "./LogBox.js";
+const DOCS_URL = 'https://docs.swmansion.com/react-native-reanimated/docs/debugging/logger-configuration';
 const DOCS_REFERENCE = `If you don't want to see this message, you can disable the \`strict\` mode. Refer to:\n${DOCS_URL} for more details.`;
-export let LogLevel = /*#__PURE__*/ (function (LogLevel) {
-  LogLevel[(LogLevel['warn'] = 1)] = 'warn';
-  LogLevel[(LogLevel['error'] = 2)] = 'error';
+export let LogLevel = /*#__PURE__*/function (LogLevel) {
+  LogLevel[LogLevel["warn"] = 1] = "warn";
+  LogLevel[LogLevel["error"] = 2] = "error";
   return LogLevel;
-})({});
+}({});
 function logToConsole(data) {
   'worklet';
 
@@ -26,7 +25,7 @@ function logToConsole(data) {
 export const DEFAULT_LOGGER_CONFIG = {
   logFunction: logToConsole,
   level: LogLevel.warn,
-  strict: true,
+  strict: true
 };
 function formatMessage(message) {
   'worklet';
@@ -41,13 +40,13 @@ function createLog(level, message) {
     level,
     message: {
       content: formattedMessage,
-      substitutions: [],
+      substitutions: []
     },
     category: formattedMessage,
     componentStack: [],
     componentStackType: null,
     // eslint-disable-next-line reanimated/use-reanimated-error
-    stack: new Error().stack,
+    stack: new Error().stack
   };
 }
 
@@ -83,7 +82,7 @@ export function replaceLoggerImplementation(logFunction) {
 
   registerLoggerConfig({
     ...global.__reanimatedLoggerConfig,
-    logFunction,
+    logFunction
   });
 }
 
@@ -103,7 +102,7 @@ export function updateLoggerConfig(options) {
     ...global.__reanimatedLoggerConfig,
     // Don't reuse previous level and strict values from the global config
     level: options?.level ?? DEFAULT_LOGGER_CONFIG.level,
-    strict: options?.strict ?? DEFAULT_LOGGER_CONFIG.strict,
+    strict: options?.strict ?? DEFAULT_LOGGER_CONFIG.strict
   });
 }
 function handleLog(level, message, options) {
@@ -111,12 +110,11 @@ function handleLog(level, message, options) {
 
   const config = global.__reanimatedLoggerConfig;
   if (
-    // Don't log if the log is marked as strict-only and the config doesn't
-    // enable strict logging
-    (options.strict && !config.strict) ||
-    // Don't log if the log level is below the minimum configured level
-    LogLevel[level] < config.level
-  ) {
+  // Don't log if the log is marked as strict-only and the config doesn't
+  // enable strict logging
+  options.strict && !config.strict ||
+  // Don't log if the log level is below the minimum configured level
+  LogLevel[level] < config.level) {
     return;
   }
   if (options.strict) {
@@ -134,6 +132,6 @@ export const logger = {
     'worklet';
 
     handleLog('error', message, options);
-  },
+  }
 };
 //# sourceMappingURL=logger.js.map

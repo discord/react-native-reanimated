@@ -1,6 +1,6 @@
 'use strict';
 
-import { ReanimatedError } from './errors.js';
+import { ReanimatedError } from "./errors.js";
 
 /**
  * https://github.com/gre/bezier-easing BezierEasing - use bezier curve for
@@ -58,10 +58,7 @@ function binarySubdivide(aX, aA, aB, mX1, mX2) {
     } else {
       aA = currentT;
     }
-  } while (
-    Math.abs(currentX) > SUBDIVISION_PRECISION &&
-    ++i < SUBDIVISION_MAX_ITERATIONS
-  );
+  } while (Math.abs(currentX) > SUBDIVISION_PRECISION && ++i < SUBDIVISION_MAX_ITERATIONS);
   return currentT;
 }
 function newtonRaphsonIterate(aX, aGuessT, mX1, mX2) {
@@ -103,19 +100,13 @@ export function Bezier(mX1, mY1, mX2, mY2) {
     let intervalStart = 0.0;
     let currentSample = 1;
     const lastSample = kSplineTableSize - 1;
-    for (
-      ;
-      currentSample !== lastSample && sampleValues[currentSample] <= aX;
-      ++currentSample
-    ) {
+    for (; currentSample !== lastSample && sampleValues[currentSample] <= aX; ++currentSample) {
       intervalStart += kSampleStepSize;
     }
     --currentSample;
 
     // Interpolate to provide an initial guess for t
-    const dist =
-      (aX - sampleValues[currentSample]) /
-      (sampleValues[currentSample + 1] - sampleValues[currentSample]);
+    const dist = (aX - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
     const guessForT = intervalStart + dist * kSampleStepSize;
     const initialSlope = getSlope(guessForT, mX1, mX2);
     if (initialSlope >= NEWTON_MIN_SLOPE) {
@@ -123,13 +114,7 @@ export function Bezier(mX1, mY1, mX2, mY2) {
     } else if (initialSlope === 0.0) {
       return guessForT;
     } else {
-      return binarySubdivide(
-        aX,
-        intervalStart,
-        intervalStart + kSampleStepSize,
-        mX1,
-        mX2
-      );
+      return binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
     }
   }
   return function BezierEasing(x) {

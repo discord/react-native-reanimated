@@ -7,9 +7,7 @@ import { ReduceMotion } from '../commonTypes';
  *   application. Configured with {@link ReduceMotion} enum.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/3.x/device/ReducedMotionConfig/
  */
-export declare function ReducedMotionConfig({
-  mode,
-}: {
-  mode: ReduceMotion;
+export declare function ReducedMotionConfig({ mode }: {
+    mode: ReduceMotion;
 }): null;
 //# sourceMappingURL=ReducedMotionConfig.d.ts.map

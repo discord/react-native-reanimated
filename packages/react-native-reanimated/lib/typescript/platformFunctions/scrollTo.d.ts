@@ -1,11 +1,6 @@
 import type { Component } from 'react';
 import type { AnimatedRef } from '../hook/commonTypes';
-type ScrollTo = <T extends Component>(
-  animatedRef: AnimatedRef<T>,
-  x: number,
-  y: number,
-  animated: boolean
-) => void;
+type ScrollTo = <T extends Component>(animatedRef: AnimatedRef<T>, x: number, y: number, animated: boolean) => void;
 /**
  * Lets you synchronously scroll to a given position of a `ScrollView`.
  *

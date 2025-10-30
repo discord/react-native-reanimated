@@ -1,16 +1,11 @@
 'use strict';
 
-import { SensorType } from '../../commonTypes.js';
-import { ReanimatedError } from '../../errors.js';
-import { logger } from '../../logger/index.js';
-import { mockedRequestAnimationFrame } from '../../mockedRequestAnimationFrame.js';
-import {
-  isChromeDebugger,
-  isJest,
-  isWeb,
-  isWindowAvailable,
-} from '../../PlatformChecker.js';
-import { WorkletsModule } from '../../worklets/index.js';
+import { SensorType } from "../../commonTypes.js";
+import { ReanimatedError } from "../../errors.js";
+import { logger } from "../../logger/index.js";
+import { mockedRequestAnimationFrame } from "../../mockedRequestAnimationFrame.js";
+import { isChromeDebugger, isJest, isWeb, isWindowAvailable } from "../../PlatformChecker.js";
+import { WorkletsModule } from "../../worklets/index.js";
 export function createJSReanimatedModule() {
   return new JSReanimated();
 }
@@ -18,10 +13,7 @@ export function createJSReanimatedModule() {
 // In Node.js environments (like when static rendering with Expo Router)
 // requestAnimationFrame is unavailable, so we use our mock.
 // It also has to be mocked for Jest purposes (see `initializeUIRuntime`).
-const requestAnimationFrameImpl =
-  isJest() || !globalThis.requestAnimationFrame
-    ? mockedRequestAnimationFrame
-    : globalThis.requestAnimationFrame;
+const requestAnimationFrameImpl = isJest() || !globalThis.requestAnimationFrame ? mockedRequestAnimationFrame : globalThis.requestAnimationFrame;
 class JSReanimated {
   /**
    * We keep the instance of `WorkletsModule` here to keep correct coupling of
@@ -36,24 +28,16 @@ class JSReanimated {
     requestAnimationFrameImpl(worklet);
   }
   createWorkletRuntime(_name, _initializer) {
-    throw new ReanimatedError(
-      'createWorkletRuntime is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('createWorkletRuntime is not available in JSReanimated.');
   }
   scheduleOnRuntime() {
-    throw new ReanimatedError(
-      'scheduleOnRuntime is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('scheduleOnRuntime is not available in JSReanimated.');
   }
   registerEventHandler(_eventHandler, _eventName, _emitterReactTag) {
-    throw new ReanimatedError(
-      'registerEventHandler is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('registerEventHandler is not available in JSReanimated.');
   }
   unregisterEventHandler(_) {
-    throw new ReanimatedError(
-      'unregisterEventHandler is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('unregisterEventHandler is not available in JSReanimated.');
   }
   enableLayoutAnimations() {
     if (isWeb()) {
@@ -83,25 +67,14 @@ class JSReanimated {
     }
     if (!(this.getSensorName(sensorType) in window)) {
       // https://w3c.github.io/sensors/#secure-context
-      logger.warn(
-        'Sensor is not available.' +
-          (isWeb() && location.protocol !== 'https:'
-            ? ' Make sure you use secure origin with `npx expo start --web --https`.'
-            : '') +
-          (this.platform === Platform.WEB_IOS
-            ? ' For iOS web, you will also have to also grant permission in the browser: https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2.'
-            : '')
-      );
+      logger.warn('Sensor is not available.' + (isWeb() && location.protocol !== 'https:' ? ' Make sure you use secure origin with `npx expo start --web --https`.' : '') + (this.platform === Platform.WEB_IOS ? ' For iOS web, you will also have to also grant permission in the browser: https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2.' : ''));
       return -1;
     }
     if (this.platform === undefined) {
       this.detectPlatform();
     }
     const sensor = this.initializeSensor(sensorType, interval);
-    sensor.addEventListener(
-      'reading',
-      this.getSensorCallback(sensor, sensorType, eventHandler)
-    );
+    sensor.addEventListener('reading', this.getSensorCallback(sensor, sensorType, eventHandler));
     sensor.start();
     this.sensors.set(this.nextSensorId, sensor);
     return this.nextSensorId++;
@@ -111,7 +84,11 @@ class JSReanimated {
       case SensorType.ACCELEROMETER:
       case SensorType.GRAVITY:
         return () => {
-          let { x, y, z } = sensor;
+          let {
+            x,
+            y,
+            z
+          } = sensor;
 
           // Web Android sensors have a different coordinate system than iOS
           if (this.platform === Platform.WEB_ANDROID) {
@@ -122,19 +99,23 @@ class JSReanimated {
             x,
             y,
             z,
-            interfaceOrientation: 0,
+            interfaceOrientation: 0
           });
         };
       case SensorType.GYROSCOPE:
       case SensorType.MAGNETIC_FIELD:
         return () => {
-          const { x, y, z } = sensor;
+          const {
+            x,
+            y,
+            z
+          } = sensor;
           // TODO TYPESCRIPT on web ShareableRef is the value itself so we call it directly
           eventHandler({
             x,
             y,
             z,
-            interfaceOrientation: 0,
+            interfaceOrientation: 0
           });
         };
       case SensorType.ROTATION:
@@ -147,15 +128,9 @@ class JSReanimated {
           }
 
           // reference: https://stackoverflow.com/questions/5782658/extracting-yaw-from-a-quaternion
-          const yaw = -Math.atan2(
-            2.0 * (qy * qz + qw * qx),
-            qw * qw - qx * qx - qy * qy + qz * qz
-          );
+          const yaw = -Math.atan2(2.0 * (qy * qz + qw * qx), qw * qw - qx * qx - qy * qy + qz * qz);
           const pitch = Math.sin(-2.0 * (qx * qz - qw * qy));
-          const roll = -Math.atan2(
-            2.0 * (qx * qy + qw * qz),
-            qw * qw + qx * qx - qy * qy - qz * qz
-          );
+          const roll = -Math.atan2(2.0 * (qx * qy + qw * qz), qw * qw + qx * qx - qy * qy - qz * qz);
           // TODO TYPESCRIPT on web ShareableRef is the value itself so we call it directly
           eventHandler({
             qw,
@@ -165,7 +140,7 @@ class JSReanimated {
             yaw,
             pitch,
             roll,
-            interfaceOrientation: 0,
+            interfaceOrientation: 0
           });
         };
     }
@@ -183,13 +158,9 @@ class JSReanimated {
     } else if (isJest()) {
       logger.warn('useAnimatedKeyboard is not available when using Jest.');
     } else if (isChromeDebugger()) {
-      logger.warn(
-        'useAnimatedKeyboard is not available when using Chrome Debugger.'
-      );
+      logger.warn('useAnimatedKeyboard is not available when using Chrome Debugger.');
     } else {
-      logger.warn(
-        'useAnimatedKeyboard is not available on this configuration.'
-      );
+      logger.warn('useAnimatedKeyboard is not available on this configuration.');
     }
     return -1;
   }
@@ -197,14 +168,11 @@ class JSReanimated {
     // noop
   }
   initializeSensor(sensorType, interval) {
-    const config =
-      interval <= 0
-        ? {
-            referenceFrame: 'device',
-          }
-        : {
-            frequency: 1000 / interval,
-          };
+    const config = interval <= 0 ? {
+      referenceFrame: 'device'
+    } : {
+      frequency: 1000 / interval
+    };
     switch (sensorType) {
       case SensorType.ACCELEROMETER:
         return new window.Accelerometer(config);
@@ -248,35 +216,27 @@ class JSReanimated {
     throw new ReanimatedError('getViewProp is not available in JSReanimated.');
   }
   configureProps() {
-    throw new ReanimatedError(
-      'configureProps is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('configureProps is not available in JSReanimated.');
   }
   executeOnUIRuntimeSync(_shareable) {
-    throw new ReanimatedError(
-      '`executeOnUIRuntimeSync` is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('`executeOnUIRuntimeSync` is not available in JSReanimated.');
   }
   markNodeAsRemovable(_shadowNodeWrapper) {
-    throw new ReanimatedError(
-      'markNodeAsRemovable is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('markNodeAsRemovable is not available in JSReanimated.');
   }
   unmarkNodeAsRemovable(_viewTag) {
-    throw new ReanimatedError(
-      'unmarkNodeAsRemovable is not available in JSReanimated.'
-    );
+    throw new ReanimatedError('unmarkNodeAsRemovable is not available in JSReanimated.');
   }
 }
 
 // Lack of this export breaks TypeScript generation since
 // an enum transpiles into JavaScript code.
 // ts-prune-ignore-next
-export let Platform = /*#__PURE__*/ (function (Platform) {
-  Platform['WEB_IOS'] = 'web iOS';
-  Platform['WEB_ANDROID'] = 'web Android';
-  Platform['WEB'] = 'web';
-  Platform['UNKNOWN'] = 'unknown';
+export let Platform = /*#__PURE__*/function (Platform) {
+  Platform["WEB_IOS"] = "web iOS";
+  Platform["WEB_ANDROID"] = "web Android";
+  Platform["WEB"] = "web";
+  Platform["UNKNOWN"] = "unknown";
   return Platform;
-})({});
+}({});
 //# sourceMappingURL=JSReanimated.js.map

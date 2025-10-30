@@ -1,10 +1,6 @@
 import type { AnimatableValue, AnimationCallback } from '../commonTypes';
 import type { SpringConfig } from './springUtils';
-type withSpringType = <T extends AnimatableValue>(
-  toValue: T,
-  userConfig?: SpringConfig,
-  callback?: AnimationCallback
-) => T;
+type withSpringType = <T extends AnimatableValue>(toValue: T, userConfig?: SpringConfig, callback?: AnimationCallback) => T;
 /**
  * Lets you create spring-based animations.
  *

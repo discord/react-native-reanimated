@@ -1,7 +1,7 @@
 'use strict';
 
-import { LayoutAnimationType } from '../../../commonTypes.js';
-import { getEasingByName } from '../Easing.web.js';
+import { LayoutAnimationType } from "../../../commonTypes.js";
+import { getEasingByName } from "../Easing.web.js";
 function resetStyle(component) {
   component.style.animationName = ''; // This line prevents unwanted entering animation
   component.style.position = 'absolute';
@@ -48,12 +48,7 @@ function prepareParent(element, dummy, animationConfig, transitionData) {
   element.addEventListener('animationcancel', animationCancelCallback);
   element.appendChild(dummy);
 }
-function prepareDummy(
-  element,
-  animationConfig,
-  transitionData,
-  dummyTransitionKeyframeName
-) {
+function prepareDummy(element, animationConfig, transitionData, dummyTransitionKeyframeName) {
   const dummyAnimationConfig = {
     animationName: dummyTransitionKeyframeName,
     animationType: LayoutAnimationType.LAYOUT,
@@ -61,32 +56,25 @@ function prepareDummy(
     delay: animationConfig.delay,
     easing: getEasingByName(transitionData.easingY),
     callback: null,
-    reversed: false,
+    reversed: false
   };
   const dummy = element.cloneNode(true);
   dummy.reanimatedDummy = true;
   resetStyle(dummy);
   return {
     dummy,
-    dummyAnimationConfig,
+    dummyAnimationConfig
   };
 }
-export function prepareCurvedTransition(
-  element,
-  animationConfig,
-  transitionData,
-  dummyTransitionKeyframeName
-) {
-  const { dummy, dummyAnimationConfig } = prepareDummy(
-    element,
-    animationConfig,
-    transitionData,
-    dummyTransitionKeyframeName
-  );
+export function prepareCurvedTransition(element, animationConfig, transitionData, dummyTransitionKeyframeName) {
+  const {
+    dummy,
+    dummyAnimationConfig
+  } = prepareDummy(element, animationConfig, transitionData, dummyTransitionKeyframeName);
   prepareParent(element, dummy, animationConfig, transitionData);
   return {
     dummy,
-    dummyAnimationConfig,
+    dummyAnimationConfig
   };
 }
 export function CurvedTransition(keyframeXName, keyframeYName, transitionData) {
@@ -94,33 +82,29 @@ export function CurvedTransition(keyframeXName, keyframeYName, transitionData) {
     name: keyframeXName,
     style: {
       0: {
-        transform: [
-          {
-            translateX: `${transitionData.translateX}px`,
-            scale: `${transitionData.scaleX},${transitionData.scaleY}`,
-          },
-        ],
-      },
+        transform: [{
+          translateX: `${transitionData.translateX}px`,
+          scale: `${transitionData.scaleX},${transitionData.scaleY}`
+        }]
+      }
     },
-    duration: 300,
+    duration: 300
   };
   const keyframeYObj = {
     name: keyframeYName,
     style: {
       0: {
-        transform: [
-          {
-            translateY: `${transitionData.translateY}px`,
-            scale: `${transitionData.scaleX},${transitionData.scaleY}`,
-          },
-        ],
-      },
+        transform: [{
+          translateY: `${transitionData.translateY}px`,
+          scale: `${transitionData.scaleX},${transitionData.scaleY}`
+        }]
+      }
     },
-    duration: 300,
+    duration: 300
   };
   return {
     firstKeyframeObj: keyframeXObj,
-    secondKeyframeObj: keyframeYObj,
+    secondKeyframeObj: keyframeYObj
   };
 }
 //# sourceMappingURL=Curved.web.js.map

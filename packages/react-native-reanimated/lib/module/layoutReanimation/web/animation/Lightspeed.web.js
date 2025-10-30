@@ -1,155 +1,125 @@
 'use strict';
 
-import { convertAnimationObjectToKeyframes } from '../animationParser.js';
+import { convertAnimationObjectToKeyframes } from "../animationParser.js";
 const DEFAULT_LIGHTSPEED_TIME = 0.3;
 export const LightSpeedInData = {
   LightSpeedInRight: {
     name: 'LightSpeedInRight',
     style: {
       0: {
-        transform: [
-          {
-            translateX: '100vw',
-            skewX: '-45deg',
-          },
-        ],
-        opacity: 0,
+        transform: [{
+          translateX: '100vw',
+          skewX: '-45deg'
+        }],
+        opacity: 0
       },
       70: {
-        transform: [
-          {
-            skewX: '10deg',
-          },
-        ],
+        transform: [{
+          skewX: '10deg'
+        }]
       },
       85: {
-        transform: [
-          {
-            skewX: '-5deg',
-          },
-        ],
+        transform: [{
+          skewX: '-5deg'
+        }]
       },
       100: {
-        transform: [
-          {
-            skewX: '0deg',
-          },
-        ],
-      },
+        transform: [{
+          skewX: '0deg'
+        }]
+      }
     },
-    duration: DEFAULT_LIGHTSPEED_TIME,
+    duration: DEFAULT_LIGHTSPEED_TIME
   },
   LightSpeedInLeft: {
     name: 'LightSpeedInLeft',
     style: {
       0: {
-        transform: [
-          {
-            translateX: '-100vw',
-            skewX: '45deg',
-          },
-        ],
-        opacity: 0,
+        transform: [{
+          translateX: '-100vw',
+          skewX: '45deg'
+        }],
+        opacity: 0
       },
       70: {
-        transform: [
-          {
-            skewX: '-10deg',
-          },
-        ],
+        transform: [{
+          skewX: '-10deg'
+        }]
       },
       85: {
-        transform: [
-          {
-            skewX: '5deg',
-          },
-        ],
+        transform: [{
+          skewX: '5deg'
+        }]
       },
       100: {
-        transform: [
-          {
-            skewX: '0deg',
-          },
-        ],
-      },
+        transform: [{
+          skewX: '0deg'
+        }]
+      }
     },
-    duration: DEFAULT_LIGHTSPEED_TIME,
-  },
+    duration: DEFAULT_LIGHTSPEED_TIME
+  }
 };
 export const LightSpeedOutData = {
   LightSpeedOutRight: {
     name: 'LightSpeedOutRight',
     style: {
       0: {
-        transform: [
-          {
-            translateX: '0vw',
-            skewX: '0deg',
-          },
-        ],
-        opacity: 1,
+        transform: [{
+          translateX: '0vw',
+          skewX: '0deg'
+        }],
+        opacity: 1
       },
       100: {
-        transform: [
-          {
-            translateX: '100vw',
-            skewX: '-45deg',
-          },
-        ],
-        opacity: 0,
-      },
+        transform: [{
+          translateX: '100vw',
+          skewX: '-45deg'
+        }],
+        opacity: 0
+      }
     },
-    duration: DEFAULT_LIGHTSPEED_TIME,
+    duration: DEFAULT_LIGHTSPEED_TIME
   },
   LightSpeedOutLeft: {
     name: 'LightSpeedOutLeft',
     style: {
       0: {
-        transform: [
-          {
-            translateX: '0vw',
-            skew: '0deg',
-          },
-        ],
-        opacity: 1,
+        transform: [{
+          translateX: '0vw',
+          skew: '0deg'
+        }],
+        opacity: 1
       },
       100: {
-        transform: [
-          {
-            translateX: '-100vw',
-            skew: '45deg',
-          },
-        ],
-        opacity: 0,
-      },
+        transform: [{
+          translateX: '-100vw',
+          skew: '45deg'
+        }],
+        opacity: 0
+      }
     },
-    duration: DEFAULT_LIGHTSPEED_TIME,
-  },
+    duration: DEFAULT_LIGHTSPEED_TIME
+  }
 };
 export const LightSpeedIn = {
   LightSpeedInRight: {
-    style: convertAnimationObjectToKeyframes(
-      LightSpeedInData.LightSpeedInRight
-    ),
-    duration: LightSpeedInData.LightSpeedInRight.duration,
+    style: convertAnimationObjectToKeyframes(LightSpeedInData.LightSpeedInRight),
+    duration: LightSpeedInData.LightSpeedInRight.duration
   },
   LightSpeedInLeft: {
     style: convertAnimationObjectToKeyframes(LightSpeedInData.LightSpeedInLeft),
-    duration: LightSpeedInData.LightSpeedInLeft.duration,
-  },
+    duration: LightSpeedInData.LightSpeedInLeft.duration
+  }
 };
 export const LightSpeedOut = {
   LightSpeedOutRight: {
-    style: convertAnimationObjectToKeyframes(
-      LightSpeedOutData.LightSpeedOutRight
-    ),
-    duration: LightSpeedOutData.LightSpeedOutRight.duration,
+    style: convertAnimationObjectToKeyframes(LightSpeedOutData.LightSpeedOutRight),
+    duration: LightSpeedOutData.LightSpeedOutRight.duration
   },
   LightSpeedOutLeft: {
-    style: convertAnimationObjectToKeyframes(
-      LightSpeedOutData.LightSpeedOutLeft
-    ),
-    duration: LightSpeedOutData.LightSpeedOutLeft.duration,
-  },
+    style: convertAnimationObjectToKeyframes(LightSpeedOutData.LightSpeedOutLeft),
+    duration: LightSpeedOutData.LightSpeedOutLeft.duration
+  }
 };
 //# sourceMappingURL=Lightspeed.web.js.map

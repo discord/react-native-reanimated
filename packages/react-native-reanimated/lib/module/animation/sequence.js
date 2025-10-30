@@ -1,7 +1,7 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
-import { defineAnimation, getReduceMotionForAnimation } from './util.js';
+import { logger } from "../logger/index.js";
+import { defineAnimation, getReduceMotionForAnimation } from "./util.js";
 
 /**
  * Lets you run animations in a sequence.
@@ -36,18 +36,18 @@ export function withSequence(_reduceMotionOrFirstAnimation, ..._animations) {
       'worklet';
 
       return {
-        onStart: (animation, value) => (animation.current = value),
+        onStart: (animation, value) => animation.current = value,
         onFrame: () => true,
         current: 0,
         animationIndex: 0,
-        reduceMotion: getReduceMotionForAnimation(reduceMotion),
+        reduceMotion: getReduceMotionForAnimation(reduceMotion)
       };
     });
   }
   return defineAnimation(_animations[0], () => {
     'worklet';
 
-    const animations = _animations.map((a) => {
+    const animations = _animations.map(a => {
       const result = typeof a === 'function' ? a() : a;
       result.finished = false;
       return result;
@@ -60,14 +60,14 @@ export function withSequence(_reduceMotionOrFirstAnimation, ..._animations) {
       }
       return index;
     }
-    const callback = (finished) => {
+    const callback = finished => {
       if (finished) {
         // we want to call the callback after every single animation
         // not after all of them
         return;
       }
       // this is going to be called only if sequence has been cancelled
-      animations.forEach((animation) => {
+      animations.forEach(animation => {
         if (typeof animation.callback === 'function' && !animation.finished) {
           animation.callback(finished);
         }
@@ -83,9 +83,7 @@ export function withSequence(_reduceMotionOrFirstAnimation, ..._animations) {
           currentAnim.callback(true /* finished */);
         }
         currentAnim.finished = true;
-        animation.animationIndex = findNextNonReducedMotionAnimationIndex(
-          animation.animationIndex + 1
-        );
+        animation.animationIndex = findNextNonReducedMotionAnimationIndex(animation.animationIndex + 1);
         if (animation.animationIndex < animations.length) {
           const nextAnim = animations[animation.animationIndex];
           nextAnim.onStart(nextAnim, currentAnim.current, now, currentAnim);
@@ -98,7 +96,7 @@ export function withSequence(_reduceMotionOrFirstAnimation, ..._animations) {
     function onStart(animation, value, now, previousAnimation) {
       // child animations inherit the setting, unless they already have it defined
       // they will have it defined only if the user used the `reduceMotion` prop
-      animations.forEach((anim) => {
+      animations.forEach(anim => {
         if (anim.reduceMotion === undefined) {
           anim.reduceMotion = animation.reduceMotion;
         }
@@ -117,7 +115,7 @@ export function withSequence(_reduceMotionOrFirstAnimation, ..._animations) {
       animationIndex: 0,
       current: animations[0].current,
       callback,
-      reduceMotion: getReduceMotionForAnimation(reduceMotion),
+      reduceMotion: getReduceMotionForAnimation(reduceMotion)
     };
   });
 }

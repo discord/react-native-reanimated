@@ -1,21 +1,17 @@
 'use strict';
 
-import { LayoutAnimationType, ReduceMotion } from '../../commonTypes.js';
-import { EasingNameSymbol } from '../../Easing.js';
-import { logger } from '../../logger/index.js';
-import { _updatePropsJS } from '../../ReanimatedModule/js-reanimated/index.js';
-import { ReducedMotionManager } from '../../ReducedMotion.js';
-import { Keyframe } from '../animationBuilder/index.js';
-import { setElementPosition, snapshots } from './componentStyle.js';
-import { Animations, TransitionType } from './config.js';
-import { TransitionGenerator } from './createAnimation.js';
-import { scheduleAnimationCleanup } from './domUtils.js';
-import {
-  getEasingByName,
-  maybeGetBezierEasing,
-  WebEasings,
-} from './Easing.web.js';
-import { prepareCurvedTransition } from './transition/Curved.web.js';
+import { LayoutAnimationType, ReduceMotion } from "../../commonTypes.js";
+import { EasingNameSymbol } from "../../Easing.js";
+import { logger } from "../../logger/index.js";
+import { _updatePropsJS } from "../../ReanimatedModule/js-reanimated/index.js";
+import { ReducedMotionManager } from "../../ReducedMotion.js";
+import { Keyframe } from "../animationBuilder/index.js";
+import { setElementPosition, snapshots } from "./componentStyle.js";
+import { Animations, TransitionType } from "./config.js";
+import { TransitionGenerator } from "./createAnimation.js";
+import { scheduleAnimationCleanup } from "./domUtils.js";
+import { getEasingByName, maybeGetBezierEasing, WebEasings } from "./Easing.web.js";
+import { prepareCurvedTransition } from "./transition/Curved.web.js";
 function getEasingFromConfig(config) {
   if (!config.easingV) {
     return getEasingByName('linear');
@@ -26,9 +22,7 @@ function getEasingFromConfig(config) {
   }
   const bezierEasing = maybeGetBezierEasing(config.easingV);
   if (!bezierEasing) {
-    logger.warn(
-      `Selected easing is not currently supported on web. Using linear easing instead.`
-    );
+    logger.warn(`Selected easing is not currently supported on web. Using linear easing instead.`);
     return getEasingByName('linear');
   }
   return bezierEasing;
@@ -42,9 +36,7 @@ function getDelayFromConfig(config) {
   if (!config.delayV) {
     return delay;
   }
-  return shouldRandomizeDelay
-    ? getRandomDelay(config.delayV)
-    : config.delayV / 1000;
+  return shouldRandomizeDelay ? getRandomDelay(config.delayV) : config.delayV / 1000;
 }
 export function getReducedMotionFromConfig(config) {
   if (!config.reduceMotionV) {
@@ -63,11 +55,8 @@ function getDurationFromConfig(config, animationName) {
   // Duration in keyframe has to be in seconds. However, when using `.duration()` modifier we pass it in miliseconds.
   // If `duration` was specified in config, we have to divide it by `1000`, otherwise we return value that is already in seconds.
 
-  const defaultDuration =
-    animationName in Animations ? Animations[animationName].duration : 0.3;
-  return config.durationV !== undefined
-    ? config.durationV / 1000
-    : defaultDuration;
+  const defaultDuration = animationName in Animations ? Animations[animationName].duration : 0.3;
+  return config.durationV !== undefined ? config.durationV / 1000 : defaultDuration;
 }
 function getCallbackFromConfig(config) {
   return config.callbackV !== undefined ? config.callbackV : null;
@@ -83,7 +72,7 @@ export function getProcessedConfig(animationName, animationType, config) {
     delay: getDelayFromConfig(config),
     easing: getEasingFromConfig(config),
     callback: getCallbackFromConfig(config),
-    reversed: getReversedFromConfig(config),
+    reversed: getReversedFromConfig(config)
   };
 }
 export function maybeModifyStyleForKeyframe(element, config) {
@@ -108,17 +97,17 @@ export function saveSnapshot(element) {
     left: rect.left,
     width: rect.width,
     height: rect.height,
-    scrollOffsets: getElementScrollValue(element),
+    scrollOffsets: getElementScrollValue(element)
   };
   snapshots.set(element, snapshot);
 }
-export function setElementAnimation(
-  element,
-  animationConfig,
-  shouldSavePosition = false,
-  parent = null
-) {
-  const { animationName, duration, delay, easing } = animationConfig;
+export function setElementAnimation(element, animationConfig, shouldSavePosition = false, parent = null) {
+  const {
+    animationName,
+    duration,
+    delay,
+    easing
+  } = animationConfig;
   const configureAnimation = () => {
     element.style.animationName = animationName;
     element.style.animationDuration = `${duration}s`;
@@ -139,7 +128,7 @@ export function setElementAnimation(
     }
   };
   let wasCallbackCalled = false;
-  const maybeCallCallback = (finished) => {
+  const maybeCallCallback = finished => {
     if (!wasCallbackCalled && animationConfig.callback) {
       animationConfig.callback(finished);
       wasCallbackCalled = true;
@@ -162,12 +151,9 @@ export function setElementAnimation(
   // Here we have to use `addEventListener` since element.onanimationcancel doesn't work on chrome
   element.onanimationstart = () => {
     if (animationConfig.animationType === LayoutAnimationType.ENTERING) {
-      _updatePropsJS(
-        {
-          visibility: 'initial',
-        },
-        element
-      );
+      _updatePropsJS({
+        visibility: 'initial'
+      }, element);
     }
     element.addEventListener('animationcancel', animationCancelHandler);
   };
@@ -181,12 +167,10 @@ export function setElementAnimation(
     });
   }
 }
-export function handleLayoutTransition(
-  element,
-  animationConfig,
-  transitionData
-) {
-  const { animationName } = animationConfig;
+export function handleLayoutTransition(element, animationConfig, transitionData) {
+  const {
+    animationName
+  } = animationConfig;
   let animationType;
   switch (animationName) {
     case 'LinearTransition':
@@ -211,15 +195,16 @@ export function handleLayoutTransition(
       animationType = TransitionType.LINEAR;
       break;
   }
-  const { transitionKeyframeName, dummyTransitionKeyframeName } =
-    TransitionGenerator(animationType, transitionData);
+  const {
+    transitionKeyframeName,
+    dummyTransitionKeyframeName
+  } = TransitionGenerator(animationType, transitionData);
   animationConfig.animationName = transitionKeyframeName;
   if (animationType === TransitionType.CURVED) {
-    const { dummy, dummyAnimationConfig } = prepareCurvedTransition(
-      element,
-      animationConfig,
-      transitionData,
-      dummyTransitionKeyframeName // In `CurvedTransition` it cannot be undefined
+    const {
+      dummy,
+      dummyAnimationConfig
+    } = prepareCurvedTransition(element, animationConfig, transitionData, dummyTransitionKeyframeName // In `CurvedTransition` it cannot be undefined
     );
     setElementAnimation(dummy, dummyAnimationConfig);
   }
@@ -229,7 +214,7 @@ function getElementScrollValue(element) {
   let current = element;
   const scrollOffsets = {
     scrollTopOffset: 0,
-    scrollLeftOffset: 0,
+    scrollLeftOffset: 0
   };
   while (current) {
     if (current.scrollTop !== 0 && scrollOffsets.scrollTopOffset === 0) {
@@ -252,10 +237,10 @@ export function handleExitingAnimation(element, animationConfig) {
   // Moving elements in DOM resets their scroll positions
   // so we memorize them here and restore after
   const scrollPositions = new Map();
-  const saveScrollPosition = (node) => {
+  const saveScrollPosition = node => {
     scrollPositions.set(node, {
       top: node.scrollTop,
-      left: node.scrollLeft,
+      left: node.scrollLeft
     });
     for (const child of Array.from(node.children)) {
       saveScrollPosition(child);
@@ -272,7 +257,7 @@ export function handleExitingAnimation(element, animationConfig) {
     dummy.appendChild(element.firstChild);
   }
   parent?.appendChild(dummy);
-  const restoreScrollPosition = (node) => {
+  const restoreScrollPosition = node => {
     const scrollPosition = scrollPositions.get(node === dummy ? element : node);
     if (scrollPosition) {
       node.scrollTop = scrollPosition.top;

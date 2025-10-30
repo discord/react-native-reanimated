@@ -21,9 +21,7 @@ export function registerReanimatedError() {
   'worklet';
 
   if (!_WORKLET) {
-    throw new Error(
-      '[Reanimated] registerReanimatedError() must be called on Worklet runtime'
-    );
+    throw new Error('[Reanimated] registerReanimatedError() must be called on Worklet runtime');
   }
   global.ReanimatedError = ReanimatedErrorConstructor;
 }
@@ -45,7 +43,7 @@ function getBundleOffset(error) {
 function processStack(stack) {
   const workletStackEntries = stack.match(/worklet_(\d+):(\d+):(\d+)/g);
   let result = stack;
-  workletStackEntries?.forEach((match) => {
+  workletStackEntries?.forEach(match => {
     const [, hash, origLine, origCol] = match.split(/:|_/).map(Number);
     const errorDetails = _workletStackDetails.get(hash);
     if (!errorDetails) {
@@ -59,7 +57,10 @@ function processStack(stack) {
   });
   return result;
 }
-export function reportFatalErrorOnJS({ message, stack }) {
+export function reportFatalErrorOnJS({
+  message,
+  stack
+}) {
   const error = new Error();
   error.message = message;
   error.stack = stack ? processStack(stack) : undefined;

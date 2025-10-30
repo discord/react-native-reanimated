@@ -1,50 +1,55 @@
 'use strict';
 
-import { isFabric } from '../PlatformChecker.js';
-import { updateProps } from '../updateProps/index.js';
+import { isFabric } from "../PlatformChecker.js";
+import { updateProps } from "../updateProps/index.js";
 const IS_FABRIC = isFabric();
 function createViewDescriptorPaper(screenId) {
   'worklet';
 
   return {
     tag: screenId,
-    name: 'RCTView',
+    name: 'RCTView'
   };
 }
 function createViewDescriptorFabric(screenId) {
   'worklet';
 
   return {
-    shadowNodeWrapper: screenId,
+    shadowNodeWrapper: screenId
   };
 }
-const createViewDescriptor = IS_FABRIC
-  ? createViewDescriptorFabric
-  : createViewDescriptorPaper;
+const createViewDescriptor = IS_FABRIC ? createViewDescriptorFabric : createViewDescriptorPaper;
 function applyStyleForTopScreen(screenTransitionConfig, event) {
   'worklet';
 
-  const { screenDimensions, topScreenId, screenTransition } =
-    screenTransitionConfig;
-  const { topScreenStyle: computeTopScreenStyle } = screenTransition;
+  const {
+    screenDimensions,
+    topScreenId,
+    screenTransition
+  } = screenTransitionConfig;
+  const {
+    topScreenStyle: computeTopScreenStyle
+  } = screenTransition;
   const topScreenStyle = computeTopScreenStyle(event, screenDimensions);
   const topScreenDescriptor = {
-    value: [createViewDescriptor(topScreenId)],
+    value: [createViewDescriptor(topScreenId)]
   };
   updateProps(topScreenDescriptor, topScreenStyle, undefined);
 }
 export function applyStyleForBelowTopScreen(screenTransitionConfig, event) {
   'worklet';
 
-  const { screenDimensions, belowTopScreenId, screenTransition } =
-    screenTransitionConfig;
-  const { belowTopScreenStyle: computeBelowTopScreenStyle } = screenTransition;
-  const belowTopScreenStyle = computeBelowTopScreenStyle(
-    event,
-    screenDimensions
-  );
+  const {
+    screenDimensions,
+    belowTopScreenId,
+    screenTransition
+  } = screenTransitionConfig;
+  const {
+    belowTopScreenStyle: computeBelowTopScreenStyle
+  } = screenTransition;
+  const belowTopScreenStyle = computeBelowTopScreenStyle(event, screenDimensions);
   const belowTopScreenDescriptor = {
-    value: [createViewDescriptor(belowTopScreenId)],
+    value: [createViewDescriptor(belowTopScreenId)]
   };
   updateProps(belowTopScreenDescriptor, belowTopScreenStyle, undefined);
 }

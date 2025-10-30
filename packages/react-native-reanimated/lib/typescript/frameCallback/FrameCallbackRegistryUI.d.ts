@@ -1,28 +1,22 @@
 type CallbackDetails = {
-  callback: (frameInfo: FrameInfo) => void;
-  startTime: number | null;
+    callback: (frameInfo: FrameInfo) => void;
+    startTime: number | null;
 };
 export type FrameInfo = {
-  timestamp: number;
-  timeSincePreviousFrame: number | null;
-  timeSinceFirstFrame: number;
+    timestamp: number;
+    timeSincePreviousFrame: number | null;
+    timeSinceFirstFrame: number;
 };
 export interface FrameCallbackRegistryUI {
-  frameCallbackRegistry: Map<number, CallbackDetails>;
-  activeFrameCallbacks: Set<number>;
-  previousFrameTimestamp: number | null;
-  runCallbacks: (callId: number) => void;
-  nextCallId: number;
-  registerFrameCallback: (
-    callback: (frameInfo: FrameInfo) => void,
-    callbackId: number
-  ) => void;
-  unregisterFrameCallback: (callbackId: number) => void;
-  manageStateFrameCallback: (callbackId: number, state: boolean) => void;
+    frameCallbackRegistry: Map<number, CallbackDetails>;
+    activeFrameCallbacks: Set<number>;
+    previousFrameTimestamp: number | null;
+    runCallbacks: (callId: number) => void;
+    nextCallId: number;
+    registerFrameCallback: (callback: (frameInfo: FrameInfo) => void, callbackId: number) => void;
+    unregisterFrameCallback: (callbackId: number) => void;
+    manageStateFrameCallback: (callbackId: number, state: boolean) => void;
 }
-export declare const prepareUIRegistry: import('../commonTypes').WorkletFunction<
-  [],
-  void
->;
+export declare const prepareUIRegistry: import("../commonTypes").WorkletFunction<[], void>;
 export {};
 //# sourceMappingURL=FrameCallbackRegistryUI.d.ts.map

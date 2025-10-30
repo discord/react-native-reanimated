@@ -1,6 +1,6 @@
 'use strict';
 
-import { logger } from './logger/index.js';
+import { logger } from "./logger/index.js";
 const mockTargetValues = {
   targetOriginX: 0,
   targetOriginY: 0,
@@ -17,51 +17,30 @@ const mockTargetValues = {
   currentHeight: 0,
   currentGlobalOriginX: 0,
   currentGlobalOriginY: 0,
-  currentBorderRadius: 0,
+  currentBorderRadius: 0
 };
 function getCommonProperties(layoutStyle, componentStyle) {
-  let componentStyleFlat = Array.isArray(componentStyle)
-    ? componentStyle.flat()
-    : [componentStyle];
+  let componentStyleFlat = Array.isArray(componentStyle) ? componentStyle.flat() : [componentStyle];
   componentStyleFlat = componentStyleFlat.filter(Boolean);
-  componentStyleFlat = componentStyleFlat.map((style) =>
-    'initial' in style
-      ? style.initial.value // Include properties of animated style
-      : style
-  );
-  const componentStylesKeys = componentStyleFlat.flatMap((style) =>
-    Object.keys(style)
-  );
-  const commonKeys = Object.keys(layoutStyle).filter((key) =>
-    componentStylesKeys.includes(key)
-  );
+  componentStyleFlat = componentStyleFlat.map(style => 'initial' in style ? style.initial.value // Include properties of animated style
+  : style);
+  const componentStylesKeys = componentStyleFlat.flatMap(style => Object.keys(style));
+  const commonKeys = Object.keys(layoutStyle).filter(key => componentStylesKeys.includes(key));
   return commonKeys;
 }
-function maybeReportOverwrittenProperties(
-  layoutAnimationStyle,
-  style,
-  displayName
-) {
+function maybeReportOverwrittenProperties(layoutAnimationStyle, style, displayName) {
   const commonProperties = getCommonProperties(layoutAnimationStyle, style);
   if (commonProperties.length > 0) {
-    logger.warn(
-      `${commonProperties.length === 1 ? 'Property' : 'Properties'} "${commonProperties.join(', ')}" of ${displayName} may be overwritten by a layout animation. Please wrap your component with an animated view and apply the layout animation on the wrapper.`
-    );
+    logger.warn(`${commonProperties.length === 1 ? 'Property' : 'Properties'} "${commonProperties.join(', ')}" of ${displayName} may be overwritten by a layout animation. Please wrap your component with an animated view and apply the layout animation on the wrapper.`);
   }
 }
 export function maybeBuild(layoutAnimationOrBuilder, style, displayName) {
-  const isAnimationBuilder = (value) =>
-    'build' in layoutAnimationOrBuilder &&
-    typeof layoutAnimationOrBuilder.build === 'function';
+  const isAnimationBuilder = value => 'build' in layoutAnimationOrBuilder && typeof layoutAnimationOrBuilder.build === 'function';
   if (isAnimationBuilder(layoutAnimationOrBuilder)) {
     const animationFactory = layoutAnimationOrBuilder.build();
     if (__DEV__ && style) {
       const layoutAnimation = animationFactory(mockTargetValues);
-      maybeReportOverwrittenProperties(
-        layoutAnimation.animations,
-        style,
-        displayName
-      );
+      maybeReportOverwrittenProperties(layoutAnimation.animations, style, displayName);
     }
     return animationFactory;
   } else {

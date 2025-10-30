@@ -1,9 +1,9 @@
 'use strict';
 
 import { useEffect, useRef } from 'react';
-import { initialUpdaterRun } from '../animation/index.js';
-import { makeMutable, startMapper, stopMapper } from '../core.js';
-import { shouldBeUseWeb } from '../PlatformChecker.js';
+import { initialUpdaterRun } from "../animation/index.js";
+import { makeMutable, startMapper, stopMapper } from "../core.js";
+import { shouldBeUseWeb } from "../PlatformChecker.js";
 
 /**
  * Lets you create new shared values based on existing ones while keeping them

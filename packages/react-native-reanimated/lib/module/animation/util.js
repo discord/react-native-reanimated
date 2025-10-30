@@ -1,30 +1,14 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 'use strict';
 
-import {
-  clampRGBA,
-  convertToRGBA,
-  isColor,
-  rgbaArrayToRGBAColor,
-  toGammaSpace,
-  toLinearSpace,
-} from '../Colors.js';
-import { isWorkletFunction, ReduceMotion } from '../commonTypes.js';
-import { ReanimatedError } from '../errors.js';
-import { logger } from '../logger/index.js';
-import { shouldBeUseWeb } from '../PlatformChecker.js';
-import { ReducedMotionManager } from '../ReducedMotion.js';
-import { runOnUI } from '../threads.js';
-import {
-  addMatrices,
-  decomposeMatrixIntoMatricesAndAngles,
-  flatten,
-  getRotationMatrix,
-  isAffineMatrixFlat,
-  multiplyMatrices,
-  scaleMatrix,
-  subtractMatrices,
-} from './transformationMatrix/matrixUtils.js';
+import { clampRGBA, convertToRGBA, isColor, rgbaArrayToRGBAColor, toGammaSpace, toLinearSpace } from "../Colors.js";
+import { isWorkletFunction, ReduceMotion } from "../commonTypes.js";
+import { ReanimatedError } from "../errors.js";
+import { logger } from "../logger/index.js";
+import { shouldBeUseWeb } from "../PlatformChecker.js";
+import { ReducedMotionManager } from "../ReducedMotion.js";
+import { runOnUI } from "../threads.js";
+import { addMatrices, decomposeMatrixIntoMatricesAndAngles, flatten, getRotationMatrix, isAffineMatrixFlat, multiplyMatrices, scaleMatrix, subtractMatrices } from "./transformationMatrix/matrixUtils.js";
 let IN_STYLE_UPDATER = false;
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 const LAYOUT_ANIMATION_SUPPORTED_PROPS = {
@@ -37,7 +21,7 @@ const LAYOUT_ANIMATION_SUPPORTED_PROPS = {
   globalOriginY: true,
   opacity: true,
   transform: true,
-  backgroundColor: true,
+  backgroundColor: true
 };
 export function isValidLayoutAnimationProp(prop) {
   'worklet';
@@ -45,9 +29,7 @@ export function isValidLayoutAnimationProp(prop) {
   return prop in LAYOUT_ANIMATION_SUPPORTED_PROPS;
 }
 if (__DEV__ && ReducedMotionManager.jsValue) {
-  logger.warn(
-    `Reduced motion setting is enabled on this device. This warning is visible only in the development mode. Some animations will be disabled by default. You can override the behavior for individual animations, see https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#reduced-motion-setting-is-enabled-on-this-device.`
-  );
+  logger.warn(`Reduced motion setting is enabled on this device. This warning is visible only in the development mode. Some animations will be disabled by default. You can override the behavior for individual animations, see https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#reduced-motion-setting-is-enabled-on-this-device.`);
 }
 export function assertEasingIsWorklet(easing) {
   'worklet';
@@ -66,9 +48,7 @@ export function assertEasingIsWorklet(easing) {
     return;
   }
   if (!isWorkletFunction(easing)) {
-    throw new ReanimatedError(
-      'The easing function is not a worklet. Please make sure you import `Easing` from react-native-reanimated.'
-    );
+    throw new ReanimatedError('The easing function is not a worklet. Please make sure you import `Easing` from react-native-reanimated.');
   }
 }
 export function initialUpdaterRun(updater) {
@@ -81,9 +61,7 @@ export function recognizePrefixSuffix(value) {
   'worklet';
 
   if (typeof value === 'string') {
-    const match = value.match(
-      /([A-Za-z]*)(-?\d*\.?\d*)([eE][-+]?[0-9]+)?([A-Za-z%]*)/
-    );
+    const match = value.match(/([A-Za-z]*)(-?\d*\.?\d*)([eE][-+]?[0-9]+)?([A-Za-z%]*)/);
     if (!match) {
       throw new ReanimatedError("Couldn't parse animation value.");
     }
@@ -94,11 +72,11 @@ export function recognizePrefixSuffix(value) {
     return {
       prefix,
       suffix,
-      strippedValue: parseFloat(number),
+      strippedValue: parseFloat(number)
     };
   } else {
     return {
-      strippedValue: value,
+      strippedValue: value
     };
   }
 }
@@ -111,9 +89,7 @@ const isReduceMotionOnUI = ReducedMotionManager.uiValue;
 export function getReduceMotionFromConfig(config) {
   'worklet';
 
-  return !config || config === ReduceMotion.System
-    ? isReduceMotionOnUI.value
-    : config === ReduceMotion.Always;
+  return !config || config === ReduceMotion.System ? isReduceMotionOnUI.value : config === ReduceMotion.Always;
 }
 
 /**
@@ -156,20 +132,19 @@ function decorateAnimation(animation) {
   }
   const animationCopy = Object.assign({}, animation);
   delete animationCopy.callback;
-  const prefNumberSuffOnStart = (
-    animation,
-    value,
-    timestamp,
-    previousAnimation
-  ) => {
+  const prefNumberSuffOnStart = (animation, value, timestamp, previousAnimation) => {
     // recognize prefix, suffix, and updates stripped value on animation start
-    const { prefix, suffix, strippedValue } = recognizePrefixSuffix(value);
+    const {
+      prefix,
+      suffix,
+      strippedValue
+    } = recognizePrefixSuffix(value);
     animation.__prefix = prefix;
     animation.__suffix = suffix;
     animation.strippedCurrent = strippedValue;
-    const { strippedValue: strippedToValue } = recognizePrefixSuffix(
-      animation.toValue
-    );
+    const {
+      strippedValue: strippedToValue
+    } = recognizePrefixSuffix(animation.toValue);
     animation.current = strippedValue;
     animation.startValue = strippedValue;
     animation.toValue = strippedToValue;
@@ -177,34 +152,26 @@ function decorateAnimation(animation) {
       const {
         prefix: paPrefix,
         suffix: paSuffix,
-        strippedValue: paStrippedValue,
+        strippedValue: paStrippedValue
       } = recognizePrefixSuffix(previousAnimation.current);
       previousAnimation.current = paStrippedValue;
       previousAnimation.__prefix = paPrefix;
       previousAnimation.__suffix = paSuffix;
     }
     baseOnStart(animation, strippedValue, timestamp, previousAnimation);
-    animation.current =
-      (animation.__prefix ?? '') +
-      animation.current +
-      (animation.__suffix ?? '');
+    animation.current = (animation.__prefix ?? '') + animation.current + (animation.__suffix ?? '');
     if (previousAnimation && previousAnimation !== animation) {
-      previousAnimation.current =
-        (previousAnimation.__prefix ?? '') +
-        // FIXME
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        previousAnimation.current +
-        (previousAnimation.__suffix ?? '');
+      previousAnimation.current = (previousAnimation.__prefix ?? '') +
+      // FIXME
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      previousAnimation.current + (previousAnimation.__suffix ?? '');
     }
   };
   const prefNumberSuffOnFrame = (animation, timestamp) => {
     animation.current = animation.strippedCurrent;
     const res = baseOnFrame(animation, timestamp);
     animation.strippedCurrent = animation.current;
-    animation.current =
-      (animation.__prefix ?? '') +
-      animation.current +
-      (animation.__suffix ?? '');
+    animation.current = (animation.__prefix ?? '') + animation.current + (animation.__suffix ?? '');
     return res;
   };
   const tab = ['R', 'G', 'B', 'A'];
@@ -224,12 +191,7 @@ function decorateAnimation(animation) {
       animation[i] = Object.assign({}, animationCopy);
       animation[i].current = RGBACurrent[index];
       animation[i].toValue = RGBAToValue ? RGBAToValue[index] : undefined;
-      animation[i].onStart(
-        animation[i],
-        RGBAValue[index],
-        timestamp,
-        previousAnimation ? previousAnimation[i] : undefined
-      );
+      animation[i].onStart(animation[i], RGBAValue[index], timestamp, previousAnimation ? previousAnimation[i] : undefined);
       res.push(animation[i].current);
     });
     animation.unroundedCurrent = res;
@@ -243,7 +205,7 @@ function decorateAnimation(animation) {
     let finished = true;
     // We must restore nonscale current to ever end the animation.
     animation.current = animation.nonscaledCurrent;
-    tab.forEach((i) => {
+    tab.forEach(i => {
       const result = animation[i].onFrame(animation[i], timestamp);
       // We really need to assign this value to result, instead of passing it directly - otherwise once "finished" is false, onFrame won't be called
       finished = finished && result;
@@ -256,12 +218,7 @@ function decorateAnimation(animation) {
     animation.current = rgbaArrayToRGBAColor(toGammaSpace(res));
     return finished;
   };
-  const transformationMatrixOnStart = (
-    animation,
-    value,
-    timestamp,
-    previousAnimation
-  ) => {
+  const transformationMatrixOnStart = (animation, value, timestamp, previousAnimation) => {
     const toValue = animation.toValue;
     animation.startMatrices = decomposeMatrixIntoMatricesAndAngles(value);
     animation.stopMatrices = decomposeMatrixIntoMatricesAndAngles(toValue);
@@ -273,12 +230,7 @@ function decorateAnimation(animation) {
     animation[0] = Object.assign({}, animationCopy);
     animation[0].current = 0;
     animation[0].toValue = 100;
-    animation[0].onStart(
-      animation[0],
-      0,
-      timestamp,
-      previousAnimation ? previousAnimation[0] : undefined
-    );
+    animation[0].onStart(animation[0], 0, timestamp, previousAnimation ? previousAnimation[0] : undefined);
     animation.current = value;
   };
   const transformationMatrixOnFrame = (animation, timestamp) => {
@@ -289,40 +241,17 @@ function decorateAnimation(animation) {
     const progress = animation[0].current / 100;
     const transforms = ['translationMatrix', 'scaleMatrix', 'skewMatrix'];
     const mappedTransforms = [];
-    transforms.forEach((key, _) =>
-      mappedTransforms.push(
-        applyProgressToMatrix(
-          progress,
-          animation.startMatrices[key],
-          animation.stopMatrices[key]
-        )
-      )
-    );
+    transforms.forEach((key, _) => mappedTransforms.push(applyProgressToMatrix(progress, animation.startMatrices[key], animation.stopMatrices[key])));
     const [currentTranslation, currentScale, skewMatrix] = mappedTransforms;
     const rotations = ['x', 'y', 'z'];
     const mappedRotations = [];
     rotations.forEach((key, _) => {
-      const angle = applyProgressToNumber(
-        progress,
-        animation.startMatrices['r' + key],
-        animation.stopMatrices['r' + key]
-      );
+      const angle = applyProgressToNumber(progress, animation.startMatrices['r' + key], animation.stopMatrices['r' + key]);
       mappedRotations.push(getRotationMatrix(angle, key));
     });
     const [rotationMatrixX, rotationMatrixY, rotationMatrixZ] = mappedRotations;
-    const rotationMatrix = multiplyMatrices(
-      rotationMatrixX,
-      multiplyMatrices(rotationMatrixY, rotationMatrixZ)
-    );
-    const updated = flatten(
-      multiplyMatrices(
-        multiplyMatrices(
-          currentScale,
-          multiplyMatrices(skewMatrix, rotationMatrix)
-        ),
-        currentTranslation
-      )
-    );
+    const rotationMatrix = multiplyMatrices(rotationMatrixX, multiplyMatrices(rotationMatrixY, rotationMatrixZ));
+    const updated = flatten(multiplyMatrices(multiplyMatrices(currentScale, multiplyMatrices(skewMatrix, rotationMatrix)), currentTranslation));
     animation.current = updated;
     return finished;
   };
@@ -331,12 +260,7 @@ function decorateAnimation(animation) {
       animation[i] = Object.assign({}, animationCopy);
       animation[i].current = v;
       animation[i].toValue = animation.toValue[i];
-      animation[i].onStart(
-        animation[i],
-        v,
-        timestamp,
-        previousAnimation ? previousAnimation[i] : undefined
-      );
+      animation[i].onStart(animation[i], v, timestamp, previousAnimation ? previousAnimation[i] : undefined);
     });
     animation.current = [...value];
   };
@@ -356,12 +280,7 @@ function decorateAnimation(animation) {
       animation[key].onStart = animation.onStart;
       animation[key].current = value[key];
       animation[key].toValue = animation.toValue[key];
-      animation[key].onStart(
-        animation[key],
-        value[key],
-        timestamp,
-        previousAnimation ? previousAnimation[key] : undefined
-      );
+      animation[key].onStart(animation[key], value[key], timestamp, previousAnimation ? previousAnimation[key] : undefined);
     }
     animation.current = value;
   };
@@ -397,12 +316,7 @@ function decorateAnimation(animation) {
       animation.onFrame = colorOnFrame;
       return;
     } else if (isAffineMatrixFlat(value)) {
-      transformationMatrixOnStart(
-        animation,
-        value,
-        timestamp,
-        previousAnimation
-      );
+      transformationMatrixOnStart(animation, value, timestamp, previousAnimation);
       animation.onFrame = transformationMatrixOnFrame;
       return;
     } else if (Array.isArray(value)) {
@@ -469,7 +383,5 @@ function cancelAnimationWeb(sharedValue) {
  *   cancel.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/core/cancelAnimation
  */
-export const cancelAnimation = SHOULD_BE_USE_WEB
-  ? cancelAnimationWeb
-  : cancelAnimationNative;
+export const cancelAnimation = SHOULD_BE_USE_WEB ? cancelAnimationWeb : cancelAnimationNative;
 //# sourceMappingURL=util.js.map

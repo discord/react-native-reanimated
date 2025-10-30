@@ -25,7 +25,7 @@ export function getRelativeCoords(animatedRef, absoluteX, absoluteY) {
   }
   return {
     x: absoluteX - parentCoords.pageX,
-    y: absoluteY - parentCoords.pageY,
+    y: absoluteY - parentCoords.pageY
   };
 }
 //# sourceMappingURL=getRelativeCoords.js.map

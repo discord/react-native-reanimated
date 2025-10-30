@@ -1,15 +1,12 @@
 'use strict';
 
-import { isWorkletFunction } from './commonTypes.js';
-import { ReanimatedError, registerWorkletStackDetails } from './errors.js';
-import { logger } from './logger/index.js';
-import { jsVersion } from './platform-specific/jsVersion.js';
-import { shouldBeUseWeb } from './PlatformChecker.js';
-import {
-  shareableMappingCache,
-  shareableMappingFlag,
-} from './shareableMappingCache.js';
-import { WorkletsModule } from './worklets/index.js';
+import { isWorkletFunction } from "./commonTypes.js";
+import { ReanimatedError, registerWorkletStackDetails } from "./errors.js";
+import { logger } from "./logger/index.js";
+import { jsVersion } from "./platform-specific/jsVersion.js";
+import { shouldBeUseWeb } from "./PlatformChecker.js";
+import { shareableMappingCache, shareableMappingFlag } from "./shareableMappingCache.js";
+import { WorkletsModule } from "./worklets/index.js";
 
 // for web/chrome debugger/jest environments this file provides a stub implementation
 // where no shareable references are used. Instead, the objects themselves are used
@@ -49,51 +46,28 @@ const INACCESSIBLE_OBJECT = {
   __init: () => {
     'worklet';
 
-    return new Proxy(
-      {},
-      {
-        get: (_, prop) => {
-          if (
-            prop === '_isReanimatedSharedValue' ||
-            prop === '__remoteFunction'
-          ) {
-            // not very happy about this check here, but we need to allow for
-            // "inaccessible" objects to be tested with isSharedValue check
-            // as it is being used in the mappers when extracting inputs recursively
-            // as well as with isRemoteFunction when cloning objects recursively.
-            // Apparently we can't check if a key exists there as HostObjects always
-            // return true for such tests, so the only possibility for us is to
-            // actually access that key and see if it is set to true. We therefore
-            // need to allow for this key to be accessed here.
-            return false;
-          }
-          throw new ReanimatedError(
-            `Trying to access property \`${String(prop)}\` of an object which cannot be sent to the UI runtime.`
-          );
-        },
-        set: () => {
-          throw new ReanimatedError(
-            'Trying to write to an object which cannot be sent to the UI runtime.'
-          );
-        },
+    return new Proxy({}, {
+      get: (_, prop) => {
+        if (prop === '_isReanimatedSharedValue' || prop === '__remoteFunction') {
+          // not very happy about this check here, but we need to allow for
+          // "inaccessible" objects to be tested with isSharedValue check
+          // as it is being used in the mappers when extracting inputs recursively
+          // as well as with isRemoteFunction when cloning objects recursively.
+          // Apparently we can't check if a key exists there as HostObjects always
+          // return true for such tests, so the only possibility for us is to
+          // actually access that key and see if it is set to true. We therefore
+          // need to allow for this key to be accessed here.
+          return false;
+        }
+        throw new ReanimatedError(`Trying to access property \`${String(prop)}\` of an object which cannot be sent to the UI runtime.`);
+      },
+      set: () => {
+        throw new ReanimatedError('Trying to write to an object which cannot be sent to the UI runtime.');
       }
-    );
-  },
+    });
+  }
 };
-const VALID_ARRAY_VIEWS_NAMES = [
-  'Int8Array',
-  'Uint8Array',
-  'Uint8ClampedArray',
-  'Int16Array',
-  'Uint16Array',
-  'Int32Array',
-  'Uint32Array',
-  'Float32Array',
-  'Float64Array',
-  'BigInt64Array',
-  'BigUint64Array',
-  'DataView',
-];
+const VALID_ARRAY_VIEWS_NAMES = ['Int8Array', 'Uint8Array', 'Uint8ClampedArray', 'Int16Array', 'Uint16Array', 'Int32Array', 'Uint32Array', 'Float32Array', 'Float64Array', 'BigInt64Array', 'BigUint64Array', 'DataView'];
 const DETECT_CYCLIC_OBJECT_DEPTH_THRESHOLD = 30;
 // Below variable stores object that we process in makeShareableCloneRecursive at the specified depth.
 // We use it to check if later on the function reenters with the same object
@@ -101,15 +75,11 @@ let processedObjectAtThresholdDepth;
 function makeShareableCloneRecursiveWeb(value) {
   return value;
 }
-function makeShareableCloneRecursiveNative(
-  value,
-  shouldPersistRemote = false,
-  depth = 0
-) {
+function makeShareableCloneRecursiveNative(value, shouldPersistRemote = false, depth = 0) {
   detectCyclicObject(value, depth);
   const isObject = typeof value === 'object';
   const isFunction = typeof value === 'function';
-  if ((!isObject && !isFunction) || value === null) {
+  if (!isObject && !isFunction || value === null) {
     return clonePrimitive(value, shouldPersistRemote);
   }
   const cached = getFromCache(value);
@@ -149,9 +119,7 @@ function makeShareableCloneRecursiveNative(
   }
   return inaccessibleObject(value);
 }
-export const makeShareableCloneRecursive = SHOULD_BE_USE_WEB
-  ? makeShareableCloneRecursiveWeb
-  : makeShareableCloneRecursiveNative;
+export const makeShareableCloneRecursive = SHOULD_BE_USE_WEB ? makeShareableCloneRecursiveWeb : makeShareableCloneRecursiveNative;
 function detectCyclicObject(value, depth) {
   if (depth >= DETECT_CYCLIC_OBJECT_DEPTH_THRESHOLD) {
     // if we reach certain recursion depth we suspect that we are dealing with a cyclic object.
@@ -162,9 +130,7 @@ function detectCyclicObject(value, depth) {
     if (depth === DETECT_CYCLIC_OBJECT_DEPTH_THRESHOLD) {
       processedObjectAtThresholdDepth = value;
     } else if (value === processedObjectAtThresholdDepth) {
-      throw new ReanimatedError(
-        'Trying to convert a cyclic object to a shareable. This is not supported.'
-      );
+      throw new ReanimatedError('Trying to convert a cyclic object to a shareable. This is not supported.');
     }
   } else {
     processedObjectAtThresholdDepth = undefined;
@@ -174,25 +140,15 @@ function clonePrimitive(value, shouldPersistRemote) {
   return WorkletsModule.makeShareableClone(value, shouldPersistRemote);
 }
 function cloneArray(value, shouldPersistRemote, depth) {
-  const clonedElements = value.map((element) =>
-    makeShareableCloneRecursive(element, shouldPersistRemote, depth + 1)
-  );
-  const clone = WorkletsModule.makeShareableClone(
-    clonedElements,
-    shouldPersistRemote,
-    value
-  );
+  const clonedElements = value.map(element => makeShareableCloneRecursive(element, shouldPersistRemote, depth + 1));
+  const clone = WorkletsModule.makeShareableClone(clonedElements, shouldPersistRemote, value);
   shareableMappingCache.set(value, clone);
   shareableMappingCache.set(clone);
   freezeObjectInDev(value);
   return clone;
 }
 function cloneRemoteFunction(value, shouldPersistRemote) {
-  const clone = WorkletsModule.makeShareableClone(
-    value,
-    shouldPersistRemote,
-    value
-  );
+  const clone = WorkletsModule.makeShareableClone(value, shouldPersistRemote, value);
   shareableMappingCache.set(value, clone);
   shareableMappingCache.set(clone);
   freezeObjectInDev(value);
@@ -202,11 +158,7 @@ function cloneHostObject(value, shouldPersistRemote) {
   // for host objects we pass the reference to the object as shareable and
   // then recreate new host object wrapping the same instance on the UI thread.
   // there is no point of iterating over keys as we do for regular objects.
-  const clone = WorkletsModule.makeShareableClone(
-    value,
-    shouldPersistRemote,
-    value
-  );
+  const clone = WorkletsModule.makeShareableClone(value, shouldPersistRemote, value);
   shareableMappingCache.set(value, clone);
   shareableMappingCache.set(clone);
   return clone;
@@ -234,27 +186,16 @@ Offending code was: \`${getWorkletCode(value)}\``);
   // worklet code, source map, and location, will always be
   // serialized/deserialized once.
   const clonedProps = {};
-  clonedProps.__initData = makeShareableCloneRecursive(
-    value.__initData,
-    true,
-    depth + 1
-  );
+  clonedProps.__initData = makeShareableCloneRecursive(value.__initData, true, depth + 1);
   for (const [key, element] of Object.entries(value)) {
     if (key === '__initData' && clonedProps.__initData !== undefined) {
       continue;
     }
-    clonedProps[key] = makeShareableCloneRecursive(
-      element,
-      shouldPersistRemote,
-      depth + 1
-    );
+    clonedProps[key] = makeShareableCloneRecursive(element, shouldPersistRemote, depth + 1);
   }
-  const clone = WorkletsModule.makeShareableClone(
-    clonedProps,
-    // retain all worklets
-    true,
-    value
-  );
+  const clone = WorkletsModule.makeShareableClone(clonedProps,
+  // retain all worklets
+  true, value);
   shareableMappingCache.set(value, clone);
   shareableMappingCache.set(clone);
   freezeObjectInDev(value);
@@ -267,7 +208,7 @@ function cloneContextObject(value) {
       'worklet';
 
       return workletContextObjectFactory();
-    },
+    }
   });
   shareableMappingCache.set(value, handle);
   return handle;
@@ -278,17 +219,9 @@ function clonePlainJSObject(value, shouldPersistRemote, depth) {
     if (key === '__initData' && clonedProps.__initData !== undefined) {
       continue;
     }
-    clonedProps[key] = makeShareableCloneRecursive(
-      element,
-      shouldPersistRemote,
-      depth + 1
-    );
+    clonedProps[key] = makeShareableCloneRecursive(element, shouldPersistRemote, depth + 1);
   }
-  const clone = WorkletsModule.makeShareableClone(
-    clonedProps,
-    shouldPersistRemote,
-    value
-  );
+  const clone = WorkletsModule.makeShareableClone(clonedProps, shouldPersistRemote, value);
   shareableMappingCache.set(value, clone);
   shareableMappingCache.set(clone);
   freezeObjectInDev(value);
@@ -302,13 +235,17 @@ function cloneRegExp(value) {
       'worklet';
 
       return new RegExp(pattern, flags);
-    },
+    }
   });
   shareableMappingCache.set(value, handle);
   return handle;
 }
 function cloneError(value) {
-  const { name, message, stack } = value;
+  const {
+    name,
+    message,
+    stack
+  } = value;
   const handle = makeShareableCloneRecursive({
     __init: () => {
       'worklet';
@@ -319,17 +256,13 @@ function cloneError(value) {
       error.message = message;
       error.stack = stack;
       return error;
-    },
+    }
   });
   shareableMappingCache.set(value, handle);
   return handle;
 }
 function cloneArrayBuffer(value, shouldPersistRemote) {
-  const clone = WorkletsModule.makeShareableClone(
-    value,
-    shouldPersistRemote,
-    value
-  );
+  const clone = WorkletsModule.makeShareableClone(value, shouldPersistRemote, value);
   shareableMappingCache.set(value, clone);
   shareableMappingCache.set(clone);
   return clone;
@@ -342,18 +275,14 @@ function cloneArrayBufferView(value) {
       'worklet';
 
       if (!VALID_ARRAY_VIEWS_NAMES.includes(typeName)) {
-        throw new ReanimatedError(
-          `[Reanimated] Invalid array view name \`${typeName}\`.`
-        );
+        throw new ReanimatedError(`[Reanimated] Invalid array view name \`${typeName}\`.`);
       }
       const constructor = global[typeName];
       if (constructor === undefined) {
-        throw new ReanimatedError(
-          `[Reanimated] Constructor for \`${typeName}\` not found.`
-        );
+        throw new ReanimatedError(`[Reanimated] Constructor for \`${typeName}\` not found.`);
       }
       return new constructor(buffer);
-    },
+    }
   });
   shareableMappingCache.set(value, handle);
   return handle;
@@ -419,7 +348,7 @@ function freezeObjectInDev(value) {
         logger.warn(`Tried to modify key \`${key}\` of an object which has been already passed to a worklet. See 
 https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#tried-to-modify-key-of-an-object-which-has-been-converted-to-a-shareable 
 for more details.`);
-      },
+      }
     });
   });
   Object.preventExtensions(value);
@@ -434,10 +363,7 @@ export function makeShareableCloneOnUIRecursive(value) {
   }
   // eslint-disable-next-line @typescript-eslint/no-shadow
   function cloneRecursive(value) {
-    if (
-      (typeof value === 'object' && value !== null) ||
-      typeof value === 'function'
-    ) {
+    if (typeof value === 'object' && value !== null || typeof value === 'function') {
       if (isHostObject(value)) {
         // We call `_makeShareableClone` to wrap the provided HostObject
         // inside ShareableJSRef.
@@ -474,7 +400,7 @@ function makeShareableNative(value) {
       'worklet';
 
       return value;
-    },
+    }
   });
   shareableMappingCache.set(value, handle);
   return value;
@@ -485,7 +411,5 @@ function makeShareableNative(value) {
  * the UI thread will be seen by all worklets. Use it when you want to create a
  * value that is read and written only on the UI thread.
  */
-export const makeShareable = SHOULD_BE_USE_WEB
-  ? makeShareableJS
-  : makeShareableNative;
+export const makeShareable = SHOULD_BE_USE_WEB ? makeShareableJS : makeShareableNative;
 //# sourceMappingURL=shareables.js.map

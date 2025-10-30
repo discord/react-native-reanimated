@@ -1,13 +1,10 @@
 'use strict';
 
-import { isWorkletFunction } from './commonTypes.js';
-import { ReanimatedError } from './errors.js';
-import { isJest, shouldBeUseWeb } from './PlatformChecker.js';
+import { isWorkletFunction } from "./commonTypes.js";
+import { ReanimatedError } from "./errors.js";
+import { isJest, shouldBeUseWeb } from "./PlatformChecker.js";
 import { ReanimatedModule } from './ReanimatedModule';
-import {
-  makeShareableCloneOnUIRecursive,
-  makeShareableCloneRecursive,
-} from './shareables.js';
+import { makeShareableCloneOnUIRecursive, makeShareableCloneRecursive } from "./shareables.js";
 const IS_JEST = isJest();
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 
@@ -18,7 +15,7 @@ export function setupMicrotasks() {
 
   let microtasksQueue = [];
   let isExecutingMicrotasksQueue = false;
-  global.queueMicrotask = (callback) => {
+  global.queueMicrotask = callback => {
     microtasksQueue.push(callback);
   };
   global.__callMicrotasks = () => {
@@ -43,11 +40,9 @@ function callMicrotasksOnUIThread() {
 
   global.__callMicrotasks();
 }
-export const callMicrotasks = SHOULD_BE_USE_WEB
-  ? () => {
-      // on web flushing is a noop as immediates are handled by the browser
-    }
-  : callMicrotasksOnUIThread;
+export const callMicrotasks = SHOULD_BE_USE_WEB ? () => {
+  // on web flushing is a noop as immediates are handled by the browser
+} : callMicrotasksOnUIThread;
 
 /**
  * Lets you asynchronously run
@@ -75,9 +70,7 @@ export function runOnUI(worklet) {
   'worklet';
 
   if (__DEV__ && !SHOULD_BE_USE_WEB && _WORKLET) {
-    throw new ReanimatedError(
-      '`runOnUI` cannot be called on the UI runtime. Please call the function synchronously or use `queueMicrotask` or `requestAnimationFrame` instead.'
-    );
+    throw new ReanimatedError('`runOnUI` cannot be called on the UI runtime. Please call the function synchronously or use `queueMicrotask` or `requestAnimationFrame` instead.');
   }
   if (__DEV__ && !SHOULD_BE_USE_WEB && !isWorkletFunction(worklet)) {
     throw new ReanimatedError('`runOnUI` can only be used with worklets.');
@@ -93,13 +86,11 @@ export function runOnUI(worklet) {
       // that's not possible, and hence in Jest environment instead of using scheduling
       // mechanism we just schedule the work ommiting the queue. This is ok for the
       // uses that we currently have but may not be ok for future tests that we write.
-      ReanimatedModule.scheduleOnUI(
-        makeShareableCloneRecursive(() => {
-          'worklet';
+      ReanimatedModule.scheduleOnUI(makeShareableCloneRecursive(() => {
+        'worklet';
 
-          worklet(...args);
-        })
-      );
+        worklet(...args);
+      }));
       return;
     }
     if (__DEV__) {
@@ -116,17 +107,15 @@ export function runOnUI(worklet) {
       queueMicrotask(() => {
         const queue = _runOnUIQueue;
         _runOnUIQueue = [];
-        ReanimatedModule.scheduleOnUI(
-          makeShareableCloneRecursive(() => {
-            'worklet';
+        ReanimatedModule.scheduleOnUI(makeShareableCloneRecursive(() => {
+          'worklet';
 
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            queue.forEach(([worklet, args]) => {
-              worklet(...args);
-            });
-            callMicrotasks();
-          })
-        );
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          queue.forEach(([worklet, args]) => {
+            worklet(...args);
+          });
+          callMicrotasks();
+        }));
       });
     }
   };
@@ -136,14 +125,12 @@ export function runOnUI(worklet) {
 
 export function executeOnUIRuntimeSync(worklet) {
   return (...args) => {
-    return ReanimatedModule.executeOnUIRuntimeSync(
-      makeShareableCloneRecursive(() => {
-        'worklet';
+    return ReanimatedModule.executeOnUIRuntimeSync(makeShareableCloneRecursive(() => {
+      'worklet';
 
-        const result = worklet(...args);
-        return makeShareableCloneOnUIRecursive(result);
-      })
-    );
+      const result = worklet(...args);
+      return makeShareableCloneOnUIRecursive(result);
+    }));
   };
 }
 
@@ -154,23 +141,17 @@ export function runOnUIImmediately(worklet) {
   'worklet';
 
   if (__DEV__ && !SHOULD_BE_USE_WEB && _WORKLET) {
-    throw new ReanimatedError(
-      '`runOnUIImmediately` cannot be called on the UI runtime. Please call the function synchronously or use `queueMicrotask` or `requestAnimationFrame` instead.'
-    );
+    throw new ReanimatedError('`runOnUIImmediately` cannot be called on the UI runtime. Please call the function synchronously or use `queueMicrotask` or `requestAnimationFrame` instead.');
   }
   if (__DEV__ && !SHOULD_BE_USE_WEB && !isWorkletFunction(worklet)) {
-    throw new ReanimatedError(
-      '`runOnUIImmediately` can only be used with worklets.'
-    );
+    throw new ReanimatedError('`runOnUIImmediately` can only be used with worklets.');
   }
   return (...args) => {
-    ReanimatedModule.scheduleOnUI(
-      makeShareableCloneRecursive(() => {
-        'worklet';
+    ReanimatedModule.scheduleOnUI(makeShareableCloneRecursive(() => {
+      'worklet';
 
-        worklet(...args);
-      })
-    );
+      worklet(...args);
+    }));
   };
 }
 function runWorkletOnJS(worklet, ...args) {
@@ -212,18 +193,11 @@ export function runOnJS(fun) {
     // reference to the original remote function in the `__remoteFunction` property.
     fun = fun.__remoteFunction;
   }
-  const scheduleOnJS =
-    typeof fun === 'function'
-      ? global._scheduleHostFunctionOnJS
-      : global._scheduleRemoteFunctionOnJS;
+  const scheduleOnJS = typeof fun === 'function' ? global._scheduleHostFunctionOnJS : global._scheduleRemoteFunctionOnJS;
   return (...args) => {
-    scheduleOnJS(
-      fun,
-      args.length > 0
-        ? // TODO TYPESCRIPT this cast is terrible but will be fixed
-          makeShareableCloneOnUIRecursive(args)
-        : undefined
-    );
+    scheduleOnJS(fun, args.length > 0 ?
+    // TODO TYPESCRIPT this cast is terrible but will be fixed
+    makeShareableCloneOnUIRecursive(args) : undefined);
   };
 }
 //# sourceMappingURL=threads.js.map

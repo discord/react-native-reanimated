@@ -1,9 +1,7 @@
 import type { Component } from 'react';
 import type { MeasuredDimensions } from '../commonTypes';
 import type { AnimatedRef } from '../hook/commonTypes';
-type Measure = <T extends Component>(
-  animatedRef: AnimatedRef<T>
-) => MeasuredDimensions | null;
+type Measure = <T extends Component>(animatedRef: AnimatedRef<T>) => MeasuredDimensions | null;
 /**
  * Lets you synchronously get the dimensions and position of a view on the
  * screen.

@@ -1,8 +1,8 @@
 'use strict';
 
-import { withSequence, withTiming } from '../../animation/index.js';
-import { Easing } from '../../Easing.js';
-import { BaseAnimationBuilder } from '../animationBuilder/index.js';
+import { withSequence, withTiming } from "../../animation/index.js";
+import { Easing } from "../../Easing.js";
+import { BaseAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Layout jumps - quite literally - from one position to another. You can modify
@@ -25,48 +25,33 @@ export class JumpingTransition extends BaseAnimationBuilder {
     const duration = this.durationV ?? 300;
     const halfDuration = duration / 2;
     const config = {
-      duration,
+      duration
     };
-    return (values) => {
+    return values => {
       'worklet';
 
-      const d = Math.max(
-        Math.abs(values.targetOriginX - values.currentOriginX),
-        Math.abs(values.targetOriginY - values.currentOriginY)
-      );
+      const d = Math.max(Math.abs(values.targetOriginX - values.currentOriginX), Math.abs(values.targetOriginY - values.currentOriginY));
       return {
         initialValues: {
           originX: values.currentOriginX,
           originY: values.currentOriginY,
           width: values.currentWidth,
-          height: values.currentHeight,
+          height: values.currentHeight
         },
         animations: {
-          originX: delayFunction(
-            delay,
-            withTiming(values.targetOriginX, config)
-          ),
-          originY: delayFunction(
-            delay,
-            withSequence(
-              withTiming(
-                Math.min(values.targetOriginY, values.currentOriginY) - d,
-                {
-                  duration: halfDuration,
-                  easing: Easing.out(Easing.exp),
-                }
-              ),
-              withTiming(values.targetOriginY, {
-                ...config,
-                duration: halfDuration,
-                easing: Easing.bounce,
-              })
-            )
-          ),
+          originX: delayFunction(delay, withTiming(values.targetOriginX, config)),
+          originY: delayFunction(delay, withSequence(withTiming(Math.min(values.targetOriginY, values.currentOriginY) - d, {
+            duration: halfDuration,
+            easing: Easing.out(Easing.exp)
+          }), withTiming(values.targetOriginY, {
+            ...config,
+            duration: halfDuration,
+            easing: Easing.bounce
+          }))),
           width: delayFunction(delay, withTiming(values.targetWidth, config)),
-          height: delayFunction(delay, withTiming(values.targetHeight, config)),
+          height: delayFunction(delay, withTiming(values.targetHeight, config))
         },
-        callback,
+        callback
       };
     };
   };

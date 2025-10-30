@@ -1,7 +1,7 @@
 'use strict';
 
-import { withDelay, withSequence, withTiming } from '../../animation/index.js';
-import { BaseAnimationBuilder } from '../animationBuilder/index.js';
+import { withDelay, withSequence, withTiming } from "../../animation/index.js";
+import { BaseAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Fades out components from one position and shows them in another. You can
@@ -23,7 +23,7 @@ export class FadingTransition extends BaseAnimationBuilder {
     const callback = this.callbackV;
     const delay = this.getDelay();
     const halfDuration = (this.durationV ?? 500) / 2;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
@@ -32,46 +32,28 @@ export class FadingTransition extends BaseAnimationBuilder {
           originX: values.currentOriginX,
           originY: values.currentOriginY,
           width: values.currentWidth,
-          height: values.currentHeight,
+          height: values.currentHeight
         },
         animations: {
-          opacity: delayFunction(
-            delay,
-            withSequence(
-              withTiming(0, {
-                duration: halfDuration,
-              }),
-              withTiming(1, {
-                duration: halfDuration,
-              })
-            )
-          ),
-          originX: withDelay(
-            delay + halfDuration,
-            withTiming(values.targetOriginX, {
-              duration: 0,
-            })
-          ),
-          originY: withDelay(
-            delay + halfDuration,
-            withTiming(values.targetOriginY, {
-              duration: 0,
-            })
-          ),
-          width: withDelay(
-            delay + halfDuration,
-            withTiming(values.targetWidth, {
-              duration: 0,
-            })
-          ),
-          height: withDelay(
-            delay + halfDuration,
-            withTiming(values.targetHeight, {
-              duration: 0,
-            })
-          ),
+          opacity: delayFunction(delay, withSequence(withTiming(0, {
+            duration: halfDuration
+          }), withTiming(1, {
+            duration: halfDuration
+          }))),
+          originX: withDelay(delay + halfDuration, withTiming(values.targetOriginX, {
+            duration: 0
+          })),
+          originY: withDelay(delay + halfDuration, withTiming(values.targetOriginY, {
+            duration: 0
+          })),
+          width: withDelay(delay + halfDuration, withTiming(values.targetWidth, {
+            duration: 0
+          })),
+          height: withDelay(delay + halfDuration, withTiming(values.targetHeight, {
+            duration: 0
+          }))
         },
-        callback,
+        callback
       };
     };
   };

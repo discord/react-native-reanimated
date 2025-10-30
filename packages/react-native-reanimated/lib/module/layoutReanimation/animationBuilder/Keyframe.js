@@ -1,13 +1,10 @@
 'use strict';
 
-import { withDelay, withSequence, withTiming } from '../../animation/index.js';
-import {
-  assertEasingIsWorklet,
-  getReduceMotionFromConfig,
-} from '../../animation/util.js';
-import { ReduceMotion } from '../../commonTypes.js';
-import { Easing } from '../../Easing.js';
-import { ReanimatedError } from '../../errors.js';
+import { withDelay, withSequence, withTiming } from "../../animation/index.js";
+import { assertEasingIsWorklet, getReduceMotionFromConfig } from "../../animation/util.js";
+import { ReduceMotion } from "../../commonTypes.js";
+import { Easing } from "../../Easing.js";
+import { ReanimatedError } from "../../errors.js";
 class InnerKeyframe {
   reduceMotionV = ReduceMotion.System;
   /*
@@ -28,18 +25,14 @@ class InnerKeyframe {
     */
     if (this.definitions.from) {
       if (this.definitions['0']) {
-        throw new ReanimatedError(
-          "You cannot provide both keyframe 0 and 'from' as they both specified initial values."
-        );
+        throw new ReanimatedError("You cannot provide both keyframe 0 and 'from' as they both specified initial values.");
       }
       this.definitions['0'] = this.definitions.from;
       delete this.definitions.from;
     }
     if (this.definitions.to) {
       if (this.definitions['100']) {
-        throw new ReanimatedError(
-          "You cannot provide both keyframe 100 and 'to' as they both specified values at the end of the animation."
-        );
+        throw new ReanimatedError("You cannot provide both keyframe 100 and 'to' as they both specified values at the end of the animation.");
       }
       this.definitions['100'] = this.definitions.to;
       delete this.definitions.to;
@@ -49,21 +42,19 @@ class InnerKeyframe {
       Every other keyframe should contain properties from the set provided as initial values.
     */
     if (!this.definitions['0']) {
-      throw new ReanimatedError(
-        "Please provide 0 or 'from' keyframe with initial state of your object."
-      );
+      throw new ReanimatedError("Please provide 0 or 'from' keyframe with initial state of your object.");
     }
     const initialValues = this.definitions['0'];
     /*
       Initialize parsedKeyframes for properties provided in initial keyframe
     */
-    Object.keys(initialValues).forEach((styleProp) => {
+    Object.keys(initialValues).forEach(styleProp => {
       if (styleProp === 'transform') {
         if (!Array.isArray(initialValues.transform)) {
           return;
         }
         initialValues.transform.forEach((transformStyle, index) => {
-          Object.keys(transformStyle).forEach((transformProp) => {
+          Object.keys(transformStyle).forEach(transformProp => {
             parsedKeyframes[makeKeyframeKey(index, transformProp)] = [];
           });
         });
@@ -72,26 +63,24 @@ class InnerKeyframe {
       }
     });
     const duration = this.durationV ? this.durationV : 500;
-    const animationKeyPoints = Array.from(Object.keys(this.definitions)).map(
-      Number
-    );
+    const animationKeyPoints = Array.from(Object.keys(this.definitions)).map(Number);
     const getAnimationDuration = (key, currentKeyPoint) => {
-      const maxDuration = (currentKeyPoint / 100) * duration;
-      const currentDuration = parsedKeyframes[key].reduce(
-        (acc, value) => acc + value.duration,
-        0
-      );
+      const maxDuration = currentKeyPoint / 100 * duration;
+      const currentDuration = parsedKeyframes[key].reduce((acc, value) => acc + value.duration, 0);
       return maxDuration - currentDuration;
     };
 
     /* 
        Other keyframes can't contain properties that were not specified in initial keyframe.
     */
-    const addKeyPoint = ({ key, value, currentKeyPoint, easing }) => {
+    const addKeyPoint = ({
+      key,
+      value,
+      currentKeyPoint,
+      easing
+    }) => {
       if (!(key in parsedKeyframes)) {
-        throw new ReanimatedError(
-          "Keyframe can contain only that set of properties that were provide with initial values (keyframe 0 or 'from')"
-        );
+        throw new ReanimatedError("Keyframe can contain only that set of properties that were provide with initial values (keyframe 0 or 'from')");
       }
       if (__DEV__ && easing) {
         assertEasingIsWorklet(easing);
@@ -99,50 +88,42 @@ class InnerKeyframe {
       parsedKeyframes[key].push({
         duration: getAnimationDuration(key, currentKeyPoint),
         value,
-        easing,
+        easing
       });
     };
-    animationKeyPoints
-      .filter((value) => value !== 0)
-      .sort((a, b) => a - b)
-      .forEach((keyPoint) => {
-        if (keyPoint < 0 || keyPoint > 100) {
-          throw new ReanimatedError(
-            'Keyframe should be in between range 0 - 100.'
-          );
-        }
-        const keyframe = this.definitions[keyPoint];
-        const easing = keyframe.easing;
-        delete keyframe.easing;
-        const addKeyPointWith = (key, value) =>
-          addKeyPoint({
-            key,
-            value,
-            currentKeyPoint: keyPoint,
-            easing,
-          });
-        Object.keys(keyframe).forEach((key) => {
-          if (key === 'transform') {
-            if (!Array.isArray(keyframe.transform)) {
-              return;
-            }
-            keyframe.transform.forEach((transformStyle, index) => {
-              Object.keys(transformStyle).forEach((transformProp) => {
-                addKeyPointWith(
-                  makeKeyframeKey(index, transformProp),
-                  transformStyle[transformProp] // Here we assume that user has passed props of proper type.
-                  // I don't think it's worthwhile to check if he passed i.e. `Animated.Node`.
-                );
-              });
-            });
-          } else {
-            addKeyPointWith(key, keyframe[key]);
-          }
-        });
+    animationKeyPoints.filter(value => value !== 0).sort((a, b) => a - b).forEach(keyPoint => {
+      if (keyPoint < 0 || keyPoint > 100) {
+        throw new ReanimatedError('Keyframe should be in between range 0 - 100.');
+      }
+      const keyframe = this.definitions[keyPoint];
+      const easing = keyframe.easing;
+      delete keyframe.easing;
+      const addKeyPointWith = (key, value) => addKeyPoint({
+        key,
+        value,
+        currentKeyPoint: keyPoint,
+        easing
       });
+      Object.keys(keyframe).forEach(key => {
+        if (key === 'transform') {
+          if (!Array.isArray(keyframe.transform)) {
+            return;
+          }
+          keyframe.transform.forEach((transformStyle, index) => {
+            Object.keys(transformStyle).forEach(transformProp => {
+              addKeyPointWith(makeKeyframeKey(index, transformProp), transformStyle[transformProp] // Here we assume that user has passed props of proper type.
+              // I don't think it's worthwhile to check if he passed i.e. `Animated.Node`.
+              );
+            });
+          });
+        } else {
+          addKeyPointWith(key, keyframe[key]);
+        }
+      });
+    });
     return {
       initialValues,
-      keyframes: parsedKeyframes,
+      keyframes: parsedKeyframes
     };
   }
   duration(durationMs) {
@@ -164,24 +145,26 @@ class InnerKeyframe {
   getDelayFunction() {
     const delay = this.delayV;
     const reduceMotion = this.reduceMotionV;
-    return delay
-      ? // eslint-disable-next-line @typescript-eslint/no-shadow
-        (delay, animation) => {
-          'worklet';
+    return delay ?
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    (delay, animation) => {
+      'worklet';
 
-          return withDelay(delay, animation, reduceMotion);
-        }
-      : (_, animation) => {
-          'worklet';
+      return withDelay(delay, animation, reduceMotion);
+    } : (_, animation) => {
+      'worklet';
 
-          animation.reduceMotion = getReduceMotionFromConfig(reduceMotion);
-          return animation;
-        };
+      animation.reduceMotion = getReduceMotionFromConfig(reduceMotion);
+      return animation;
+    };
   }
   build = () => {
     const delay = this.delayV;
     const delayFunction = this.getDelayFunction();
-    const { keyframes, initialValues } = this.parseDefinitions();
+    const {
+      keyframes,
+      initialValues
+    } = this.parseDefinitions();
     const callback = this.callbackV;
     if (this.parsedAnimation) {
       return this.parsedAnimation;
@@ -195,47 +178,34 @@ class InnerKeyframe {
             For each style property, an animations sequence is created that corresponds with its key points.
             Transform style properties require special handling because of their nested structure.
       */
-      const addAnimation = (key) => {
+      const addAnimation = key => {
         const keyframePoints = keyframes[key];
         // in case if property was only passed as initial value
         if (keyframePoints.length === 0) {
           return;
         }
-        const animation = delayFunction(
-          delay,
-          keyframePoints.length === 1
-            ? withTiming(keyframePoints[0].value, {
-                duration: keyframePoints[0].duration,
-                easing: keyframePoints[0].easing
-                  ? keyframePoints[0].easing
-                  : Easing.linear,
-              })
-            : withSequence(
-                ...keyframePoints.map((keyframePoint) =>
-                  withTiming(keyframePoint.value, {
-                    duration: keyframePoint.duration,
-                    easing: keyframePoint.easing
-                      ? keyframePoint.easing
-                      : Easing.linear,
-                  })
-                )
-              )
-        );
+        const animation = delayFunction(delay, keyframePoints.length === 1 ? withTiming(keyframePoints[0].value, {
+          duration: keyframePoints[0].duration,
+          easing: keyframePoints[0].easing ? keyframePoints[0].easing : Easing.linear
+        }) : withSequence(...keyframePoints.map(keyframePoint => withTiming(keyframePoint.value, {
+          duration: keyframePoint.duration,
+          easing: keyframePoint.easing ? keyframePoint.easing : Easing.linear
+        }))));
         if (key.includes('transform')) {
           if (!('transform' in animations)) {
             animations.transform = [];
           }
           animations.transform.push({
-            [key.split(':')[1]]: animation,
+            [key.split(':')[1]]: animation
           });
         } else {
           animations[key] = animation;
         }
       };
-      Object.keys(initialValues).forEach((key) => {
+      Object.keys(initialValues).forEach(key => {
         if (key.includes('transform')) {
           initialValues[key].forEach((transformProp, index) => {
-            Object.keys(transformProp).forEach((transformPropKey) => {
+            Object.keys(transformProp).forEach(transformPropKey => {
               addAnimation(makeKeyframeKey(index, transformPropKey));
             });
           });
@@ -246,7 +216,7 @@ class InnerKeyframe {
       return {
         animations,
         initialValues,
-        callback,
+        callback
       };
     };
     return this.parsedAnimation;

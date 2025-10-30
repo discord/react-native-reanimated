@@ -1,40 +1,27 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
-import {
-  defineAnimation,
-  getReduceMotionForAnimation,
-  recognizePrefixSuffix,
-} from './util.js';
+import { logger } from "../logger/index.js";
+import { defineAnimation, getReduceMotionForAnimation, recognizePrefixSuffix } from "./util.js";
 export const withClamp = function (config, _animationToClamp) {
   'worklet';
 
   return defineAnimation(_animationToClamp, () => {
     'worklet';
 
-    const animationToClamp =
-      typeof _animationToClamp === 'function'
-        ? _animationToClamp()
-        : _animationToClamp;
-    const strippedMin =
-      config.min === undefined
-        ? undefined
-        : recognizePrefixSuffix(config.min).strippedValue;
-    const strippedMax =
-      config.max === undefined
-        ? undefined
-        : recognizePrefixSuffix(config.max).strippedValue;
+    const animationToClamp = typeof _animationToClamp === 'function' ? _animationToClamp() : _animationToClamp;
+    const strippedMin = config.min === undefined ? undefined : recognizePrefixSuffix(config.min).strippedValue;
+    const strippedMax = config.max === undefined ? undefined : recognizePrefixSuffix(config.max).strippedValue;
     function clampOnFrame(animation, now) {
       const finished = animationToClamp.onFrame(animationToClamp, now);
       if (animationToClamp.current === undefined) {
-        logger.warn(
-          "Error inside 'withClamp' animation, the inner animation has invalid current value"
-        );
+        logger.warn("Error inside 'withClamp' animation, the inner animation has invalid current value");
         return true;
       } else {
-        const { prefix, strippedValue, suffix } = recognizePrefixSuffix(
-          animationToClamp.current
-        );
+        const {
+          prefix,
+          strippedValue,
+          suffix
+        } = recognizePrefixSuffix(animationToClamp.current);
         let newValue;
         if (strippedMax !== undefined && strippedMax < strippedValue) {
           newValue = strippedMax;
@@ -43,10 +30,7 @@ export const withClamp = function (config, _animationToClamp) {
         } else {
           newValue = strippedValue;
         }
-        animation.current =
-          typeof animationToClamp.current === 'number'
-            ? newValue
-            : `${prefix === undefined ? '' : prefix}${newValue}${suffix === undefined ? '' : suffix}`;
+        animation.current = typeof animationToClamp.current === 'number' ? newValue : `${prefix === undefined ? '' : prefix}${newValue}${suffix === undefined ? '' : suffix}`;
       }
       return finished;
     }
@@ -54,27 +38,17 @@ export const withClamp = function (config, _animationToClamp) {
       animation.current = value;
       animation.previousAnimation = animationToClamp;
       const animationBeforeClamped = previousAnimation?.previousAnimation;
-      if (
-        config.max !== undefined &&
-        config.min !== undefined &&
-        config.max < config.min
-      ) {
-        logger.warn(
-          'Wrong config was provided to withClamp. Min value is bigger than max'
-        );
+      if (config.max !== undefined && config.min !== undefined && config.max < config.min) {
+        logger.warn('Wrong config was provided to withClamp. Min value is bigger than max');
       }
-      animationToClamp.onStart(
-        animationToClamp,
-        /**
-         * Provide the current value of the previous animation of the clamped
-         * animation so we can animate from the original "un-truncated" value
-         */
-        animationBeforeClamped?.current || value,
-        now,
-        animationBeforeClamped
-      );
+      animationToClamp.onStart(animationToClamp,
+      /**
+       * Provide the current value of the previous animation of the clamped
+       * animation so we can animate from the original "un-truncated" value
+       */
+      animationBeforeClamped?.current || value, now, animationBeforeClamped);
     }
-    const callback = (finished) => {
+    const callback = finished => {
       if (animationToClamp.callback) {
         animationToClamp.callback(finished);
       }
@@ -86,7 +60,7 @@ export const withClamp = function (config, _animationToClamp) {
       current: animationToClamp.current,
       callback,
       previousAnimation: null,
-      reduceMotion: getReduceMotionForAnimation(config.reduceMotion),
+      reduceMotion: getReduceMotionForAnimation(config.reduceMotion)
     };
   });
 };

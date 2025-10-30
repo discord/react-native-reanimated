@@ -1,10 +1,10 @@
 'use strict';
 
-import { ReanimatedError } from '../../errors.js';
-import { defineAnimation, getReduceMotionForAnimation } from '../util.js';
-import { rigidDecay } from './rigidDecay.js';
-import { rubberBandDecay } from './rubberBandDecay.js';
-import { isValidRubberBandConfig } from './utils.js';
+import { ReanimatedError } from "../../errors.js";
+import { defineAnimation, getReduceMotionForAnimation } from "../util.js";
+import { rigidDecay } from "./rigidDecay.js";
+import { rubberBandDecay } from "./rubberBandDecay.js";
+import { isValidRubberBandConfig } from "./utils.js";
 
 // TODO TYPESCRIPT This is a temporary type to get rid of .d.ts file.
 
@@ -13,25 +13,17 @@ function validateConfig(config) {
 
   if (config.clamp) {
     if (!Array.isArray(config.clamp)) {
-      throw new ReanimatedError(
-        `\`config.clamp\` must be an array but is ${typeof config.clamp}.`
-      );
+      throw new ReanimatedError(`\`config.clamp\` must be an array but is ${typeof config.clamp}.`);
     }
     if (config.clamp.length !== 2) {
-      throw new ReanimatedError(
-        `\`clamp array\` must contain 2 items but is given ${config.clamp.length}.`
-      );
+      throw new ReanimatedError(`\`clamp array\` must contain 2 items but is given ${config.clamp.length}.`);
     }
   }
   if (config.velocityFactor <= 0) {
-    throw new ReanimatedError(
-      `\`config.velocityFactor\` must be greater then 0 but is ${config.velocityFactor}.`
-    );
+    throw new ReanimatedError(`\`config.velocityFactor\` must be greater then 0 but is ${config.velocityFactor}.`);
   }
   if (config.rubberBandEffect && !config.clamp) {
-    throw new ReanimatedError(
-      'You need to set `clamp` property when using `rubberBandEffect`.'
-    );
+    throw new ReanimatedError('You need to set `clamp` property when using `rubberBandEffect`.');
   }
 }
 
@@ -56,14 +48,12 @@ export const withDecay = function (userConfig, callback) {
       deceleration: 0.998,
       velocityFactor: 1,
       velocity: 0,
-      rubberBandFactor: 0.6,
+      rubberBandFactor: 0.6
     };
     if (userConfig) {
-      Object.keys(userConfig).forEach((key) => (config[key] = userConfig[key]));
+      Object.keys(userConfig).forEach(key => config[key] = userConfig[key]);
     }
-    const decay = isValidRubberBandConfig(config)
-      ? (animation, now) => rubberBandDecay(animation, now, config)
-      : (animation, now) => rigidDecay(animation, now, config);
+    const decay = isValidRubberBandConfig(config) ? (animation, now) => rubberBandDecay(animation, now, config) : (animation, now) => rigidDecay(animation, now, config);
     function onStart(animation, value, now) {
       const initialVelocity = config.velocity;
       animation.current = value;
@@ -93,7 +83,7 @@ export const withDecay = function (userConfig, callback) {
       current: undefined,
       lastTimestamp: 0,
       startTimestamp: 0,
-      reduceMotion: getReduceMotionForAnimation(config.reduceMotion),
+      reduceMotion: getReduceMotionForAnimation(config.reduceMotion)
     };
   });
 };

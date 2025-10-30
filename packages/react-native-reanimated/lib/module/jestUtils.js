@@ -1,40 +1,31 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 'use strict';
 
-import { ReanimatedError } from './errors.js';
-import { isJest } from './PlatformChecker.js';
+import { ReanimatedError } from "./errors.js";
+import { isJest } from "./PlatformChecker.js";
 const defaultFramerateConfig = {
-  fps: 60,
+  fps: 60
 };
-const isEmpty = (obj) => !obj || Object.keys(obj).length === 0;
-const getStylesFromObject = (obj) => {
-  return obj === undefined
-    ? {}
-    : Object.fromEntries(
-        Object.entries(obj).map(([property, value]) => [
-          property,
-          value._isReanimatedSharedValue ? value.value : value,
-        ])
-      );
+const isEmpty = obj => !obj || Object.keys(obj).length === 0;
+const getStylesFromObject = obj => {
+  return obj === undefined ? {} : Object.fromEntries(Object.entries(obj).map(([property, value]) => [property, value._isReanimatedSharedValue ? value.value : value]));
 };
-const getCurrentProps = (component) => {
+const getCurrentProps = component => {
   const propsObject = component.props.jestAnimatedProps?.value;
-  return propsObject
-    ? {
-        ...propsObject,
-      }
-    : {};
+  return propsObject ? {
+    ...propsObject
+  } : {};
 };
-const getCurrentStyle = (component) => {
+const getCurrentStyle = component => {
   const styleObject = component.props.style;
   let currentStyle = {};
   if (Array.isArray(styleObject)) {
     // It is possible that style may contain nested arrays. Currently, neither `StyleSheet.flatten` nor `flattenArray` solve this issue.
     // Hence, we're not handling nested arrays at the moment - this is a known limitation of the current implementation.
-    styleObject.forEach((style) => {
+    styleObject.forEach(style => {
       currentStyle = {
         ...currentStyle,
-        ...style,
+        ...style
       };
     });
   }
@@ -48,23 +39,21 @@ const getCurrentStyle = (component) => {
       const inlineStyles = getStylesFromObject(obj);
       currentStyle = {
         ...currentStyle,
-        ...inlineStyles,
+        ...inlineStyles
       };
     }
     currentStyle = {
       ...currentStyle,
-      ...jestAnimatedStyleValue,
+      ...jestAnimatedStyleValue
     };
     return currentStyle;
   }
   const inlineStyles = getStylesFromObject(jestInlineStyles);
-  currentStyle = isEmpty(jestAnimatedStyleValue)
-    ? {
-        ...inlineStyles,
-      }
-    : {
-        ...jestAnimatedStyleValue,
-      };
+  currentStyle = isEmpty(jestAnimatedStyleValue) ? {
+    ...inlineStyles
+  } : {
+    ...jestAnimatedStyleValue
+  };
   return currentStyle;
 };
 const checkEqual = (current, expected) => {
@@ -101,14 +90,11 @@ const findStyleDiff = (current, expected, shouldMatchAllProps) => {
       diffs.push({
         property,
         current: current[property],
-        expect: expected[property],
+        expect: expected[property]
       });
     }
   }
-  if (
-    shouldMatchAllProps &&
-    Object.keys(current).length !== Object.keys(expected).length
-  ) {
+  if (shouldMatchAllProps && Object.keys(current).length !== Object.keys(expected).length) {
     isEqual = false;
     // eslint-disable-next-line @typescript-eslint/no-shadow
     let property;
@@ -117,54 +103,40 @@ const findStyleDiff = (current, expected, shouldMatchAllProps) => {
         diffs.push({
           property,
           current: current[property],
-          expect: expected[property],
+          expect: expected[property]
         });
       }
     }
   }
   return {
     isEqual,
-    diffs,
+    diffs
   };
 };
-const compareAndFormatDifferences = (
-  currentValues,
-  expectedValues,
-  shouldMatchAllProps = false
-) => {
-  const { isEqual, diffs } = findStyleDiff(
-    currentValues,
-    expectedValues,
-    shouldMatchAllProps
-  );
+const compareAndFormatDifferences = (currentValues, expectedValues, shouldMatchAllProps = false) => {
+  const {
+    isEqual,
+    diffs
+  } = findStyleDiff(currentValues, expectedValues, shouldMatchAllProps);
   if (isEqual) {
     return {
       message: () => 'ok',
-      pass: true,
+      pass: true
     };
   }
   const currentValuesStr = JSON.stringify(currentValues);
   const expectedValuesStr = JSON.stringify(expectedValues);
-  const differences = diffs
-    .map(
-      (diff) =>
-        `- '${diff.property}' should be ${JSON.stringify(diff.expect)}, but is ${JSON.stringify(diff.current)}`
-    )
-    .join('\n');
+  const differences = diffs.map(diff => `- '${diff.property}' should be ${JSON.stringify(diff.expect)}, but is ${JSON.stringify(diff.current)}`).join('\n');
   return {
-    message: () =>
-      `Expected: ${expectedValuesStr}\nReceived: ${currentValuesStr}\n\nDifferences:\n${differences}`,
-    pass: false,
+    message: () => `Expected: ${expectedValuesStr}\nReceived: ${currentValuesStr}\n\nDifferences:\n${differences}`,
+    pass: false
   };
 };
 const compareProps = (component, expectedProps) => {
-  if (
-    component.props.jestAnimatedProps &&
-    Object.keys(component.props.jestAnimatedProps.value).length === 0
-  ) {
+  if (component.props.jestAnimatedProps && Object.keys(component.props.jestAnimatedProps.value).length === 0) {
     return {
       message: () => `Component doesn't have props.`,
-      pass: false,
+      pass: false
     };
   }
   const currentProps = getCurrentProps(component);
@@ -174,16 +146,14 @@ const compareStyle = (component, expectedStyle, config) => {
   if (!component.props.style) {
     return {
       message: () => `Component doesn't have a style.`,
-      pass: false,
+      pass: false
     };
   }
-  const { shouldMatchAllProps } = config;
-  const currentStyle = getCurrentStyle(component);
-  return compareAndFormatDifferences(
-    currentStyle,
-    expectedStyle,
+  const {
     shouldMatchAllProps
-  );
+  } = config;
+  const currentStyle = getCurrentStyle(component);
+  return compareAndFormatDifferences(currentStyle, expectedStyle, shouldMatchAllProps);
 };
 let frameTime = Math.round(1000 / defaultFramerateConfig.fps);
 const beforeTest = () => {
@@ -193,35 +163,25 @@ const afterTest = () => {
   jest.runOnlyPendingTimers();
   jest.useRealTimers();
 };
-export const withReanimatedTimer = (animationTest) => {
-  console.warn(
-    'This method is deprecated, you should define your own before and after test hooks to enable jest.useFakeTimers(). Check out the documentation for details on testing'
-  );
+export const withReanimatedTimer = animationTest => {
+  console.warn('This method is deprecated, you should define your own before and after test hooks to enable jest.useFakeTimers(). Check out the documentation for details on testing');
   beforeTest();
   animationTest();
   afterTest();
 };
 export const advanceAnimationByTime = (time = frameTime) => {
-  console.warn(
-    'This method is deprecated, use jest.advanceTimersByTime directly'
-  );
+  console.warn('This method is deprecated, use jest.advanceTimersByTime directly');
   jest.advanceTimersByTime(time);
   jest.runOnlyPendingTimers();
 };
-export const advanceAnimationByFrame = (count) => {
-  console.warn(
-    'This method is deprecated, use jest.advanceTimersByTime directly'
-  );
+export const advanceAnimationByFrame = count => {
+  console.warn('This method is deprecated, use jest.advanceTimersByTime directly');
   jest.advanceTimersByTime(count * frameTime);
   jest.runOnlyPendingTimers();
 };
-const requireFunction = isJest()
-  ? require
-  : () => {
-      throw new ReanimatedError(
-        '`setUpTests` is available only in Jest environment.'
-      );
-    };
+const requireFunction = isJest() ? require : () => {
+  throw new ReanimatedError('`setUpTests` is available only in Jest environment.');
+};
 export const setUpTests = (userFramerateConfig = {}) => {
   let expect = global.expect;
   if (expect === undefined) {
@@ -241,25 +201,24 @@ export const setUpTests = (userFramerateConfig = {}) => {
   }
   const framerateConfig = {
     ...defaultFramerateConfig,
-    ...userFramerateConfig,
+    ...userFramerateConfig
   };
   frameTime = Math.round(1000 / framerateConfig.fps);
   expect.extend({
     toHaveAnimatedProps(component, expectedProps) {
       return compareProps(component, expectedProps);
-    },
+    }
   });
   expect.extend({
     toHaveAnimatedStyle(component, expectedStyle, config = {}) {
       return compareStyle(component, expectedStyle, config);
-    },
+    }
   });
 };
-export const getAnimatedStyle = (component) => {
+export const getAnimatedStyle = component => {
   return getCurrentStyle(
-    // This type assertion is needed to get type checking in the following
-    // functions since `ReactTestInstance` has its `props` defined as `any`.
-    component
-  );
+  // This type assertion is needed to get type checking in the following
+  // functions since `ReactTestInstance` has its `props` defined as `any`.
+  component);
 };
 //# sourceMappingURL=jestUtils.js.map

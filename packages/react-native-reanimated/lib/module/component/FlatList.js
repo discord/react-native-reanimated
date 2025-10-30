@@ -2,33 +2,21 @@
 
 import React, { useRef } from 'react';
 import { FlatList } from 'react-native';
-import { createAnimatedComponent } from '../createAnimatedComponent/index.js';
-import { componentWithRef } from '../reactUtils.js';
-import { LayoutAnimationConfig } from './LayoutAnimationConfig.js';
-import { AnimatedView } from './View.js';
+import { createAnimatedComponent } from "../createAnimatedComponent/index.js";
+import { componentWithRef } from "../reactUtils.js";
+import { LayoutAnimationConfig } from "./LayoutAnimationConfig.js";
+import { AnimatedView } from "./View.js";
 const AnimatedFlatList = createAnimatedComponent(FlatList);
-const createCellRendererComponent = (
-  itemLayoutAnimationRef,
-  cellRendererComponentStyleRef
-) => {
-  const CellRendererComponent = (props) => {
-    return (
-      <AnimatedView
-        // TODO TYPESCRIPT This is temporary cast is to get rid of .d.ts file.
-        layout={itemLayoutAnimationRef?.current}
-        onLayout={props.onLayout}
-        style={[
-          props.style,
-          typeof cellRendererComponentStyleRef?.current === 'function'
-            ? cellRendererComponentStyleRef?.current({
-                index: props.index,
-                item: props.item,
-              })
-            : cellRendererComponentStyleRef?.current,
-        ]}>
+const createCellRendererComponent = (itemLayoutAnimationRef, cellRendererComponentStyleRef) => {
+  const CellRendererComponent = props => {
+    return <AnimatedView
+    // TODO TYPESCRIPT This is temporary cast is to get rid of .d.ts file.
+    layout={itemLayoutAnimationRef?.current} onLayout={props.onLayout} style={[props.style, typeof cellRendererComponentStyleRef?.current === 'function' ? cellRendererComponentStyleRef?.current({
+      index: props.index,
+      item: props.item
+    }) : cellRendererComponentStyleRef?.current]}>
         {props.children}
-      </AnimatedView>
-    );
+      </AnimatedView>;
   };
   return CellRendererComponent;
 };
@@ -58,30 +46,16 @@ const FlatListForwardRefRender = function (props, ref) {
   itemLayoutAnimationRef.current = itemLayoutAnimation;
   const cellRendererComponentStyleRef = useRef(CellRendererComponentStyle);
   cellRendererComponentStyleRef.current = CellRendererComponentStyle;
-  const CellRendererComponent = React.useMemo(
-    () =>
-      createCellRendererComponent(
-        itemLayoutAnimationRef,
-        cellRendererComponentStyleRef
-      ),
-    []
-  );
-  const animatedFlatList = (
-    // @ts-expect-error In its current type state, createAnimatedComponent cannot create generic components.
-    <AnimatedFlatList
-      ref={ref}
-      {...restProps}
-      CellRendererComponent={CellRendererComponent}
-    />
-  );
+  const CellRendererComponent = React.useMemo(() => createCellRendererComponent(itemLayoutAnimationRef, cellRendererComponentStyleRef), []);
+  const animatedFlatList =
+  // @ts-expect-error In its current type state, createAnimatedComponent cannot create generic components.
+  <AnimatedFlatList ref={ref} {...restProps} CellRendererComponent={CellRendererComponent} />;
   if (skipEnteringExitingAnimations === undefined) {
     return animatedFlatList;
   }
-  return (
-    <LayoutAnimationConfig skipEntering skipExiting>
+  return <LayoutAnimationConfig skipEntering skipExiting>
       {animatedFlatList}
-    </LayoutAnimationConfig>
-  );
+    </LayoutAnimationConfig>;
 };
 export const ReanimatedFlatList = componentWithRef(FlatListForwardRefRender);
 //# sourceMappingURL=FlatList.js.map

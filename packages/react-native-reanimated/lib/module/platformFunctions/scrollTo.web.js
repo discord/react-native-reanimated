@@ -1,14 +1,12 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
+import { logger } from "../logger/index.js";
 export function scrollTo(animatedRef, x, y, animated) {
   const element = animatedRef();
 
   // This prevents crashes if ref has not been set yet
   if (element === -1) {
-    logger.warn(
-      'Called scrollTo() with an uninitialized ref. Make sure to pass the animated ref to the scrollable component before calling scrollTo().'
-    );
+    logger.warn('Called scrollTo() with an uninitialized ref. Make sure to pass the animated ref to the scrollable component before calling scrollTo().');
     return;
   }
 
@@ -17,7 +15,7 @@ export function scrollTo(animatedRef, x, y, animated) {
   scrollView?.scrollTo({
     x,
     y,
-    animated,
+    animated
   });
 }
 //# sourceMappingURL=scrollTo.web.js.map

@@ -1,10 +1,6 @@
 import type { Component } from 'react';
 import type { AnimatedRef } from '../hook/commonTypes';
-type DispatchCommand = <T extends Component>(
-  animatedRef: AnimatedRef<T>,
-  commandName: string,
-  args?: unknown[]
-) => void;
+type DispatchCommand = <T extends Component>(animatedRef: AnimatedRef<T>, commandName: string, args?: unknown[]) => void;
 /**
  * Lets you synchronously call a command of a native component.
  *

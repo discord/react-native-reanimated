@@ -1,8 +1,8 @@
 'use strict';
 
-import { ReanimatedError } from '../../errors.js';
-import { WorkletsTurboModule } from '../../specs/index.js';
-import { getValueUnpackerCode } from '../valueUnpacker.js';
+import { ReanimatedError } from "../../errors.js";
+import { WorkletsTurboModule } from "../../specs/index.js";
+import { getValueUnpackerCode } from "../valueUnpacker.js";
 export function createNativeWorkletsModule() {
   return new NativeWorklets();
 }
@@ -20,11 +20,7 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
     this.#workletsModuleProxy = global.__workletsModuleProxy;
   }
   makeShareableClone(value, shouldPersistRemote, nativeStateSource) {
-    return this.#workletsModuleProxy.makeShareableClone(
-      value,
-      shouldPersistRemote,
-      nativeStateSource
-    );
+    return this.#workletsModuleProxy.makeShareableClone(value, shouldPersistRemote, nativeStateSource);
   }
 }
 //# sourceMappingURL=NativeWorklets.js.map

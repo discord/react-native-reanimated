@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Rotate to bottom from left edge. You can modify the behavior by chaining
@@ -22,40 +22,32 @@ export class RotateInDownLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              rotate: '-90deg',
-            },
-            {
-              translateX: values.targetWidth / 2 - values.targetHeight / 2,
-            },
-            {
-              translateY: -(values.targetWidth / 2 - values.targetHeight / 2),
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '-90deg'
+          }, {
+            translateX: values.targetWidth / 2 - values.targetHeight / 2
+          }, {
+            translateY: -(values.targetWidth / 2 - values.targetHeight / 2)
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -81,40 +73,32 @@ export class RotateInDownRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              rotate: '90deg',
-            },
-            {
-              translateX: -(values.targetWidth / 2 - values.targetHeight / 2),
-            },
-            {
-              translateY: -(values.targetWidth / 2 - values.targetHeight / 2),
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '90deg'
+          }, {
+            translateX: -(values.targetWidth / 2 - values.targetHeight / 2)
+          }, {
+            translateY: -(values.targetWidth / 2 - values.targetHeight / 2)
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -140,40 +124,32 @@ export class RotateInUpLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              rotate: '90deg',
-            },
-            {
-              translateX: values.targetWidth / 2 - values.targetHeight / 2,
-            },
-            {
-              translateY: values.targetWidth / 2 - values.targetHeight / 2,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '90deg'
+          }, {
+            translateX: values.targetWidth / 2 - values.targetHeight / 2
+          }, {
+            translateY: values.targetWidth / 2 - values.targetHeight / 2
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -199,40 +175,32 @@ export class RotateInUpRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              rotate: '-90deg',
-            },
-            {
-              translateX: -(values.targetWidth / 2 - values.targetHeight / 2),
-            },
-            {
-              translateY: values.targetWidth / 2 - values.targetHeight / 2,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '-90deg'
+          }, {
+            translateX: -(values.targetWidth / 2 - values.targetHeight / 2)
+          }, {
+            translateY: values.targetWidth / 2 - values.targetHeight / 2
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -258,52 +226,32 @@ export class RotateOutDownLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('90deg', config)),
-            },
-            {
-              translateX: delayFunction(
-                delay,
-                animation(
-                  values.currentWidth / 2 - values.currentHeight / 2,
-                  config
-                )
-              ),
-            },
-            {
-              translateY: delayFunction(
-                delay,
-                animation(
-                  values.currentWidth / 2 - values.currentHeight / 2,
-                  config
-                )
-              ),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('90deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(values.currentWidth / 2 - values.currentHeight / 2, config))
+          }, {
+            translateY: delayFunction(delay, animation(values.currentWidth / 2 - values.currentHeight / 2, config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              rotate: '0deg',
-            },
-            {
-              translateX: 0,
-            },
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '0deg'
+          }, {
+            translateX: 0
+          }, {
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -329,52 +277,32 @@ export class RotateOutDownRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('-90deg', config)),
-            },
-            {
-              translateX: delayFunction(
-                delay,
-                animation(
-                  -(values.currentWidth / 2 - values.currentHeight / 2),
-                  config
-                )
-              ),
-            },
-            {
-              translateY: delayFunction(
-                delay,
-                animation(
-                  values.currentWidth / 2 - values.currentHeight / 2,
-                  config
-                )
-              ),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('-90deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(-(values.currentWidth / 2 - values.currentHeight / 2), config))
+          }, {
+            translateY: delayFunction(delay, animation(values.currentWidth / 2 - values.currentHeight / 2, config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              rotate: '0deg',
-            },
-            {
-              translateX: 0,
-            },
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '0deg'
+          }, {
+            translateX: 0
+          }, {
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -400,52 +328,32 @@ export class RotateOutUpLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('-90deg', config)),
-            },
-            {
-              translateX: delayFunction(
-                delay,
-                animation(
-                  values.currentWidth / 2 - values.currentHeight / 2,
-                  config
-                )
-              ),
-            },
-            {
-              translateY: delayFunction(
-                delay,
-                animation(
-                  -(values.currentWidth / 2 - values.currentHeight / 2),
-                  config
-                )
-              ),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('-90deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(values.currentWidth / 2 - values.currentHeight / 2, config))
+          }, {
+            translateY: delayFunction(delay, animation(-(values.currentWidth / 2 - values.currentHeight / 2), config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              rotate: '0deg',
-            },
-            {
-              translateX: 0,
-            },
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '0deg'
+          }, {
+            translateX: 0
+          }, {
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -471,52 +379,32 @@ export class RotateOutUpRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              rotate: delayFunction(delay, animation('90deg', config)),
-            },
-            {
-              translateX: delayFunction(
-                delay,
-                animation(
-                  -(values.currentWidth / 2 - values.currentHeight / 2),
-                  config
-                )
-              ),
-            },
-            {
-              translateY: delayFunction(
-                delay,
-                animation(
-                  -(values.currentWidth / 2 - values.currentHeight / 2),
-                  config
-                )
-              ),
-            },
-          ],
+          transform: [{
+            rotate: delayFunction(delay, animation('90deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(-(values.currentWidth / 2 - values.currentHeight / 2), config))
+          }, {
+            translateY: delayFunction(delay, animation(-(values.currentWidth / 2 - values.currentHeight / 2), config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              rotate: '0deg',
-            },
-            {
-              translateX: 0,
-            },
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            rotate: '0deg'
+          }, {
+            translateX: 0
+          }, {
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

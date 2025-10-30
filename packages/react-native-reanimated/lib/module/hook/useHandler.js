@@ -1,11 +1,11 @@
 'use strict';
 
 import { useEffect, useRef } from 'react';
-import { isWorkletFunction } from '../commonTypes.js';
-import { ReanimatedError } from '../errors.js';
-import { isJest, isWeb } from '../PlatformChecker.js';
-import { makeShareable } from '../shareables.js';
-import { areDependenciesEqual, buildDependencies } from './utils.js';
+import { isWorkletFunction } from "../commonTypes.js";
+import { ReanimatedError } from "../errors.js";
+import { isJest, isWeb } from "../PlatformChecker.js";
+import { makeShareable } from "../shareables.js";
+import { areDependenciesEqual, buildDependencies } from "./utils.js";
 
 /**
  * Lets you find out whether the event handler dependencies have changed.
@@ -25,7 +25,7 @@ export function useHandler(handlers, dependencies) {
     const context = makeShareable({});
     initRef.current = {
       context,
-      savedDependencies: [],
+      savedDependencies: []
     };
   }
   useEffect(() => {
@@ -33,25 +33,23 @@ export function useHandler(handlers, dependencies) {
       initRef.current = null;
     };
   }, []);
-  const { context, savedDependencies } = initRef.current;
+  const {
+    context,
+    savedDependencies
+  } = initRef.current;
   for (const handlerName in handlers) {
     if (!isWorkletFunction(handlers[handlerName])) {
-      throw new ReanimatedError(
-        'Passed a function that is not a worklet. Please provide a worklet function.'
-      );
+      throw new ReanimatedError('Passed a function that is not a worklet. Please provide a worklet function.');
     }
   }
   dependencies = buildDependencies(dependencies, handlers);
-  const doDependenciesDiffer = !areDependenciesEqual(
-    dependencies,
-    savedDependencies
-  );
+  const doDependenciesDiffer = !areDependenciesEqual(dependencies, savedDependencies);
   initRef.current.savedDependencies = dependencies;
   const useWeb = isWeb() || isJest();
   return {
     context,
     doDependenciesDiffer,
-    useWeb,
+    useWeb
   };
 }
 //# sourceMappingURL=useHandler.js.map

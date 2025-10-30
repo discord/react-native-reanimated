@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Rotate from top on the X axis. You can modify the behavior by chaining
@@ -22,38 +22,30 @@ export class FlipInXUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: '90deg',
-            },
-            {
-              translateY: -targetValues.targetHeight,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: '90deg'
+          }, {
+            translateY: -targetValues.targetHeight
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -79,38 +71,30 @@ export class FlipInYLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateY: '-90deg',
-            },
-            {
-              translateX: -targetValues.targetWidth,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateY: '-90deg'
+          }, {
+            translateX: -targetValues.targetWidth
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateY: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateY: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(0, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -136,38 +120,30 @@ export class FlipInXDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: '-90deg',
-            },
-            {
-              translateY: targetValues.targetHeight,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: '-90deg'
+          }, {
+            translateY: targetValues.targetHeight
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateX: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateX: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -193,38 +169,30 @@ export class FlipInYRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateY: '90deg',
-            },
-            {
-              translateX: targetValues.targetWidth,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateY: '90deg'
+          }, {
+            translateX: targetValues.targetWidth
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateY: delayFunction(delay, animation('0deg', config)),
-            },
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateY: delayFunction(delay, animation('0deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(0, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -255,27 +223,21 @@ export class FlipInEasyX extends ComplexAnimationBuilder {
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: '90deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: '90deg'
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateX: delayFunction(delay, animation('0deg', config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateX: delayFunction(delay, animation('0deg', config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -306,27 +268,21 @@ export class FlipInEasyY extends ComplexAnimationBuilder {
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateY: '90deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateY: '90deg'
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateY: delayFunction(delay, animation('0deg', config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateY: delayFunction(delay, animation('0deg', config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -352,41 +308,30 @@ export class FlipOutXUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: '0deg',
-            },
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: '0deg'
+          }, {
+            translateY: 0
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateX: delayFunction(delay, animation('90deg', config)),
-            },
-            {
-              translateY: delayFunction(
-                delay,
-                animation(-targetValues.currentHeight, config)
-              ),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateX: delayFunction(delay, animation('90deg', config))
+          }, {
+            translateY: delayFunction(delay, animation(-targetValues.currentHeight, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -412,41 +357,30 @@ export class FlipOutYLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateY: '0deg',
-            },
-            {
-              translateX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateY: '0deg'
+          }, {
+            translateX: 0
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateY: delayFunction(delay, animation('-90deg', config)),
-            },
-            {
-              translateX: delayFunction(
-                delay,
-                animation(-targetValues.currentWidth, config)
-              ),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateY: delayFunction(delay, animation('-90deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(-targetValues.currentWidth, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -472,41 +406,30 @@ export class FlipOutXDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: '0deg',
-            },
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: '0deg'
+          }, {
+            translateY: 0
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateX: delayFunction(delay, animation('-90deg', config)),
-            },
-            {
-              translateY: delayFunction(
-                delay,
-                animation(targetValues.currentHeight, config)
-              ),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateX: delayFunction(delay, animation('-90deg', config))
+          }, {
+            translateY: delayFunction(delay, animation(targetValues.currentHeight, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -532,41 +455,30 @@ export class FlipOutYRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (targetValues) => {
+    return targetValues => {
       'worklet';
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateY: '0deg',
-            },
-            {
-              translateX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateY: '0deg'
+          }, {
+            translateX: 0
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateY: delayFunction(delay, animation('90deg', config)),
-            },
-            {
-              translateX: delayFunction(
-                delay,
-                animation(targetValues.currentWidth, config)
-              ),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateY: delayFunction(delay, animation('90deg', config))
+          }, {
+            translateX: delayFunction(delay, animation(targetValues.currentWidth, config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -597,27 +509,21 @@ export class FlipOutEasyX extends ComplexAnimationBuilder {
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateX: '0deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateX: '0deg'
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateX: delayFunction(delay, animation('90deg', config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateX: delayFunction(delay, animation('90deg', config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };
@@ -648,27 +554,21 @@ export class FlipOutEasyY extends ComplexAnimationBuilder {
 
       return {
         initialValues: {
-          transform: [
-            {
-              perspective: 500,
-            },
-            {
-              rotateY: '0deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            perspective: 500
+          }, {
+            rotateY: '0deg'
+          }],
+          ...initialValues
         },
         animations: {
-          transform: [
-            {
-              perspective: delayFunction(delay, animation(500, config)),
-            },
-            {
-              rotateY: delayFunction(delay, animation('90deg', config)),
-            },
-          ],
+          transform: [{
+            perspective: delayFunction(delay, animation(500, config))
+          }, {
+            rotateY: delayFunction(delay, animation('90deg', config))
+          }]
         },
-        callback,
+        callback
       };
     };
   };

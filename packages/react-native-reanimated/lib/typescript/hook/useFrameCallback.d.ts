@@ -8,9 +8,9 @@ import type { FrameInfo } from '../frameCallback/FrameCallbackRegistryUI';
  * @see https://docs.swmansion.com/react-native-reanimated/docs/advanced/useFrameCallback#returns
  */
 export type FrameCallback = {
-  setActive: (isActive: boolean) => void;
-  isActive: boolean;
-  callbackId: number;
+    setActive: (isActive: boolean) => void;
+    isActive: boolean;
+    callbackId: number;
 };
 /**
  * Lets you run a function on every frame update.
@@ -21,8 +21,5 @@ export type FrameCallback = {
  * @returns A frame callback object - {@link FrameCallback}.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/advanced/useFrameCallback
  */
-export declare function useFrameCallback(
-  callback: (frameInfo: FrameInfo) => void,
-  autostart?: boolean
-): FrameCallback;
+export declare function useFrameCallback(callback: (frameInfo: FrameInfo) => void, autostart?: boolean): FrameCallback;
 //# sourceMappingURL=useFrameCallback.d.ts.map

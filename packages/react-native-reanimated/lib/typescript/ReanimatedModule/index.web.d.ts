@@ -1,2 +1,2 @@
-export declare const ReanimatedModule: import('../commonTypes').IReanimatedModule;
+export declare const ReanimatedModule: import("../commonTypes").IReanimatedModule;
 //# sourceMappingURL=index.web.d.ts.map

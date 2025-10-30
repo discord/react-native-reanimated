@@ -1,10 +1,10 @@
 'use strict';
 
 import { Platform } from 'react-native';
-import { registerEventHandler, unregisterEventHandler } from '../../core.js';
-import { ReanimatedError } from '../../errors.js';
-import { isJest, shouldBeUseWeb } from '../../PlatformChecker.js';
-import { runOnUIImmediately } from '../../threads.js';
+import { registerEventHandler, unregisterEventHandler } from "../../core.js";
+import { ReanimatedError } from "../../errors.js";
+import { isJest, shouldBeUseWeb } from "../../PlatformChecker.js";
+import { runOnUIImmediately } from "../../threads.js";
 const IS_ANDROID = Platform.OS === 'android';
 export class ProgressTransitionManager {
   _sharedElementCount = 0;
@@ -13,16 +13,13 @@ export class ProgressTransitionManager {
     onTransitionProgress: -1,
     onAppear: -1,
     onDisappear: -1,
-    onSwipeDismiss: -1,
+    onSwipeDismiss: -1
   };
   addProgressAnimation(viewTag, progressAnimation) {
     runOnUIImmediately(() => {
       'worklet';
 
-      global.ProgressTransitionRegister.addProgressAnimation(
-        viewTag,
-        progressAnimation
-      );
+      global.ProgressTransitionRegister.addProgressAnimation(viewTag, progressAnimation);
     })();
     this.registerEventHandlers();
   }
@@ -31,10 +28,7 @@ export class ProgressTransitionManager {
     runOnUIImmediately(() => {
       'worklet';
 
-      global.ProgressTransitionRegister.removeProgressAnimation(
-        viewTag,
-        isUnmounting
-      );
+      global.ProgressTransitionRegister.removeProgressAnimation(viewTag, isUnmounting);
     })();
   }
   registerEventHandlers() {
@@ -44,7 +38,7 @@ export class ProgressTransitionManager {
       eventHandler.isRegistered = true;
       const eventPrefix = IS_ANDROID ? 'on' : 'top';
       let lastProgressValue = -1;
-      eventHandler.onTransitionProgress = registerEventHandler((event) => {
+      eventHandler.onTransitionProgress = registerEventHandler(event => {
         'worklet';
 
         const progress = event.progress;
@@ -146,7 +140,7 @@ function createProgressTransitionRegister() {
       // set initial style for re-parented components
       progressTransitionManager.frame(0);
     },
-    frame: (progress) => {
+    frame: progress => {
       for (const viewTag of currentTransitions) {
         const progressAnimation = progressAnimations.get(viewTag);
         if (!progressAnimation) {
@@ -189,7 +183,7 @@ function createProgressTransitionRegister() {
         }
         toRemove.clear();
       }
-    },
+    }
   };
   return progressTransitionManager;
 }
@@ -198,21 +192,16 @@ if (shouldBeUseWeb()) {
     // Jest attempts to access a property of this object to check if it is a Jest mock
     // so we can't throw an error in the getter.
     if (!isJest()) {
-      throw new ReanimatedError(
-        '`ProgressTransitionRegister` is not available on non-native platform.'
-      );
+      throw new ReanimatedError('`ProgressTransitionRegister` is not available on non-native platform.');
     }
   };
-  global.ProgressTransitionRegister = new Proxy(
-    {},
-    {
-      get: maybeThrowError,
-      set: () => {
-        maybeThrowError();
-        return false;
-      },
+  global.ProgressTransitionRegister = new Proxy({}, {
+    get: maybeThrowError,
+    set: () => {
+      maybeThrowError();
+      return false;
     }
-  );
+  });
 } else {
   runOnUIImmediately(() => {
     'worklet';

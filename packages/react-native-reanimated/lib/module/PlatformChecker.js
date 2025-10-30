@@ -12,10 +12,7 @@ export function isJest() {
 
 // `isChromeDebugger` also returns true in Jest environment, so `isJest()` check should always be performed first
 export function isChromeDebugger() {
-  return (
-    (!global.nativeCallSyncHook || !!global.__REMOTEDEV__) &&
-    !global.RN$Bridgeless
-  );
+  return (!global.nativeCallSyncHook || !!global.__REMOTEDEV__) && !global.RN$Bridgeless;
 }
 export function isWeb() {
   return Platform.OS === 'web';

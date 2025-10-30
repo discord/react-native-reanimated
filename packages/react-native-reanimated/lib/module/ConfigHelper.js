@@ -1,39 +1,29 @@
 'use strict';
 
-import { executeOnUIRuntimeSync, jsiConfigureProps } from './core.js';
-import { ReanimatedError } from './errors.js';
-import { updateLoggerConfig } from './logger/index.js';
-import { shouldBeUseWeb } from './PlatformChecker.js';
-import { PropsAllowlists } from './propsAllowlists.js';
+import { executeOnUIRuntimeSync, jsiConfigureProps } from "./core.js";
+import { ReanimatedError } from "./errors.js";
+import { updateLoggerConfig } from "./logger/index.js";
+import { shouldBeUseWeb } from "./PlatformChecker.js";
+import { PropsAllowlists } from "./propsAllowlists.js";
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 function assertNoOverlapInLists() {
   for (const key in PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST) {
     if (key in PropsAllowlists.UI_THREAD_PROPS_WHITELIST) {
-      throw new ReanimatedError(
-        `Property \`${key}\` was whitelisted both as UI and native prop. Please remove it from one of the lists.`
-      );
+      throw new ReanimatedError(`Property \`${key}\` was whitelisted both as UI and native prop. Please remove it from one of the lists.`);
     }
   }
 }
 export function configureProps() {
   assertNoOverlapInLists();
-  jsiConfigureProps(
-    Object.keys(PropsAllowlists.UI_THREAD_PROPS_WHITELIST),
-    Object.keys(PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST)
-  );
+  jsiConfigureProps(Object.keys(PropsAllowlists.UI_THREAD_PROPS_WHITELIST), Object.keys(PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST));
 }
 export function addWhitelistedNativeProps(props) {
-  const oldSize = Object.keys(
-    PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST
-  ).length;
+  const oldSize = Object.keys(PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST).length;
   PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST = {
     ...PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST,
-    ...props,
+    ...props
   };
-  if (
-    oldSize !==
-    Object.keys(PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST).length
-  ) {
+  if (oldSize !== Object.keys(PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST).length) {
     configureProps();
   }
 }
@@ -41,11 +31,9 @@ export function addWhitelistedUIProps(props) {
   const oldSize = Object.keys(PropsAllowlists.UI_THREAD_PROPS_WHITELIST).length;
   PropsAllowlists.UI_THREAD_PROPS_WHITELIST = {
     ...PropsAllowlists.UI_THREAD_PROPS_WHITELIST,
-    ...props,
+    ...props
   };
-  if (
-    oldSize !== Object.keys(PropsAllowlists.UI_THREAD_PROPS_WHITELIST).length
-  ) {
+  if (oldSize !== Object.keys(PropsAllowlists.UI_THREAD_PROPS_WHITELIST).length) {
     configureProps();
   }
 }
@@ -80,13 +68,10 @@ export function adaptViewConfig(viewConfig) {
   // update whitelist of UI props for this view name only once
   if (!PROCESSED_VIEW_NAMES.has(viewName)) {
     const propsToAdd = {};
-    Object.keys(props).forEach((key) => {
+    Object.keys(props).forEach(key => {
       // we don't want to add native props as they affect layout
       // we also skip props which repeat here
-      if (
-        !(key in PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST) &&
-        !(key in PropsAllowlists.UI_THREAD_PROPS_WHITELIST)
-      ) {
+      if (!(key in PropsAllowlists.NATIVE_THREAD_PROPS_WHITELIST) && !(key in PropsAllowlists.UI_THREAD_PROPS_WHITELIST)) {
         propsToAdd[key] = true;
       }
     });

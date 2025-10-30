@@ -1,15 +1,12 @@
 'use strict';
 
-import { isWorkletFunction } from './commonTypes.js';
-import { ReanimatedError, registerReanimatedError } from './errors.js';
-import { setupCallGuard, setupConsole } from './initializers.js';
-import { registerLoggerConfig } from './logger/index.js';
-import { shouldBeUseWeb } from './PlatformChecker.js';
+import { isWorkletFunction } from "./commonTypes.js";
+import { ReanimatedError, registerReanimatedError } from "./errors.js";
+import { setupCallGuard, setupConsole } from "./initializers.js";
+import { registerLoggerConfig } from "./logger/index.js";
+import { shouldBeUseWeb } from "./PlatformChecker.js";
 import { ReanimatedModule } from './ReanimatedModule';
-import {
-  makeShareableCloneOnUIRecursive,
-  makeShareableCloneRecursive,
-} from './shareables.js';
+import { makeShareableCloneOnUIRecursive, makeShareableCloneRecursive } from "./shareables.js";
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 
 /**
@@ -30,18 +27,15 @@ export function createWorkletRuntime(name, initializer) {
   // Assign to a different variable as __reanimatedLoggerConfig is not a captured
   // identifier in the Worklet runtime.
   const config = __reanimatedLoggerConfig;
-  return ReanimatedModule.createWorkletRuntime(
-    name,
-    makeShareableCloneRecursive(() => {
-      'worklet';
+  return ReanimatedModule.createWorkletRuntime(name, makeShareableCloneRecursive(() => {
+    'worklet';
 
-      registerReanimatedError();
-      registerLoggerConfig(config);
-      setupCallGuard();
-      setupConsole();
-      initializer?.();
-    })
-  );
+    registerReanimatedError();
+    registerLoggerConfig(config);
+    setupCallGuard();
+    setupConsole();
+    initializer?.();
+  }));
 }
 
 // @ts-expect-error Check `runOnUI` overload.
@@ -51,32 +45,19 @@ export function runOnRuntime(workletRuntime, worklet) {
   'worklet';
 
   if (__DEV__ && !SHOULD_BE_USE_WEB && !isWorkletFunction(worklet)) {
-    throw new ReanimatedError(
-      'The function passed to `runOnRuntime` is not a worklet.' +
-        (_WORKLET
-          ? ' Please make sure that `processNestedWorklets` option in Reanimated Babel plugin is enabled.'
-          : '')
-    );
+    throw new ReanimatedError('The function passed to `runOnRuntime` is not a worklet.' + (_WORKLET ? ' Please make sure that `processNestedWorklets` option in Reanimated Babel plugin is enabled.' : ''));
   }
   if (_WORKLET) {
-    return (...args) =>
-      global._scheduleOnRuntime(
-        workletRuntime,
-        makeShareableCloneOnUIRecursive(() => {
-          'worklet';
+    return (...args) => global._scheduleOnRuntime(workletRuntime, makeShareableCloneOnUIRecursive(() => {
+      'worklet';
 
-          worklet(...args);
-        })
-      );
+      worklet(...args);
+    }));
   }
-  return (...args) =>
-    ReanimatedModule.scheduleOnRuntime(
-      workletRuntime,
-      makeShareableCloneRecursive(() => {
-        'worklet';
+  return (...args) => ReanimatedModule.scheduleOnRuntime(workletRuntime, makeShareableCloneRecursive(() => {
+    'worklet';
 
-        worklet(...args);
-      })
-    );
+    worklet(...args);
+  }));
 }
 //# sourceMappingURL=runtimes.js.map

@@ -1,18 +1,19 @@
 'use strict';
 
-import { SLOPE_FACTOR, VELOCITY_EPS } from './utils.js';
+import { SLOPE_FACTOR, VELOCITY_EPS } from "./utils.js";
 export function rigidDecay(animation, now, config) {
   'worklet';
 
-  const { lastTimestamp, startTimestamp, initialVelocity, current, velocity } =
-    animation;
+  const {
+    lastTimestamp,
+    startTimestamp,
+    initialVelocity,
+    current,
+    velocity
+  } = animation;
   const deltaTime = Math.min(now - lastTimestamp, 64);
-  const v =
-    velocity *
-    Math.exp(
-      -(1 - config.deceleration) * (now - startTimestamp) * SLOPE_FACTOR
-    );
-  animation.current = current + (v * config.velocityFactor * deltaTime) / 1000;
+  const v = velocity * Math.exp(-(1 - config.deceleration) * (now - startTimestamp) * SLOPE_FACTOR);
+  animation.current = current + v * config.velocityFactor * deltaTime / 1000;
   animation.velocity = v;
   animation.lastTimestamp = now;
   if (config.clamp) {

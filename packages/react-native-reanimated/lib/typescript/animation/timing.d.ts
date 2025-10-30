@@ -1,11 +1,4 @@
-import type {
-  AnimatableValue,
-  Animation,
-  AnimationCallback,
-  EasingFunction,
-  ReduceMotion,
-  Timestamp,
-} from '../commonTypes';
+import type { AnimatableValue, Animation, AnimationCallback, EasingFunction, ReduceMotion, Timestamp } from '../commonTypes';
 import type { EasingFunctionFactory } from '../Easing';
 /**
  * The timing animation configuration.
@@ -19,25 +12,21 @@ import type { EasingFunctionFactory } from '../Easing';
  * @see https://docs.swmansion.com/react-native-reanimated/docs/animations/withTiming#config-
  */
 interface TimingConfig {
-  duration?: number;
-  reduceMotion?: ReduceMotion;
-  easing?: EasingFunction | EasingFunctionFactory;
+    duration?: number;
+    reduceMotion?: ReduceMotion;
+    easing?: EasingFunction | EasingFunctionFactory;
 }
 export type WithTimingConfig = TimingConfig;
 export interface TimingAnimation extends Animation<TimingAnimation> {
-  type: string;
-  easing: EasingFunction;
-  startValue: AnimatableValue;
-  startTime: Timestamp;
-  progress: number;
-  toValue: AnimatableValue;
-  current: AnimatableValue;
+    type: string;
+    easing: EasingFunction;
+    startValue: AnimatableValue;
+    startTime: Timestamp;
+    progress: number;
+    toValue: AnimatableValue;
+    current: AnimatableValue;
 }
-type withTimingType = <T extends AnimatableValue>(
-  toValue: T,
-  userConfig?: TimingConfig,
-  callback?: AnimationCallback
-) => T;
+type withTimingType = <T extends AnimatableValue>(toValue: T, userConfig?: TimingConfig, callback?: AnimationCallback) => T;
 /**
  * Lets you create an animation based on duration and easing.
  *

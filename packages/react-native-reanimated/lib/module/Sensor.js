@@ -1,7 +1,7 @@
 'use strict';
 
-import { SensorType } from './commonTypes.js';
-import { makeMutable } from './mutables.js';
+import { SensorType } from "./commonTypes.js";
+import { makeMutable } from "./mutables.js";
 import { ReanimatedModule } from './ReanimatedModule';
 function initSensorData(sensorType) {
   if (sensorType === SensorType.ROTATION) {
@@ -13,14 +13,14 @@ function initSensorData(sensorType) {
       yaw: 0,
       pitch: 0,
       roll: 0,
-      interfaceOrientation: 0,
+      interfaceOrientation: 0
     });
   } else {
     return makeMutable({
       x: 0,
       y: 0,
       z: 0,
-      interfaceOrientation: 0,
+      interfaceOrientation: 0
     });
   }
 }
@@ -35,12 +35,7 @@ export default class Sensor {
   register(eventHandler) {
     const config = this.config;
     const sensorType = this.sensorType;
-    this.sensorId = ReanimatedModule.registerSensor(
-      sensorType,
-      config.interval === 'auto' ? -1 : config.interval,
-      config.iosReferenceFrame,
-      eventHandler
-    );
+    this.sensorId = ReanimatedModule.registerSensor(sensorType, config.interval === 'auto' ? -1 : config.interval, config.iosReferenceFrame, eventHandler);
     return this.sensorId !== -1;
   }
   isRunning() {

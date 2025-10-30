@@ -8,47 +8,34 @@ export function valueSetter(mutable, value, forceUpdate = false) {
     previousAnimation.cancelled = true;
     mutable._animation = null;
   }
-  if (
-    typeof value === 'function' ||
-    (value !== null &&
-      typeof value === 'object' &&
-      // TODO TYPESCRIPT fix this after fixing AnimationObject type
-      value.onFrame !== undefined)
-  ) {
-    const animation =
-      typeof value === 'function'
-        ? // TODO TYPESCRIPT fix this after fixing AnimationObject type
-          value()
-        : // TODO TYPESCRIPT fix this after fixing AnimationObject type
-          value;
+  if (typeof value === 'function' || value !== null && typeof value === 'object' &&
+  // TODO TYPESCRIPT fix this after fixing AnimationObject type
+  value.onFrame !== undefined) {
+    const animation = typeof value === 'function' ?
+    // TODO TYPESCRIPT fix this after fixing AnimationObject type
+    value() :
+    // TODO TYPESCRIPT fix this after fixing AnimationObject type
+    value;
     // prevent setting again to the same value
     // and triggering the mappers that treat this value as an input
     // this happens when the animation's target value(stored in animation.current until animation.onStart is called) is set to the same value as a current one(this._value)
     // built in animations that are not higher order(withTiming, withSpring) hold target value in .current
-    if (
-      mutable._value === animation.current &&
-      !animation.isHigherOrder &&
-      !forceUpdate
-    ) {
+    if (mutable._value === animation.current && !animation.isHigherOrder && !forceUpdate) {
       animation.callback && animation.callback(true);
       return;
     }
     // animated set
-    const initializeAnimation = (timestamp) => {
+    const initializeAnimation = timestamp => {
       animation.onStart(animation, mutable.value, timestamp, previousAnimation);
     };
-    const currentTimestamp =
-      global.__frameTimestamp || global._getAnimationTimestamp();
+    const currentTimestamp = global.__frameTimestamp || global._getAnimationTimestamp();
     initializeAnimation(currentTimestamp);
-    const step = (newTimestamp) => {
+    const step = newTimestamp => {
       // Function `requestAnimationFrame` adds callback to an array, all the callbacks are flushed with function `__flushAnimationFrame`
       // Usually we flush them inside function `nativeRequestAnimationFrame` and then the given timestamp is the timestamp of end of the current frame.
       // However function `__flushAnimationFrame` may also be called inside `registerEventHandler` - then we get actual timestamp which is earlier than the end of the frame.
 
-      const timestamp =
-        newTimestamp < (animation.timestamp || 0)
-          ? animation.timestamp
-          : newTimestamp;
+      const timestamp = newTimestamp < (animation.timestamp || 0) ? animation.timestamp : newTimestamp;
       if (animation.cancelled) {
         animation.callback && animation.callback(false /* finished */);
         return;

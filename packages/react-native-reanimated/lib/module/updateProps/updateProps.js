@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-explicit-any */
 'use strict';
 
-import { processColorsInProps } from '../Colors.js';
-import { ReanimatedError } from '../errors.js';
-import { isFabric, isJest, shouldBeUseWeb } from '../PlatformChecker.js';
-import { _updatePropsJS } from '../ReanimatedModule/js-reanimated/index.js';
-import { runOnUIImmediately } from '../threads.js';
-import { processTransformOrigin } from './processTransformOrigin.js';
+import { processColorsInProps } from "../Colors.js";
+import { ReanimatedError } from "../errors.js";
+import { isFabric, isJest, shouldBeUseWeb } from "../PlatformChecker.js";
+import { _updatePropsJS } from "../ReanimatedModule/js-reanimated/index.js";
+import { runOnUIImmediately } from "../threads.js";
+import { processTransformOrigin } from "./processTransformOrigin.js";
 let updateProps;
 if (shouldBeUseWeb()) {
   updateProps = (viewDescriptors, updates, isAnimatedProps) => {
     'worklet';
 
-    viewDescriptors.value?.forEach((viewDescriptor) => {
+    viewDescriptors.value?.forEach(viewDescriptor => {
       const component = viewDescriptor.tag;
       _updatePropsJS(updates, component, isAnimatedProps);
     });
@@ -28,90 +28,78 @@ if (shouldBeUseWeb()) {
     global.UpdatePropsManager.update(viewDescriptors, updates);
   };
 }
-export const updatePropsJestWrapper = (
-  viewDescriptors,
-  updates,
-  animatedValues,
-  adapters
-) => {
-  adapters.forEach((adapter) => {
+export const updatePropsJestWrapper = (viewDescriptors, updates, animatedValues, adapters) => {
+  adapters.forEach(adapter => {
     adapter(updates);
   });
   animatedValues.current.value = {
     ...animatedValues.current.value,
-    ...updates,
+    ...updates
   };
   updateProps(viewDescriptors, updates);
 };
 export default updateProps;
-const createUpdatePropsManager = isFabric()
-  ? () => {
-      'worklet';
+const createUpdatePropsManager = isFabric() ? () => {
+  'worklet';
 
-      // Fabric
-      const operations = [];
-      return {
-        update(viewDescriptors, updates) {
-          viewDescriptors.value.forEach((viewDescriptor) => {
-            operations.push({
-              shadowNodeWrapper: viewDescriptor.shadowNodeWrapper,
-              updates,
-            });
-            if (operations.length === 1) {
-              queueMicrotask(this.flush);
-            }
-          });
-        },
-        flush() {
-          global._updatePropsFabric(operations);
-          operations.length = 0;
-        },
-      };
+  // Fabric
+  const operations = [];
+  return {
+    update(viewDescriptors, updates) {
+      viewDescriptors.value.forEach(viewDescriptor => {
+        operations.push({
+          shadowNodeWrapper: viewDescriptor.shadowNodeWrapper,
+          updates
+        });
+        if (operations.length === 1) {
+          queueMicrotask(this.flush);
+        }
+      });
+    },
+    flush() {
+      global._updatePropsFabric(operations);
+      operations.length = 0;
     }
-  : () => {
-      'worklet';
+  };
+} : () => {
+  'worklet';
 
-      // Paper
-      const operations = [];
-      return {
-        update(viewDescriptors, updates) {
-          viewDescriptors.value.forEach((viewDescriptor) => {
-            operations.push({
-              tag: viewDescriptor.tag,
-              name: viewDescriptor.name || 'RCTView',
-              updates,
-            });
-            if (operations.length === 1) {
-              queueMicrotask(this.flush);
-            }
-          });
-        },
-        flush() {
-          global._updatePropsPaper(operations);
-          operations.length = 0;
-        },
-      };
-    };
+  // Paper
+  const operations = [];
+  return {
+    update(viewDescriptors, updates) {
+      viewDescriptors.value.forEach(viewDescriptor => {
+        operations.push({
+          tag: viewDescriptor.tag,
+          name: viewDescriptor.name || 'RCTView',
+          updates
+        });
+        if (operations.length === 1) {
+          queueMicrotask(this.flush);
+        }
+      });
+    },
+    flush() {
+      global._updatePropsPaper(operations);
+      operations.length = 0;
+    }
+  };
+};
 if (shouldBeUseWeb()) {
   const maybeThrowError = () => {
     // Jest attempts to access a property of this object to check if it is a Jest mock
     // so we can't throw an error in the getter.
     if (!isJest()) {
-      throw new ReanimatedError(
-        '`UpdatePropsManager` is not available on non-native platform.'
-      );
+      throw new ReanimatedError('`UpdatePropsManager` is not available on non-native platform.');
     }
   };
-  global.UpdatePropsManager = new Proxy(
-    {},
-    {
-      get: maybeThrowError,
-      set: () => {
-        maybeThrowError();
-        return false;
-      },
+  global.UpdatePropsManager = new Proxy({}, {
+    get: maybeThrowError,
+    set: () => {
+      maybeThrowError();
+      return false;
     }
-  );
+  });
 } else {
   runOnUIImmediately(() => {
     'worklet';

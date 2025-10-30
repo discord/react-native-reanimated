@@ -11,9 +11,6 @@ import type { AnimatedRef } from './commonTypes';
  * @see https://docs.swmansion.com/react-native-reanimated/docs/scroll/useScrollViewOffset
  */
 export declare const useScrollViewOffset: typeof useScrollViewOffsetWeb;
-declare function useScrollViewOffsetWeb(
-  animatedRef: AnimatedRef<AnimatedScrollView> | null,
-  providedOffset?: SharedValue<number>
-): SharedValue<number>;
+declare function useScrollViewOffsetWeb(animatedRef: AnimatedRef<AnimatedScrollView> | null, providedOffset?: SharedValue<number>): SharedValue<number>;
 export {};
 //# sourceMappingURL=useScrollViewOffset.d.ts.map

@@ -1,16 +1,16 @@
 'use strict';
 
-import { adaptViewConfig } from '../ConfigHelper.js';
-import { isSharedValue } from '../isSharedValue.js';
-import { startMapper, stopMapper } from '../mappers.js';
-import { updateProps } from '../updateProps/index.js';
-import { makeViewDescriptorsSet } from '../ViewDescriptorsSet.js';
-import { flattenArray } from './utils.js';
+import { adaptViewConfig } from "../ConfigHelper.js";
+import { isSharedValue } from "../isSharedValue.js";
+import { startMapper, stopMapper } from "../mappers.js";
+import { updateProps } from "../updateProps/index.js";
+import { makeViewDescriptorsSet } from "../ViewDescriptorsSet.js";
+import { flattenArray } from "./utils.js";
 function isInlineStyleTransform(transform) {
   if (!Array.isArray(transform)) {
     return false;
   }
-  return transform.some((t) => hasInlineStyles(t));
+  return transform.some(t => hasInlineStyles(t));
 }
 function inlinePropsHasChanged(styles1, styles2) {
   if (Object.keys(styles1).length !== Object.keys(styles2).length) {
@@ -31,7 +31,7 @@ function getInlinePropsUpdate(inlineProps) {
     if (isSharedValue(styleValue)) {
       update[key] = styleValue.value;
     } else if (Array.isArray(styleValue)) {
-      update[key] = styleValue.map((item) => {
+      update[key] = styleValue.map(item => {
         return getInlinePropsUpdate(item);
       });
     } else if (typeof styleValue === 'object') {
@@ -48,17 +48,14 @@ function extractSharedValuesMapFromProps(props) {
     const value = props[key];
     if (key === 'style') {
       const styles = flattenArray(props.style ?? []);
-      styles.forEach((style) => {
+      styles.forEach(style => {
         if (!style) {
           return;
         }
         for (const [styleKey, styleValue] of Object.entries(style)) {
           if (isSharedValue(styleValue)) {
             inlineProps[styleKey] = styleValue;
-          } else if (
-            styleKey === 'transform' &&
-            isInlineStyleTransform(styleValue)
-          ) {
+          } else if (styleKey === 'transform' && isInlineStyleTransform(styleValue)) {
             inlineProps[styleKey] = styleValue;
           }
         }
@@ -73,12 +70,9 @@ export function hasInlineStyles(style) {
   if (!style) {
     return false;
   }
-  return Object.keys(style).some((key) => {
+  return Object.keys(style).some(key => {
     const styleValue = style[key];
-    return (
-      isSharedValue(styleValue) ||
-      (key === 'transform' && isInlineStyleTransform(styleValue))
-    );
+    return isSharedValue(styleValue) || key === 'transform' && isInlineStyleTransform(styleValue);
   });
 }
 export function getInlineStyle(style, isFirstRender) {
@@ -87,10 +81,7 @@ export function getInlineStyle(style, isFirstRender) {
   }
   const newStyle = {};
   for (const [key, styleValue] of Object.entries(style)) {
-    if (
-      !isSharedValue(styleValue) &&
-      !(key === 'transform' && isInlineStyleTransform(styleValue))
-    ) {
+    if (!isSharedValue(styleValue) && !(key === 'transform' && isInlineStyleTransform(styleValue))) {
       newStyle[key] = styleValue;
     }
   }
@@ -101,25 +92,27 @@ export class InlinePropManager {
   _inlinePropsMapperId = null;
   _inlineProps = {};
   attachInlineProps(animatedComponent, viewInfo) {
-    const newInlineProps = extractSharedValuesMapFromProps(
-      animatedComponent.props
-    );
+    const newInlineProps = extractSharedValuesMapFromProps(animatedComponent.props);
     const hasChanged = inlinePropsHasChanged(newInlineProps, this._inlineProps);
     if (hasChanged) {
       if (!this._inlinePropsViewDescriptors) {
         this._inlinePropsViewDescriptors = makeViewDescriptorsSet();
-        const { viewTag, viewName, shadowNodeWrapper, viewConfig } = viewInfo;
+        const {
+          viewTag,
+          viewName,
+          shadowNodeWrapper,
+          viewConfig
+        } = viewInfo;
         if (Object.keys(newInlineProps).length && viewConfig) {
           adaptViewConfig(viewConfig);
         }
         this._inlinePropsViewDescriptors.add({
           tag: viewTag,
           name: viewName,
-          shadowNodeWrapper: shadowNodeWrapper,
+          shadowNodeWrapper: shadowNodeWrapper
         });
       }
-      const shareableViewDescriptors =
-        this._inlinePropsViewDescriptors.shareableViewDescriptors;
+      const shareableViewDescriptors = this._inlinePropsViewDescriptors.shareableViewDescriptors;
       const updaterFunction = () => {
         'worklet';
 
@@ -132,10 +125,7 @@ export class InlinePropManager {
       }
       this._inlinePropsMapperId = null;
       if (Object.keys(newInlineProps).length) {
-        this._inlinePropsMapperId = startMapper(
-          updaterFunction,
-          Object.values(newInlineProps)
-        );
+        this._inlinePropsMapperId = startMapper(updaterFunction, Object.values(newInlineProps));
       }
     }
   }

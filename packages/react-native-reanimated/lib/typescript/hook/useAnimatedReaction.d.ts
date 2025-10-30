@@ -13,9 +13,5 @@ import type { DependencyList } from './commonTypes';
  *   using Reanimated without the Babel plugin on the Web.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/advanced/useAnimatedReaction
  */
-export declare function useAnimatedReaction<PreparedResult>(
-  prepare: () => PreparedResult,
-  react: (prepared: PreparedResult, previous: PreparedResult | null) => void,
-  dependencies?: DependencyList
-): void;
+export declare function useAnimatedReaction<PreparedResult>(prepare: () => PreparedResult, react: (prepared: PreparedResult, previous: PreparedResult | null) => void, dependencies?: DependencyList): void;
 //# sourceMappingURL=useAnimatedReaction.d.ts.map

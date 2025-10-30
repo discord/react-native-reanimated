@@ -1,7 +1,4 @@
-import type {
-  ILayoutAnimationBuilder,
-  LayoutAnimationFunction,
-} from '../../commonTypes';
+import type { ILayoutAnimationBuilder, LayoutAnimationFunction } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,15 +10,10 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/layout-transitions#linear-transition
  */
-export declare class LinearTransition
-  extends ComplexAnimationBuilder
-  implements ILayoutAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => LayoutAnimationFunction;
+export declare class LinearTransition extends ComplexAnimationBuilder implements ILayoutAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => LayoutAnimationFunction;
 }
 /** @deprecated Please use {@link LinearTransition} instead. */
 export declare const Layout: typeof LinearTransition;

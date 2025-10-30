@@ -1,26 +1,10 @@
 'use strict';
 
-import { registerReanimatedError, reportFatalErrorOnJS } from './errors.js';
-import {
-  DEFAULT_LOGGER_CONFIG,
-  logToLogBoxAndConsole,
-  registerLoggerConfig,
-  replaceLoggerImplementation,
-} from './logger/index.js';
-import { mockedRequestAnimationFrame } from './mockedRequestAnimationFrame.js';
-import {
-  isChromeDebugger,
-  isJest,
-  isWeb,
-  shouldBeUseWeb,
-} from './PlatformChecker.js';
-import {
-  callMicrotasks,
-  executeOnUIRuntimeSync,
-  runOnJS,
-  runOnUIImmediately,
-  setupMicrotasks,
-} from './threads.js';
+import { registerReanimatedError, reportFatalErrorOnJS } from "./errors.js";
+import { DEFAULT_LOGGER_CONFIG, logToLogBoxAndConsole, registerLoggerConfig, replaceLoggerImplementation } from "./logger/index.js";
+import { mockedRequestAnimationFrame } from "./mockedRequestAnimationFrame.js";
+import { isChromeDebugger, isJest, isWeb, shouldBeUseWeb } from "./PlatformChecker.js";
+import { callMicrotasks, executeOnUIRuntimeSync, runOnJS, runOnUIImmediately, setupMicrotasks } from "./threads.js";
 const IS_JEST = isJest();
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 const IS_CHROME_DEBUGGER = isChromeDebugger();
@@ -31,7 +15,7 @@ const IS_CHROME_DEBUGGER = isChromeDebugger();
 function overrideLogFunctionImplementation() {
   'worklet';
 
-  replaceLoggerImplementation((data) => {
+  replaceLoggerImplementation(data => {
     'worklet';
 
     runOnJS(logToLogBoxAndConsole)(data);
@@ -76,12 +60,12 @@ export function setupCallGuard() {
 
   global.__callGuardDEV = callGuardDEV;
   global.__ErrorUtils = {
-    reportFatalError: (error) => {
+    reportFatalError: error => {
       runOnJS(reportFatalErrorOnJS)({
         message: error.message,
-        stack: error.stack,
+        stack: error.stack
       });
-    },
+    }
   };
 }
 
@@ -99,27 +83,25 @@ export function setupCallGuard() {
  * JavaScript wrappers instead.
  */
 function createMemorySafeCapturableConsole() {
-  const consoleCopy = Object.fromEntries(
-    Object.entries(console).map(([methodName, method]) => {
-      const methodWrapper = function methodWrapper(...args) {
-        return method(...args);
-      };
-      if (method.name) {
-        /**
-         * Set the original method name as the wrapper name if available.
-         *
-         * It might be unnecessary but if we want to fully mimic the console
-         * object we should take into the account the fact some code might rely on
-         * the method name.
-         */
-        Object.defineProperty(methodWrapper, 'name', {
-          value: method.name,
-          writable: false,
-        });
-      }
-      return [methodName, methodWrapper];
-    })
-  );
+  const consoleCopy = Object.fromEntries(Object.entries(console).map(([methodName, method]) => {
+    const methodWrapper = function methodWrapper(...args) {
+      return method(...args);
+    };
+    if (method.name) {
+      /**
+       * Set the original method name as the wrapper name if available.
+       *
+       * It might be unnecessary but if we want to fully mimic the console
+       * object we should take into the account the fact some code might rely
+       * on the method name.
+       */
+      Object.defineProperty(methodWrapper, 'name', {
+        value: method.name,
+        writable: false
+      });
+    }
+    return [methodName, methodWrapper];
+  }));
   return consoleCopy;
 }
 
@@ -138,7 +120,7 @@ export function setupConsole() {
       log: runOnJS(capturableConsole.log),
       warn: runOnJS(capturableConsole.warn),
       error: runOnJS(capturableConsole.error),
-      info: runOnJS(capturableConsole.info),
+      info: runOnJS(capturableConsole.info)
       /* eslint-enable @typescript-eslint/unbound-method */
     };
   }
@@ -151,17 +133,17 @@ function setupRequestAnimationFrame() {
   const nativeRequestAnimationFrame = global.requestAnimationFrame;
   let animationFrameCallbacks = [];
   let flushRequested = false;
-  global.__flushAnimationFrame = (frameTimestamp) => {
+  global.__flushAnimationFrame = frameTimestamp => {
     const currentCallbacks = animationFrameCallbacks;
     animationFrameCallbacks = [];
-    currentCallbacks.forEach((f) => f(frameTimestamp));
+    currentCallbacks.forEach(f => f(frameTimestamp));
     callMicrotasks();
   };
-  global.requestAnimationFrame = (callback) => {
+  global.requestAnimationFrame = callback => {
     animationFrameCallbacks.push(callback);
     if (!flushRequested) {
       flushRequested = true;
-      nativeRequestAnimationFrame((timestamp) => {
+      nativeRequestAnimationFrame(timestamp => {
         flushRequested = false;
         global.__frameTimestamp = timestamp;
         global.__flushAnimationFrame(timestamp);
@@ -181,9 +163,7 @@ export function initializeUIRuntime(ReanimatedModule) {
   }
   if (!ReanimatedModule) {
     // eslint-disable-next-line reanimated/use-reanimated-error
-    throw new Error(
-      '[Reanimated] Reanimated is trying to initialize the UI runtime without a valid ReanimatedModule'
-    );
+    throw new Error('[Reanimated] Reanimated is trying to initialize the UI runtime without a valid ReanimatedModule');
   }
   if (IS_JEST) {
     // requestAnimationFrame react-native jest's setup is incorrect as it polyfills

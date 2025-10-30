@@ -6,13 +6,11 @@ import type { ShareableRef } from './commonTypes';
  * example a Shared Value that's in worklet's closure.
  */
 export declare const shareableMappingFlag: unique symbol;
-export declare const shareableMappingCache:
-  | {
-      set(): void;
-      get(): null;
-    }
-  | {
-      set(shareable: object, shareableRef?: ShareableRef): void;
-      get: (key: object) => symbol | ShareableRef | undefined;
-    };
+export declare const shareableMappingCache: {
+    set(): void;
+    get(): null;
+} | {
+    set(shareable: object, shareableRef?: ShareableRef): void;
+    get: (key: object) => symbol | ShareableRef | undefined;
+};
 //# sourceMappingURL=shareableMappingCache.d.ts.map

@@ -1,8 +1,6 @@
 import type { Component } from 'react';
 import type { AnimatedRef } from './commonTypes';
-declare function useAnimatedRefWeb<
-  TComponent extends Component,
->(): AnimatedRef<TComponent>;
+declare function useAnimatedRefWeb<TComponent extends Component>(): AnimatedRef<TComponent>;
 /**
  * Lets you get a reference of a view that you can use inside a worklet.
  *

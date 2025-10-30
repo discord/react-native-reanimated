@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Fade in animation. You can modify the behavior by chaining methods like
@@ -27,13 +27,13 @@ export class FadeIn extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          opacity: delayFunction(delay, animation(1, config)),
+          opacity: delayFunction(delay, animation(1, config))
         },
         initialValues: {
           opacity: 0,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -65,22 +65,18 @@ export class FadeInRight extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              translateX: 25,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 25
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -112,22 +108,18 @@ export class FadeInLeft extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              translateX: -25,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: -25
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -159,22 +151,18 @@ export class FadeInUp extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              translateY: -25,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: -25
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -206,22 +194,18 @@ export class FadeInDown extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(1, config)),
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
           opacity: 0,
-          transform: [
-            {
-              translateY: 25,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 25
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -252,13 +236,13 @@ export class FadeOut extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          opacity: delayFunction(delay, animation(0, config)),
+          opacity: delayFunction(delay, animation(0, config))
         },
         initialValues: {
           opacity: 1,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -290,22 +274,18 @@ export class FadeOutRight extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(25, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(25, config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              translateX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -337,22 +317,18 @@ export class FadeOutLeft extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(-25, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(-25, config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              translateX: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -383,22 +359,18 @@ export class FadeOutUp extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(-25, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(-25, config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -430,22 +402,18 @@ export class FadeOutDown extends ComplexAnimationBuilder {
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(25, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(25, config))
+          }]
         },
         initialValues: {
           opacity: 1,
-          transform: [
-            {
-              translateY: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

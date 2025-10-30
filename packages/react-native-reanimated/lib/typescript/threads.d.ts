@@ -20,25 +20,16 @@ export declare const callMicrotasks: () => void;
  *   first argument.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/3.x/threading/runOnUI
  */
-export declare function runOnUI<Args extends unknown[], ReturnValue>(
-  worklet: (...args: Args) => ReturnValue
-): (...args: Args) => void;
-export declare function executeOnUIRuntimeSync<
-  Args extends unknown[],
-  ReturnValue,
->(worklet: (...args: Args) => ReturnValue): (...args: Args) => ReturnValue;
-export declare function runOnUIImmediately<Args extends unknown[], ReturnValue>(
-  worklet: (...args: Args) => ReturnValue
-): WorkletFunction<Args, ReturnValue>;
+export declare function runOnUI<Args extends unknown[], ReturnValue>(worklet: (...args: Args) => ReturnValue): (...args: Args) => void;
+export declare function executeOnUIRuntimeSync<Args extends unknown[], ReturnValue>(worklet: (...args: Args) => ReturnValue): (...args: Args) => ReturnValue;
+export declare function runOnUIImmediately<Args extends unknown[], ReturnValue>(worklet: (...args: Args) => ReturnValue): WorkletFunction<Args, ReturnValue>;
 type ReleaseRemoteFunction<Args extends unknown[], ReturnValue> = {
-  (...args: Args): ReturnValue;
+    (...args: Args): ReturnValue;
 };
 type DevRemoteFunction<Args extends unknown[], ReturnValue> = {
-  __remoteFunction: (...args: Args) => ReturnValue;
+    __remoteFunction: (...args: Args) => ReturnValue;
 };
-type RemoteFunction<Args extends unknown[], ReturnValue> =
-  | ReleaseRemoteFunction<Args, ReturnValue>
-  | DevRemoteFunction<Args, ReturnValue>;
+type RemoteFunction<Args extends unknown[], ReturnValue> = ReleaseRemoteFunction<Args, ReturnValue> | DevRemoteFunction<Args, ReturnValue>;
 /**
  * Lets you asynchronously run
  * non-[workletized](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#to-workletize)
@@ -53,11 +44,6 @@ type RemoteFunction<Args extends unknown[], ReturnValue> =
  *   first argument.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/3.x/threading/runOnJS
  */
-export declare function runOnJS<Args extends unknown[], ReturnValue>(
-  fun:
-    | ((...args: Args) => ReturnValue)
-    | RemoteFunction<Args, ReturnValue>
-    | WorkletFunction<Args, ReturnValue>
-): (...args: Args) => void;
+export declare function runOnJS<Args extends unknown[], ReturnValue>(fun: ((...args: Args) => ReturnValue) | RemoteFunction<Args, ReturnValue> | WorkletFunction<Args, ReturnValue>): (...args: Args) => void;
 export {};
 //# sourceMappingURL=threads.d.ts.map

@@ -1,9 +1,9 @@
 'use strict';
 
-import { withTiming } from '../../animation/index.js';
-import { assertEasingIsWorklet } from '../../animation/util.js';
-import { Easing } from '../../Easing.js';
-import { BaseAnimationBuilder } from '../animationBuilder/index.js';
+import { withTiming } from "../../animation/index.js";
+import { assertEasingIsWorklet } from "../../animation/util.js";
+import { Easing } from "../../Easing.js";
+import { BaseAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Layout transitions with a curved animation. You can modify the behavior by
@@ -76,9 +76,9 @@ export class CurvedTransition extends BaseAnimationBuilder {
       easingX: this.easingXV,
       easingY: this.easingYV,
       easingWidth: this.easingWidthV,
-      easingHeight: this.easingHeightV,
+      easingHeight: this.easingHeightV
     };
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
@@ -86,39 +86,27 @@ export class CurvedTransition extends BaseAnimationBuilder {
           originX: values.currentOriginX,
           originY: values.currentOriginY,
           width: values.currentWidth,
-          height: values.currentHeight,
+          height: values.currentHeight
         },
         animations: {
-          originX: delayFunction(
-            delay,
-            withTiming(values.targetOriginX, {
-              duration,
-              easing: easing.easingX,
-            })
-          ),
-          originY: delayFunction(
-            delay,
-            withTiming(values.targetOriginY, {
-              duration,
-              easing: easing.easingY,
-            })
-          ),
-          width: delayFunction(
-            delay,
-            withTiming(values.targetWidth, {
-              duration,
-              easing: easing.easingWidth,
-            })
-          ),
-          height: delayFunction(
-            delay,
-            withTiming(values.targetHeight, {
-              duration,
-              easing: easing.easingHeight,
-            })
-          ),
+          originX: delayFunction(delay, withTiming(values.targetOriginX, {
+            duration,
+            easing: easing.easingX
+          })),
+          originY: delayFunction(delay, withTiming(values.targetOriginY, {
+            duration,
+            easing: easing.easingY
+          })),
+          width: delayFunction(delay, withTiming(values.targetWidth, {
+            duration,
+            easing: easing.easingWidth
+          })),
+          height: delayFunction(delay, withTiming(values.targetHeight, {
+            duration,
+            easing: easing.easingHeight
+          }))
         },
-        callback,
+        callback
       };
     };
   };

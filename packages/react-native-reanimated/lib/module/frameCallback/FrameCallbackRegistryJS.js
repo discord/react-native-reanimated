@@ -1,7 +1,7 @@
 'use strict';
 
-import { runOnUI } from '../core.js';
-import { prepareUIRegistry } from './FrameCallbackRegistryUI.js';
+import { runOnUI } from "../core.js";
+import { prepareUIRegistry } from "./FrameCallbackRegistryUI.js";
 export default class FrameCallbackRegistryJS {
   nextCallbackId = 0;
   constructor() {

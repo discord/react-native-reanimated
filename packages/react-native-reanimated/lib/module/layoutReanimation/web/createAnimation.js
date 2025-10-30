@@ -1,14 +1,14 @@
 'use strict';
 
-import { convertAnimationObjectToKeyframes } from './animationParser.js';
-import { AnimationsData, TransitionType } from './config.js';
-import { insertWebAnimation } from './domUtils.js';
-import { CurvedTransition } from './transition/Curved.web.js';
-import { EntryExitTransition } from './transition/EntryExit.web.js';
-import { FadingTransition } from './transition/Fading.web.js';
-import { JumpingTransition } from './transition/Jumping.web.js';
-import { LinearTransition } from './transition/Linear.web.js';
-import { SequencedTransition } from './transition/Sequenced.web.js';
+import { convertAnimationObjectToKeyframes } from "./animationParser.js";
+import { AnimationsData, TransitionType } from "./config.js";
+import { insertWebAnimation } from "./domUtils.js";
+import { CurvedTransition } from "./transition/Curved.web.js";
+import { EntryExitTransition } from "./transition/EntryExit.web.js";
+import { FadingTransition } from "./transition/Fading.web.js";
+import { JumpingTransition } from "./transition/Jumping.web.js";
+import { LinearTransition } from "./transition/Linear.web.js";
+import { SequencedTransition } from "./transition/Sequenced.web.js";
 // Translate values are passed as numbers. However, if `translate` property receives number, it will not automatically
 // convert it to `px`. Therefore if we want to keep transform we have to add 'px' suffix to each of translate values
 // that are present inside transform.
@@ -17,13 +17,10 @@ import { SequencedTransition } from './transition/Sequenced.web.js';
 function addPxToTransform(transform) {
   // @ts-ignore `existingTransform` cannot be string because in that case
   // we throw error in `extractTransformFromStyle`
-  const newTransform = transform.map((transformProp) => {
+  const newTransform = transform.map(transformProp => {
     const newTransformProp = {};
     for (const [key, value] of Object.entries(transformProp)) {
-      if (
-        (key.includes('translate') || key.includes('perspective')) &&
-        typeof value === 'number'
-      ) {
+      if ((key.includes('translate') || key.includes('perspective')) && typeof value === 'number') {
         // @ts-ignore After many trials we decided to ignore this error - it says that we cannot use 'key' to index this object.
         // Sadly it doesn't go away after using cast `key as keyof TransformProperties`.
         newTransformProp[key] = `${value}px`;
@@ -45,7 +42,7 @@ export function createCustomKeyFrameAnimation(keyframeDefinitions) {
   const animationData = {
     name: '',
     style: keyframeDefinitions,
-    duration: -1,
+    duration: -1
   };
   animationData.name = generateNextCustomKeyframeName();
 
@@ -67,7 +64,10 @@ export function createCustomKeyFrameAnimation(keyframeDefinitions) {
 export function createAnimationWithInitialValues(animationName, initialValues) {
   const animationStyle = structuredClone(AnimationsData[animationName].style);
   const firstAnimationStep = animationStyle['0'];
-  const { transform, ...rest } = initialValues;
+  const {
+    transform,
+    ...rest
+  } = initialValues;
   if (transform) {
     const transformWithPx = addPxToTransform(transform);
     // If there was no predefined transform, we can simply assign transform from `initialValues`.
@@ -94,17 +94,14 @@ export function createAnimationWithInitialValues(animationName, initialValues) {
       }
 
       // Finally, we convert `Map` with final transform back into array of objects.
-      firstAnimationStep.transform = Array.from(
-        transformStyle,
-        ([property, value]) => ({
-          [property]: value,
-        })
-      );
+      firstAnimationStep.transform = Array.from(transformStyle, ([property, value]) => ({
+        [property]: value
+      }));
     }
   }
   animationStyle['0'] = {
     ...animationStyle['0'],
-    ...rest,
+    ...rest
   };
 
   // TODO: Maybe we can extract the logic below into separate function
@@ -112,7 +109,7 @@ export function createAnimationWithInitialValues(animationName, initialValues) {
   const animationObject = {
     name: keyframeName,
     style: animationStyle,
-    duration: AnimationsData[animationName].duration,
+    duration: AnimationsData[animationName].duration
   };
   const keyframe = convertAnimationObjectToKeyframes(animationObject);
   insertWebAnimation(keyframeName, keyframe);
@@ -138,57 +135,40 @@ export function TransitionGenerator(transitionType, transitionData) {
   let transitionObject;
   switch (transitionType) {
     case TransitionType.LINEAR:
-      transitionObject = LinearTransition(
-        transitionKeyframeName,
-        transitionData
-      );
+      transitionObject = LinearTransition(transitionKeyframeName, transitionData);
       break;
     case TransitionType.SEQUENCED:
-      transitionObject = SequencedTransition(
-        transitionKeyframeName,
-        transitionData
-      );
+      transitionObject = SequencedTransition(transitionKeyframeName, transitionData);
       break;
     case TransitionType.FADING:
-      transitionObject = FadingTransition(
-        transitionKeyframeName,
-        transitionData
-      );
+      transitionObject = FadingTransition(transitionKeyframeName, transitionData);
       break;
     case TransitionType.JUMPING:
-      transitionObject = JumpingTransition(
-        transitionKeyframeName,
-        transitionData
-      );
+      transitionObject = JumpingTransition(transitionKeyframeName, transitionData);
       break;
 
     // Here code block with {} is necessary because of eslint
-    case TransitionType.CURVED: {
-      dummyTransitionKeyframeName = generateNextCustomKeyframeName();
-      const { firstKeyframeObj, secondKeyframeObj } = CurvedTransition(
-        transitionKeyframeName,
-        dummyTransitionKeyframeName,
-        transitionData
-      );
-      transitionObject = firstKeyframeObj;
-      const dummyKeyframe =
-        convertAnimationObjectToKeyframes(secondKeyframeObj);
-      insertWebAnimation(dummyTransitionKeyframeName, dummyKeyframe);
-      break;
-    }
+    case TransitionType.CURVED:
+      {
+        dummyTransitionKeyframeName = generateNextCustomKeyframeName();
+        const {
+          firstKeyframeObj,
+          secondKeyframeObj
+        } = CurvedTransition(transitionKeyframeName, dummyTransitionKeyframeName, transitionData);
+        transitionObject = firstKeyframeObj;
+        const dummyKeyframe = convertAnimationObjectToKeyframes(secondKeyframeObj);
+        insertWebAnimation(dummyTransitionKeyframeName, dummyKeyframe);
+        break;
+      }
     case TransitionType.ENTRY_EXIT:
-      transitionObject = EntryExitTransition(
-        transitionKeyframeName,
-        transitionData
-      );
+      transitionObject = EntryExitTransition(transitionKeyframeName, transitionData);
       break;
   }
-  const transitionKeyframe =
-    convertAnimationObjectToKeyframes(transitionObject);
+  const transitionKeyframe = convertAnimationObjectToKeyframes(transitionObject);
   insertWebAnimation(transitionKeyframeName, transitionKeyframe);
   return {
     transitionKeyframeName,
-    dummyTransitionKeyframeName,
+    dummyTransitionKeyframeName
   };
 }
 //# sourceMappingURL=createAnimation.js.map

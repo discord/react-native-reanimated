@@ -9,7 +9,7 @@ export const WebEasings = {
   cubic: [0.32, 0, 0.67, 0],
   sin: [0.12, 0, 0.39, 0],
   circle: [0.55, 0, 1, 0.45],
-  exp: [0.7, 0, 0.84, 0],
+  exp: [0.7, 0, 0.84, 0]
 };
 export function getEasingByName(easingName) {
   return `cubic-bezier(${WebEasings[easingName].toString()})`;

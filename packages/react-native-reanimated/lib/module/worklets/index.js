@@ -1,4 +1,4 @@
 'use strict';
 
-export { WorkletsModule } from './WorkletsModule/index.js';
+export { WorkletsModule } from "./WorkletsModule/index.js";
 //# sourceMappingURL=index.js.map

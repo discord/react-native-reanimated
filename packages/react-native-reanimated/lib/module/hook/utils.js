@@ -1,21 +1,16 @@
 'use strict';
 
-import { isWorkletFunction } from '../commonTypes.js';
-import { ReanimatedError } from '../errors.js';
+import { isWorkletFunction } from "../commonTypes.js";
+import { ReanimatedError } from "../errors.js";
 // Builds one big hash from multiple worklets' hashes.
 export function buildWorkletsHash(worklets) {
   // For arrays `Object.values` returns the array itself.
-  return Object.values(worklets).reduce(
-    (acc, worklet) => acc + worklet.__workletHash.toString(),
-    ''
-  );
+  return Object.values(worklets).reduce((acc, worklet) => acc + worklet.__workletHash.toString(), '');
 }
 
 // Builds dependencies array for useEvent handlers.
 export function buildDependencies(dependencies, handlers) {
-  const handlersList = Object.values(handlers).filter(
-    (handler) => handler !== undefined
-  );
+  const handlersList = Object.values(handlers).filter(handler => handler !== undefined);
   if (!dependencies) {
     return handlersList;
   }
@@ -26,14 +21,7 @@ function areWorkletsEqual(worklet1, worklet2) {
   if (worklet1.__workletHash === worklet2.__workletHash) {
     const closure1Keys = Object.keys(worklet1.__closure);
     const closure2Keys = Object.keys(worklet2.__closure);
-    return (
-      closure1Keys.length === closure2Keys.length &&
-      closure1Keys.every(
-        (key) =>
-          key in worklet2.__closure &&
-          worklet1.__closure[key] === worklet2.__closure[key]
-      )
-    );
+    return closure1Keys.length === closure2Keys.length && closure1Keys.every(key => key in worklet2.__closure && worklet1.__closure[key] === worklet2.__closure[key]);
   }
   return false;
 }
@@ -41,10 +29,7 @@ function areWorkletsEqual(worklet1, worklet2) {
 // This is supposed to work as useEffect comparison.
 export function areDependenciesEqual(nextDependencies, prevDependencies) {
   function is(x, y) {
-    return (
-      (x === y && (x !== 0 || 1 / x === 1 / y)) ||
-      (Number.isNaN(x) && Number.isNaN(y))
-    );
+    return x === y && (x !== 0 || 1 / x === 1 / y) || Number.isNaN(x) && Number.isNaN(y);
   }
   const objectIs = typeof Object.is === 'function' ? Object.is : is;
   function areHookInputsEqual(nextDeps, prevDeps) {
@@ -105,13 +90,9 @@ export function validateAnimatedStyles(styles) {
   'worklet';
 
   if (typeof styles !== 'object') {
-    throw new ReanimatedError(
-      `\`useAnimatedStyle\` has to return an object, found ${typeof styles} instead.`
-    );
+    throw new ReanimatedError(`\`useAnimatedStyle\` has to return an object, found ${typeof styles} instead.`);
   } else if (Array.isArray(styles)) {
-    throw new ReanimatedError(
-      '`useAnimatedStyle` has to return an object and cannot return static styles combined with dynamic ones. Please do merging where a component receives props.'
-    );
+    throw new ReanimatedError('`useAnimatedStyle` has to return an object and cannot return static styles combined with dynamic ones. Please do merging where a component receives props.');
   }
 }
 //# sourceMappingURL=utils.js.map

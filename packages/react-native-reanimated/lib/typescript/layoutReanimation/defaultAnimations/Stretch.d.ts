@@ -1,7 +1,4 @@
-import type {
-  EntryExitAnimationFunction,
-  IEntryExitAnimationBuilder,
-} from '../../commonTypes';
+import type { EntryExitAnimationFunction, IEntryExitAnimationBuilder } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,15 +10,10 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations/#stretch
  */
-export declare class StretchInX
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class StretchInX extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Stretch animation on the Y axis. You can modify the behavior by chaining
@@ -32,15 +24,10 @@ export declare class StretchInX
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations/#stretch
  */
-export declare class StretchInY
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class StretchInY extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Stretch animation on the X axis. You can modify the behavior by chaining
@@ -51,15 +38,10 @@ export declare class StretchInY
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations/#stretch
  */
-export declare class StretchOutX
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class StretchOutX extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Stretch animation on the Y axis. You can modify the behavior by chaining
@@ -70,14 +52,9 @@ export declare class StretchOutX
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations/#stretch
  */
-export declare class StretchOutY
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class StretchOutY extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 //# sourceMappingURL=Stretch.d.ts.map

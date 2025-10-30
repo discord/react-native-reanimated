@@ -1,11 +1,7 @@
 'use strict';
 
-import { Easing } from '../Easing.js';
-import {
-  assertEasingIsWorklet,
-  defineAnimation,
-  getReduceMotionForAnimation,
-} from './util.js';
+import { Easing } from "../Easing.js";
+import { assertEasingIsWorklet, defineAnimation, getReduceMotionForAnimation } from "./util.js";
 
 /**
  * The timing animation configuration.
@@ -45,14 +41,18 @@ export const withTiming = function (toValue, userConfig, callback) {
 
     const config = {
       duration: 300,
-      easing: Easing.inOut(Easing.quad),
+      easing: Easing.inOut(Easing.quad)
     };
     if (userConfig) {
-      Object.keys(userConfig).forEach((key) => (config[key] = userConfig[key]));
+      Object.keys(userConfig).forEach(key => config[key] = userConfig[key]);
     }
     function timing(animation, now) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      const { toValue, startTime, startValue } = animation;
+      const {
+        toValue,
+        startTime,
+        startValue
+      } = animation;
       const runtime = now - startTime;
       if (runtime >= config.duration) {
         // reset startTime to avoid reusing finished animation config in `start` method
@@ -65,12 +65,7 @@ export const withTiming = function (toValue, userConfig, callback) {
       return false;
     }
     function onStart(animation, value, now, previousAnimation) {
-      if (
-        previousAnimation &&
-        previousAnimation.type === 'timing' &&
-        previousAnimation.toValue === toValue &&
-        previousAnimation.startTime
-      ) {
+      if (previousAnimation && previousAnimation.type === 'timing' && previousAnimation.toValue === toValue && previousAnimation.startTime) {
         // to maintain continuity of timing animations we check if we are starting
         // new timing over the old one with the same parameters. If so, we want
         // to copy animation timeline properties
@@ -98,7 +93,7 @@ export const withTiming = function (toValue, userConfig, callback) {
       easing: () => 0,
       current: toValue,
       callback,
-      reduceMotion: getReduceMotionForAnimation(userConfig?.reduceMotion),
+      reduceMotion: getReduceMotionForAnimation(userConfig?.reduceMotion)
     };
   });
 };

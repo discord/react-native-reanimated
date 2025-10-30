@@ -1,13 +1,12 @@
 'use strict';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { logger } from '../logger/index.js';
-import { isWeb } from '../PlatformChecker.js';
-import { useEvent } from './useEvent.js';
-import { useSharedValue } from './useSharedValue.js';
+import { logger } from "../logger/index.js";
+import { isWeb } from "../PlatformChecker.js";
+import { useEvent } from "./useEvent.js";
+import { useSharedValue } from "./useSharedValue.js";
 const IS_WEB = isWeb();
-const NOT_INITIALIZED_WARNING =
-  'animatedRef is not initialized in useScrollViewOffset. Make sure to pass the animated ref to the scrollable component to get scroll offset updates.';
+const NOT_INITIALIZED_WARNING = 'animatedRef is not initialized in useScrollViewOffset. Make sure to pass the animated ref to the scrollable component to get scroll offset updates.';
 
 /**
  * Lets you synchronously get the current offset of a `ScrollView`.
@@ -18,9 +17,7 @@ const NOT_INITIALIZED_WARNING =
  * @returns A shared value which holds the current offset of the `ScrollView`.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/scroll/useScrollViewOffset
  */
-export const useScrollViewOffset = IS_WEB
-  ? useScrollViewOffsetWeb
-  : useScrollViewOffsetNative;
+export const useScrollViewOffset = IS_WEB ? useScrollViewOffsetWeb : useScrollViewOffsetNative;
 function useScrollViewOffsetWeb(animatedRef, providedOffset) {
   const internalOffset = useSharedValue(0);
   const offset = useRef(providedOffset ?? internalOffset).current;
@@ -30,15 +27,14 @@ function useScrollViewOffsetWeb(animatedRef, providedOffset) {
     if (animatedRef) {
       const element = getWebScrollableElement(animatedRef.current);
       // scrollLeft is the X axis scrolled offset, works properly also with RTL layout
-      offset.value =
-        element.scrollLeft === 0 ? element.scrollTop : element.scrollLeft;
+      offset.value = element.scrollLeft === 0 ? element.scrollTop : element.scrollLeft;
     }
   }, [animatedRef, offset]);
   useEffect(() => {
     if (!animatedRef) {
       return;
     }
-    return animatedRef.observe((tag) => {
+    return animatedRef.observe(tag => {
       if (!tag) {
         logger.warn(NOT_INITIALIZED_WARNING);
         return;
@@ -55,24 +51,19 @@ function useScrollViewOffsetWeb(animatedRef, providedOffset) {
 function useScrollViewOffsetNative(animatedRef, providedOffset) {
   const internalOffset = useSharedValue(0);
   const offset = useRef(providedOffset ?? internalOffset).current;
-  const eventHandler = useEvent(
-    (event) => {
-      'worklet';
+  const eventHandler = useEvent(event => {
+    'worklet';
 
-      offset.value =
-        event.contentOffset.x === 0
-          ? event.contentOffset.y
-          : event.contentOffset.x;
-    },
-    scrollNativeEventNames
-    // Read https://github.com/software-mansion/react-native-reanimated/pull/5056
-    // for more information about this cast.
+    offset.value = event.contentOffset.x === 0 ? event.contentOffset.y : event.contentOffset.x;
+  }, scrollNativeEventNames
+  // Read https://github.com/software-mansion/react-native-reanimated/pull/5056
+  // for more information about this cast.
   );
   useEffect(() => {
     if (!animatedRef) {
       return;
     }
-    return animatedRef.observe((tag) => {
+    return animatedRef.observe(tag => {
       if (!tag) {
         logger.warn(NOT_INITIALIZED_WARNING);
         return;
@@ -88,11 +79,5 @@ function useScrollViewOffsetNative(animatedRef, providedOffset) {
 function getWebScrollableElement(scrollComponent) {
   return scrollComponent?.getScrollableNode() ?? scrollComponent;
 }
-const scrollNativeEventNames = [
-  'onScroll',
-  'onScrollBeginDrag',
-  'onScrollEndDrag',
-  'onMomentumScrollBegin',
-  'onMomentumScrollEnd',
-];
+const scrollNativeEventNames = ['onScroll', 'onScrollBeginDrag', 'onScrollEndDrag', 'onMomentumScrollBegin', 'onMomentumScrollEnd'];
 //# sourceMappingURL=useScrollViewOffset.js.map

@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Scale from center animation. You can modify the behavior by chaining methods
@@ -27,21 +27,17 @@ export class ZoomIn extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -73,27 +69,21 @@ export class ZoomInRotate extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-            {
-              rotate: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            scale: delayFunction(delay, animation(1, config))
+          }, {
+            rotate: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scale: 0,
-            },
-            {
-              rotate: `${rotate}rad`,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scale: 0
+          }, {
+            rotate: `${rotate}rad`
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -119,32 +109,26 @@ export class ZoomInLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: -values.windowWidth,
-            },
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: -values.windowWidth
+          }, {
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -170,32 +154,26 @@ export class ZoomInRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: values.windowWidth,
-            },
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: values.windowWidth
+          }, {
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -221,32 +199,26 @@ export class ZoomInUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(0, config))
+          }, {
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: -values.windowHeight,
-            },
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: -values.windowHeight
+          }, {
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -272,32 +244,26 @@ export class ZoomInDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(0, config))
+          }, {
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: values.windowHeight,
-            },
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: values.windowHeight
+          }, {
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -323,32 +289,26 @@ export class ZoomInEasyUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(0, config))
+          }, {
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: -values.targetHeight,
-            },
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: -values.targetHeight
+          }, {
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -374,32 +334,26 @@ export class ZoomInEasyDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(delay, animation(0, config)),
-            },
-            {
-              scale: delayFunction(delay, animation(1, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(0, config))
+          }, {
+            scale: delayFunction(delay, animation(1, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: values.targetHeight,
-            },
-            {
-              scale: 0,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: values.targetHeight
+          }, {
+            scale: 0
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -430,21 +384,17 @@ export class ZoomOut extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -476,27 +426,21 @@ export class ZoomOutRotate extends ComplexAnimationBuilder {
 
       return {
         animations: {
-          transform: [
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-            {
-              rotate: delayFunction(delay, animation(rotate, config)),
-            },
-          ],
+          transform: [{
+            scale: delayFunction(delay, animation(0, config))
+          }, {
+            rotate: delayFunction(delay, animation(rotate, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              scale: 1,
-            },
-            {
-              rotate: '0rad',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            scale: 1
+          }, {
+            rotate: '0rad'
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -522,35 +466,26 @@ export class ZoomOutLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                animation(-values.windowWidth, config)
-              ),
-            },
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(-values.windowWidth, config))
+          }, {
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: 0,
-            },
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }, {
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -576,35 +511,26 @@ export class ZoomOutRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                animation(values.windowWidth, config)
-              ),
-            },
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(values.windowWidth, config))
+          }, {
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: 0,
-            },
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }, {
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -630,35 +556,26 @@ export class ZoomOutUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                animation(-values.windowHeight, config)
-              ),
-            },
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(-values.windowHeight, config))
+          }, {
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: 0,
-            },
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }, {
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -684,35 +601,26 @@ export class ZoomOutDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                animation(values.windowHeight, config)
-              ),
-            },
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(values.windowHeight, config))
+          }, {
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: 0,
-            },
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }, {
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -738,35 +646,26 @@ export class ZoomOutEasyUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                animation(-values.currentHeight, config)
-              ),
-            },
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(-values.currentHeight, config))
+          }, {
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: 0,
-            },
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }, {
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -792,35 +691,26 @@ export class ZoomOutEasyDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateY: delayFunction(
-                delay,
-                animation(values.currentHeight, config)
-              ),
-            },
-            {
-              scale: delayFunction(delay, animation(0, config)),
-            },
-          ],
+          transform: [{
+            translateY: delayFunction(delay, animation(values.currentHeight, config))
+          }, {
+            scale: delayFunction(delay, animation(0, config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateY: 0,
-            },
-            {
-              scale: 1,
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateY: 0
+          }, {
+            scale: 1
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

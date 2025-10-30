@@ -1,19 +1,16 @@
 'use strict';
 
-import {
-  controlEdgeToEdgeValues,
-  isEdgeToEdge,
-} from 'react-native-is-edge-to-edge';
-import { ReanimatedError } from './errors.js';
-import { isFabric, shouldBeUseWeb } from './PlatformChecker.js';
+import { controlEdgeToEdgeValues, isEdgeToEdge } from 'react-native-is-edge-to-edge';
+import { ReanimatedError } from "./errors.js";
+import { isFabric, shouldBeUseWeb } from "./PlatformChecker.js";
 import { ReanimatedModule } from './ReanimatedModule';
-import { SensorContainer } from './SensorContainer.js';
-import { makeShareableCloneRecursive } from './shareables.js';
-export { startMapper, stopMapper } from './mappers.js';
-export { makeMutable } from './mutables.js';
-export { createWorkletRuntime, runOnRuntime } from './runtimes.js';
-export { makeShareable, makeShareableCloneRecursive } from './shareables.js';
-export { executeOnUIRuntimeSync, runOnJS, runOnUI } from './threads.js';
+import { SensorContainer } from "./SensorContainer.js";
+import { makeShareableCloneRecursive } from "./shareables.js";
+export { startMapper, stopMapper } from "./mappers.js";
+export { makeMutable } from "./mutables.js";
+export { createWorkletRuntime, runOnRuntime } from "./runtimes.js";
+export { makeShareable, makeShareableCloneRecursive } from "./shareables.js";
+export { executeOnUIRuntimeSync, runOnJS, runOnUI } from "./threads.js";
 const EDGE_TO_EDGE = isEdgeToEdge();
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 
@@ -31,25 +28,18 @@ export const isReanimated3 = () => true;
 export const isConfigured = isReanimated3;
 export function getViewProp(viewTag, propName, component) {
   if (isFabric() && !component) {
-    throw new ReanimatedError(
-      'Function `getViewProp` requires a component to be passed as an argument on Fabric.'
-    );
+    throw new ReanimatedError('Function `getViewProp` requires a component to be passed as an argument on Fabric.');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   return new Promise((resolve, reject) => {
-    return ReanimatedModule.getViewProp(
-      viewTag,
-      propName,
-      component,
-      (result) => {
-        if (typeof result === 'string' && result.substr(0, 6) === 'error:') {
-          reject(result);
-        } else {
-          resolve(result);
-        }
+    return ReanimatedModule.getViewProp(viewTag, propName, component, result => {
+      if (typeof result === 'string' && result.substr(0, 6) === 'error:') {
+        reject(result);
+      } else {
+        resolve(result);
       }
-    );
+    });
   });
 }
 function getSensorContainer() {
@@ -58,11 +48,7 @@ function getSensorContainer() {
   }
   return global.__sensorContainer;
 }
-export function registerEventHandler(
-  eventHandler,
-  eventName,
-  emitterReactTag = -1
-) {
+export function registerEventHandler(eventHandler, eventName, emitterReactTag = -1) {
   function handleAndFlushAnimationFrame(eventTimestamp, event) {
     'worklet';
 
@@ -71,11 +57,7 @@ export function registerEventHandler(
     global.__flushAnimationFrame(eventTimestamp);
     global.__frameTimestamp = undefined;
   }
-  return ReanimatedModule.registerEventHandler(
-    makeShareableCloneRecursive(handleAndFlushAnimationFrame),
-    eventName,
-    emitterReactTag
-  );
+  return ReanimatedModule.registerEventHandler(makeShareableCloneRecursive(handleAndFlushAnimationFrame), eventName, emitterReactTag);
 }
 export function unregisterEventHandler(id) {
   return ReanimatedModule.unregisterEventHandler(id);
@@ -95,26 +77,17 @@ export function subscribeForKeyboardEvents(eventHandler, options) {
   if (__DEV__) {
     controlEdgeToEdgeValues({
       isStatusBarTranslucentAndroid: options.isStatusBarTranslucentAndroid,
-      isNavigationBarTranslucentAndroid:
-        options.isNavigationBarTranslucentAndroid,
+      isNavigationBarTranslucentAndroid: options.isNavigationBarTranslucentAndroid
     });
   }
-  return ReanimatedModule.subscribeForKeyboardEvents(
-    makeShareableCloneRecursive(handleAndFlushAnimationFrame),
-    EDGE_TO_EDGE || (options.isStatusBarTranslucentAndroid ?? false),
-    EDGE_TO_EDGE || (options.isNavigationBarTranslucentAndroid ?? false)
-  );
+  return ReanimatedModule.subscribeForKeyboardEvents(makeShareableCloneRecursive(handleAndFlushAnimationFrame), EDGE_TO_EDGE || (options.isStatusBarTranslucentAndroid ?? false), EDGE_TO_EDGE || (options.isNavigationBarTranslucentAndroid ?? false));
 }
 export function unsubscribeFromKeyboardEvents(listenerId) {
   return ReanimatedModule.unsubscribeFromKeyboardEvents(listenerId);
 }
 export function registerSensor(sensorType, config, eventHandler) {
   const sensorContainer = getSensorContainer();
-  return sensorContainer.registerSensor(
-    sensorType,
-    config,
-    makeShareableCloneRecursive(eventHandler)
-  );
+  return sensorContainer.registerSensor(sensorType, config, makeShareableCloneRecursive(eventHandler));
 }
 export function initializeSensor(sensorType, config) {
   const sensorContainer = getSensorContainer();
@@ -126,19 +99,16 @@ export function unregisterSensor(sensorId) {
 }
 let featuresConfig = {
   enableLayoutAnimations: false,
-  setByUser: false,
+  setByUser: false
 };
 export function enableLayoutAnimations(flag, isCallByUser = true) {
   if (isCallByUser) {
     featuresConfig = {
       enableLayoutAnimations: flag,
-      setByUser: true,
+      setByUser: true
     };
     ReanimatedModule.enableLayoutAnimations(flag);
-  } else if (
-    !featuresConfig.setByUser &&
-    featuresConfig.enableLayoutAnimations !== flag
-  ) {
+  } else if (!featuresConfig.setByUser && featuresConfig.enableLayoutAnimations !== flag) {
     featuresConfig.enableLayoutAnimations = flag;
     ReanimatedModule.enableLayoutAnimations(flag);
   }

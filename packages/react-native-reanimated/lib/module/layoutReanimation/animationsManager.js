@@ -1,15 +1,14 @@
 'use strict';
 
-import { withStyleAnimation } from '../animation/styleAnimation.js';
-import { LayoutAnimationType } from '../commonTypes.js';
-import { makeMutableUI } from '../mutables.js';
-import { runOnUIImmediately } from '../threads.js';
+import { withStyleAnimation } from "../animation/styleAnimation.js";
+import { LayoutAnimationType } from "../commonTypes.js";
+import { makeMutableUI } from "../mutables.js";
+import { runOnUIImmediately } from "../threads.js";
 const TAG_OFFSET = 1e9;
 function startObservingProgress(tag, sharedValue, animationType) {
   'worklet';
 
-  const isSharedTransition =
-    animationType === LayoutAnimationType.SHARED_ELEMENT_TRANSITION;
+  const isSharedTransition = animationType === LayoutAnimationType.SHARED_ELEMENT_TRANSITION;
   sharedValue.addListener(tag + TAG_OFFSET, () => {
     global._notifyAboutProgress(tag, sharedValue.value, isSharedTransition);
   });
@@ -26,16 +25,12 @@ function createLayoutAnimationManager() {
   const currentAnimationForTag = new Map();
   const mutableValuesForTag = new Map();
   return {
-    start(
-      tag,
-      type,
-      /**
-       * CreateLayoutAnimationManager creates an animation manager for both Layout
-       * animations and Shared Transition Elements animations.
-       */
-      yogaValues,
-      config
-    ) {
+    start(tag, type,
+    /**
+     * CreateLayoutAnimationManager creates an animation manager for both
+     * Layout animations and Shared Transition Elements animations.
+     */
+    yogaValues, config) {
       if (type === LayoutAnimationType.SHARED_ELEMENT_TRANSITION_PROGRESS) {
         global.ProgressTransitionRegister.onTransitionStart(tag, yogaValues);
         return;
@@ -49,7 +44,7 @@ function createLayoutAnimationManager() {
       if (previousAnimation) {
         currentAnimation = {
           ...previousAnimation,
-          ...style.animations,
+          ...style.animations
         };
       }
       currentAnimationForTag.set(tag, currentAnimation);
@@ -64,15 +59,14 @@ function createLayoutAnimationManager() {
 
       // @ts-ignore The line below started failing because I added types to the method – don't have time to fix it right now
       const animation = withStyleAnimation(currentAnimation);
-      animation.callback = (finished) => {
+      animation.callback = finished => {
         if (finished) {
           currentAnimationForTag.delete(tag);
           mutableValuesForTag.delete(tag);
           const shouldRemoveView = type === LayoutAnimationType.EXITING;
           stopObservingProgress(tag, value, shouldRemoveView);
         }
-        style.callback &&
-          style.callback(finished === undefined ? false : finished);
+        style.callback && style.callback(finished === undefined ? false : finished);
       };
       startObservingProgress(tag, value, type);
       value.value = animation;
@@ -83,7 +77,7 @@ function createLayoutAnimationManager() {
         return;
       }
       stopObservingProgress(tag, value);
-    },
+    }
   };
 }
 runOnUIImmediately(() => {

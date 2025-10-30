@@ -17,14 +17,19 @@ const channelFromLrgb = (c = 0) => {
   }
   return c * 12.92;
 };
-const convertLrgbToRgb = ({ r, g, b, alpha }) => {
+const convertLrgbToRgb = ({
+  r,
+  g,
+  b,
+  alpha
+}) => {
   'worklet';
 
   return {
     r: channelFromLrgb(r),
     g: channelFromLrgb(g),
     b: channelFromLrgb(b),
-    alpha,
+    alpha
   };
 };
 const channelToLrgb = (c = 0) => {
@@ -36,20 +41,25 @@ const channelToLrgb = (c = 0) => {
   }
   return (Math.sign(c) || 1) * Math.pow((abs + 0.055) / 1.055, 2.4);
 };
-const convertRgbToLrgb = ({ r, g, b, alpha }) => {
+const convertRgbToLrgb = ({
+  r,
+  g,
+  b,
+  alpha
+}) => {
   'worklet';
 
   return {
     r: channelToLrgb(r),
     g: channelToLrgb(g),
     b: channelToLrgb(b),
-    alpha,
+    alpha
   };
 };
 export default {
   convert: {
     fromRgb: convertRgbToLrgb,
-    toRgb: convertLrgbToRgb,
-  },
+    toRgb: convertLrgbToRgb
+  }
 };
 //# sourceMappingURL=lrgb.js.map

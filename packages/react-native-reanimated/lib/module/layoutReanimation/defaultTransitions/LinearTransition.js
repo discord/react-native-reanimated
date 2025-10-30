@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Linearly transforms the layout from one position to another. You can modify
@@ -21,7 +21,7 @@ export class LinearTransition extends ComplexAnimationBuilder {
     const [animation, config] = this.getAnimationAndConfig();
     const callback = this.callbackV;
     const delay = this.getDelay();
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
@@ -29,21 +29,15 @@ export class LinearTransition extends ComplexAnimationBuilder {
           originX: values.currentOriginX,
           originY: values.currentOriginY,
           width: values.currentWidth,
-          height: values.currentHeight,
+          height: values.currentHeight
         },
         animations: {
-          originX: delayFunction(
-            delay,
-            animation(values.targetOriginX, config)
-          ),
-          originY: delayFunction(
-            delay,
-            animation(values.targetOriginY, config)
-          ),
+          originX: delayFunction(delay, animation(values.targetOriginX, config)),
+          originY: delayFunction(delay, animation(values.targetOriginY, config)),
           width: delayFunction(delay, animation(values.targetWidth, config)),
-          height: delayFunction(delay, animation(values.targetHeight, config)),
+          height: delayFunction(delay, animation(values.targetHeight, config))
         },
-        callback,
+        callback
       };
     };
   };

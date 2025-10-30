@@ -1,14 +1,8 @@
 'use strict';
 
-import React, {
-  Children,
-  Component,
-  createContext,
-  useEffect,
-  useRef,
-} from 'react';
-import { setShouldAnimateExitingForTag } from '../core.js';
-import { isReact19 } from '../PlatformChecker.js';
+import React, { Children, Component, createContext, useEffect, useRef } from 'react';
+import { setShouldAnimateExitingForTag } from "../core.js";
+import { isReact19 } from "../PlatformChecker.js";
 import { findNodeHandle } from '../platformFunctions/findNodeHandle';
 const IS_REACT_19 = isReact19();
 export const SkipEnteringContext = createContext(null);
@@ -21,9 +15,7 @@ function SkipEntering(props) {
   useEffect(() => {
     skipValueRef.current = false;
   }, [skipValueRef]);
-  const Provider = IS_REACT_19
-    ? SkipEnteringContext
-    : SkipEnteringContext.Provider;
+  const Provider = IS_REACT_19 ? SkipEnteringContext : SkipEnteringContext.Provider;
   return <Provider value={skipValueRef}>{props.children}</Provider>;
 }
 
@@ -45,11 +37,7 @@ function SkipEntering(props) {
  */
 export class LayoutAnimationConfig extends Component {
   getMaybeWrappedChildren() {
-    return Children.count(this.props.children) > 1 && this.props.skipExiting
-      ? Children.map(this.props.children, (child) => (
-          <LayoutAnimationConfig skipExiting>{child}</LayoutAnimationConfig>
-        ))
-      : this.props.children;
+    return Children.count(this.props.children) > 1 && this.props.skipExiting ? Children.map(this.props.children, child => <LayoutAnimationConfig skipExiting>{child}</LayoutAnimationConfig>) : this.props.children;
   }
   setShouldAnimateExiting() {
     if (Children.count(this.props.children) === 1) {
@@ -69,11 +57,9 @@ export class LayoutAnimationConfig extends Component {
     if (this.props.skipEntering === undefined) {
       return children;
     }
-    return (
-      <SkipEntering shouldSkip={this.props.skipEntering}>
+    return <SkipEntering shouldSkip={this.props.skipEntering}>
         {children}
-      </SkipEntering>
-    );
+      </SkipEntering>;
   }
 }
 //# sourceMappingURL=LayoutAnimationConfig.js.map

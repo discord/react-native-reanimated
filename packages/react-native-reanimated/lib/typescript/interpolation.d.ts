@@ -6,23 +6,19 @@
  * @param EXTEND - Predicts the values beyond the output range.
  */
 export declare enum Extrapolation {
-  IDENTITY = 'identity',
-  CLAMP = 'clamp',
-  EXTEND = 'extend',
+    IDENTITY = "identity",
+    CLAMP = "clamp",
+    EXTEND = "extend"
 }
 /** Represents the possible values for extrapolation as a string. */
 type ExtrapolationAsString = 'identity' | 'clamp' | 'extend';
 /** Allows to specify extrapolation for left and right edge of the interpolation. */
 export interface ExtrapolationConfig {
-  extrapolateLeft?: Extrapolation | string;
-  extrapolateRight?: Extrapolation | string;
+    extrapolateLeft?: Extrapolation | string;
+    extrapolateRight?: Extrapolation | string;
 }
 /** Configuration options for extrapolation. */
-export type ExtrapolationType =
-  | ExtrapolationConfig
-  | Extrapolation
-  | ExtrapolationAsString
-  | undefined;
+export type ExtrapolationType = ExtrapolationConfig | Extrapolation | ExtrapolationAsString | undefined;
 /**
  * Lets you map a value from one range to another using linear interpolation.
  *
@@ -38,12 +34,7 @@ export type ExtrapolationType =
  * @returns A mapped value within the output range.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/utilities/interpolate
  */
-export declare function interpolate(
-  x: number,
-  inputRange: readonly number[],
-  outputRange: readonly number[],
-  type?: ExtrapolationType
-): number;
+export declare function interpolate(x: number, inputRange: readonly number[], outputRange: readonly number[], type?: ExtrapolationType): number;
 /**
  * Lets you limit a value within a specified range.
  *

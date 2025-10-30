@@ -1,13 +1,12 @@
 import type { SharedValue } from '../commonTypes';
 import type { DependencyList } from './commonTypes';
-export interface DerivedValue<Value = unknown>
-  extends Readonly<Omit<SharedValue<Value>, 'set'>> {
-  /**
-   * @deprecated Derived values are readonly, don't use this method. It's here
-   *   only to prevent breaking changes in TypeScript types. It will be
-   *   removed in the future.
-   */
-  set: SharedValue<Value>['set'];
+export interface DerivedValue<Value = unknown> extends Readonly<Omit<SharedValue<Value>, 'set'>> {
+    /**
+     * @deprecated Derived values are readonly, don't use this method. It's here
+     *   only to prevent breaking changes in TypeScript types. It will be removed
+     *   in the future.
+     */
+    set: SharedValue<Value>['set'];
 }
 /**
  * Lets you create new shared values based on existing ones while keeping them
@@ -21,8 +20,5 @@ export interface DerivedValue<Value = unknown>
  *   updater function
  * @see https://docs.swmansion.com/react-native-reanimated/docs/core/useDerivedValue
  */
-export declare function useDerivedValue<Value>(
-  updater: () => Value,
-  dependencies?: DependencyList
-): DerivedValue<Value>;
+export declare function useDerivedValue<Value>(updater: () => Value, dependencies?: DependencyList): DerivedValue<Value>;
 //# sourceMappingURL=useDerivedValue.d.ts.map

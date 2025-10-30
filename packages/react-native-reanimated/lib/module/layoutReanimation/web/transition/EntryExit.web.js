@@ -1,18 +1,13 @@
 'use strict';
 
-import { AnimationsData } from '../config.js';
+import { AnimationsData } from "../config.js";
 const ExitingFinalStep = 49;
 const EnteringStartStep = 50;
 // Layout transitions on web work in "reverse order". It means that the element is rendered at its destination and then, at the beginning of the animation,
 // we move it back to its starting point.
 // This function is responsible for adding transition data into beginning of each keyframe step.
 // Doing so will ensure that the element will perform animation from correct position.
-function addTransformToKeepPosition(
-  keyframeStyleData,
-  animationStyle,
-  transformData,
-  isExiting
-) {
+function addTransformToKeepPosition(keyframeStyleData, animationStyle, transformData, isExiting) {
   for (const [timestamp, styles] of Object.entries(animationStyle)) {
     if (styles.transform !== undefined) {
       // If transform was defined, we want to put transform from transition at the beginning, hence we use `unshift`
@@ -22,9 +17,8 @@ function addTransformToKeepPosition(
       styles.transform = [transformData];
     }
     const newTimestamp = parseInt(timestamp) / 2;
-    const index = isExiting
-      ? Math.min(newTimestamp, ExitingFinalStep) // We want to squeeze exiting animation from range 0-100 into range 0-49
-      : newTimestamp + EnteringStartStep; // Entering animation will start from 50 and go up to 100
+    const index = isExiting ? Math.min(newTimestamp, ExitingFinalStep) // We want to squeeze exiting animation from range 0-100 into range 0-49
+    : newTimestamp + EnteringStartStep; // Entering animation will start from 50 and go up to 100
 
     keyframeStyleData[`${index}`] = styles;
   }
@@ -51,44 +45,30 @@ function hideComponentBetweenAnimations(keyframeStyleData) {
   for (const [step, opacity] of opacityInStep) {
     keyframeStyleData[step] = {
       ...keyframeStyleData[step],
-      opacity,
+      opacity
     };
   }
 }
 export function EntryExitTransition(name, transitionData) {
-  const exitingAnimationData = structuredClone(
-    AnimationsData[transitionData.exiting]
-  );
-  const enteringAnimationData = structuredClone(
-    AnimationsData[transitionData.entering]
-  );
+  const exitingAnimationData = structuredClone(AnimationsData[transitionData.exiting]);
+  const enteringAnimationData = structuredClone(AnimationsData[transitionData.entering]);
   const additionalExitingData = {
     translateX: `${transitionData.translateX}px`,
     translateY: `${transitionData.translateY}px`,
-    scale: `${transitionData.scaleX},${transitionData.scaleY}`,
+    scale: `${transitionData.scaleX},${transitionData.scaleY}`
   };
   const additionalEnteringData = {
     translateX: `0px`,
     translateY: `0px`,
-    scale: `1,1`,
+    scale: `1,1`
   };
   const keyframeData = {
     name,
     style: {},
-    duration: 300,
+    duration: 300
   };
-  addTransformToKeepPosition(
-    keyframeData.style,
-    exitingAnimationData.style,
-    additionalExitingData,
-    true
-  );
-  addTransformToKeepPosition(
-    keyframeData.style,
-    enteringAnimationData.style,
-    additionalEnteringData,
-    false
-  );
+  addTransformToKeepPosition(keyframeData.style, exitingAnimationData.style, additionalExitingData, true);
+  addTransformToKeepPosition(keyframeData.style, enteringAnimationData.style, additionalEnteringData, false);
   hideComponentBetweenAnimations(keyframeData.style);
   return keyframeData;
 }

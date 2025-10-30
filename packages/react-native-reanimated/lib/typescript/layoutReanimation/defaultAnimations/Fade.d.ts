@@ -1,7 +1,4 @@
-import type {
-  EntryExitAnimationFunction,
-  IEntryExitAnimationBuilder,
-} from '../../commonTypes';
+import type { EntryExitAnimationFunction, IEntryExitAnimationBuilder } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,15 +10,10 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeIn
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeIn extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade from right animation. You can modify the behavior by chaining methods
@@ -32,15 +24,10 @@ export declare class FadeIn
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeInRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeInRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade from left animation. You can modify the behavior by chaining methods
@@ -51,15 +38,10 @@ export declare class FadeInRight
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeInLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeInLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade from top animation. You can modify the behavior by chaining methods like
@@ -70,15 +52,10 @@ export declare class FadeInLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeInUp
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeInUp extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade from bottom animation. You can modify the behavior by chaining methods
@@ -89,15 +66,10 @@ export declare class FadeInUp
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeInDown
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeInDown extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade out animation. You can modify the behavior by chaining methods like
@@ -108,15 +80,10 @@ export declare class FadeInDown
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeOut
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeOut extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade to right animation. You can modify the behavior by chaining methods like
@@ -127,15 +94,10 @@ export declare class FadeOut
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeOutRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeOutRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade to left animation. You can modify the behavior by chaining methods like
@@ -146,15 +108,10 @@ export declare class FadeOutRight
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeOutLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeOutLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade to top animation. You can modify the behavior by chaining methods like
@@ -165,15 +122,10 @@ export declare class FadeOutLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeOutUp
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeOutUp extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Fade to bottom animation. You can modify the behavior by chaining methods
@@ -184,14 +136,9 @@ export declare class FadeOutUp
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#fade
  */
-export declare class FadeOutDown
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class FadeOutDown extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 //# sourceMappingURL=Fade.d.ts.map

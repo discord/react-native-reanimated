@@ -1,18 +1,16 @@
 'use strict';
 
 import React, { forwardRef } from 'react';
-import { isReact19 } from './PlatformChecker.js';
+import { isReact19 } from "./PlatformChecker.js";
 const IS_REACT_19 = isReact19();
 function getCurrentReactOwner() {
   return (
     // @ts-expect-error React secret internals aren't typed
     React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE?.A?.getOwner?.() ||
     // @ts-expect-error React secret internals aren't typed
-    React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED?.ReactCurrentOwner
-      ?.current ||
+    React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED?.ReactCurrentOwner?.current ||
     // @ts-expect-error React secret internals aren't typed
-    React.__SERVER_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE
-      ?.ReactCurrentOwner?.current
+    React.__SERVER_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE?.ReactCurrentOwner?.current
   );
 }
 export function isReactRendering() {
@@ -29,7 +27,10 @@ export function isFirstReactRender() {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function componentWithRef(render) {
   if (IS_REACT_19) {
-    return ({ ref, ...props }) => render(props, ref);
+    return ({
+      ref,
+      ...props
+    }) => render(props, ref);
   }
   return forwardRef(render);
 }

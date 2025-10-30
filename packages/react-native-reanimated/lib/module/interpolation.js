@@ -1,6 +1,6 @@
 'use strict';
 
-import { ReanimatedError } from './errors.js';
+import { ReanimatedError } from "./errors.js";
 
 /**
  * Extrapolation type.
@@ -9,12 +9,12 @@ import { ReanimatedError } from './errors.js';
  * @param CLAMP - Clamps the value to the edge of the output range.
  * @param EXTEND - Predicts the values beyond the output range.
  */
-export let Extrapolation = /*#__PURE__*/ (function (Extrapolation) {
-  Extrapolation['IDENTITY'] = 'identity';
-  Extrapolation['CLAMP'] = 'clamp';
-  Extrapolation['EXTEND'] = 'extend';
+export let Extrapolation = /*#__PURE__*/function (Extrapolation) {
+  Extrapolation["IDENTITY"] = "identity";
+  Extrapolation["CLAMP"] = "clamp";
+  Extrapolation["EXTEND"] = "extend";
   return Extrapolation;
-})({});
+}({});
 
 /** Represents the possible values for extrapolation as a string. */
 
@@ -41,11 +41,8 @@ function getVal(type, coef, val, leftEdgeOutput, rightEdgeOutput, x) {
 function isExtrapolate(value) {
   'worklet';
 
-  return (
-    /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */ value ===
-      Extrapolation.EXTEND ||
-    value === Extrapolation.CLAMP ||
-    value === Extrapolation.IDENTITY
+  return /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */(
+    value === Extrapolation.EXTEND || value === Extrapolation.CLAMP || value === Extrapolation.IDENTITY
     /* eslint-enable @typescript-eslint/no-unsafe-enum-comparison */
   );
 }
@@ -58,7 +55,7 @@ function validateType(type) {
   // initialize extrapolationConfig with default extrapolation
   const extrapolationConfig = {
     extrapolateLeft: Extrapolation.EXTEND,
-    extrapolateRight: Extrapolation.EXTEND,
+    extrapolateRight: Extrapolation.EXTEND
   };
   if (!type) {
     return extrapolationConfig;
@@ -74,10 +71,7 @@ function validateType(type) {
   }
 
   // otherwise type is extrapolation config object
-  if (
-    (type.extrapolateLeft && !isExtrapolate(type.extrapolateLeft)) ||
-    (type.extrapolateRight && !isExtrapolate(type.extrapolateRight))
-  ) {
+  if (type.extrapolateLeft && !isExtrapolate(type.extrapolateLeft) || type.extrapolateRight && !isExtrapolate(type.extrapolateRight)) {
     throw new ReanimatedError(`Unsupported value for "interpolate" \nSupported values: ["extend", "clamp", "identity", Extrapolatation.CLAMP, Extrapolatation.EXTEND, Extrapolatation.IDENTITY]\n Valid example:
       interpolate(value, [inputRange], [outputRange], {
         extrapolateLeft: Extrapolation.CLAMP,
@@ -90,8 +84,12 @@ function validateType(type) {
 function internalInterpolate(x, narrowedInput, extrapolationConfig) {
   'worklet';
 
-  const { leftEdgeInput, rightEdgeInput, leftEdgeOutput, rightEdgeOutput } =
-    narrowedInput;
+  const {
+    leftEdgeInput,
+    rightEdgeInput,
+    leftEdgeOutput,
+    rightEdgeOutput
+  } = narrowedInput;
   if (rightEdgeInput - leftEdgeInput === 0) {
     return leftEdgeOutput;
   }
@@ -99,23 +97,9 @@ function internalInterpolate(x, narrowedInput, extrapolationConfig) {
   const val = leftEdgeOutput + progress * (rightEdgeOutput - leftEdgeOutput);
   const coef = rightEdgeOutput >= leftEdgeOutput ? 1 : -1;
   if (coef * val < coef * leftEdgeOutput) {
-    return getVal(
-      extrapolationConfig.extrapolateLeft,
-      coef,
-      val,
-      leftEdgeOutput,
-      rightEdgeOutput,
-      x
-    );
+    return getVal(extrapolationConfig.extrapolateLeft, coef, val, leftEdgeOutput, rightEdgeOutput, x);
   } else if (coef * val > coef * rightEdgeOutput) {
-    return getVal(
-      extrapolationConfig.extrapolateRight,
-      coef,
-      val,
-      leftEdgeOutput,
-      rightEdgeOutput,
-      x
-    );
+    return getVal(extrapolationConfig.extrapolateRight, coef, val, leftEdgeOutput, rightEdgeOutput, x);
   }
   return val;
 }
@@ -139,9 +123,7 @@ export function interpolate(x, inputRange, outputRange, type) {
   'worklet';
 
   if (inputRange.length < 2 || outputRange.length < 2) {
-    throw new ReanimatedError(
-      'Interpolation input and output ranges should contain at least two values.'
-    );
+    throw new ReanimatedError('Interpolation input and output ranges should contain at least two values.');
   }
   const extrapolationConfig = validateType(type);
   const length = inputRange.length;
@@ -149,7 +131,7 @@ export function interpolate(x, inputRange, outputRange, type) {
     leftEdgeInput: inputRange[0],
     rightEdgeInput: inputRange[1],
     leftEdgeOutput: outputRange[0],
-    rightEdgeOutput: outputRange[1],
+    rightEdgeOutput: outputRange[1]
   };
   if (length > 2) {
     if (x > inputRange[length - 1]) {

@@ -1,9 +1,4 @@
-import type {
-  LayoutAnimationFunction,
-  LayoutAnimationType,
-  ProgressAnimationCallback,
-  SharedTransitionAnimationsFunction,
-} from './commonTypes';
+import type { LayoutAnimationFunction, LayoutAnimationType, ProgressAnimationCallback, SharedTransitionAnimationsFunction } from './commonTypes';
 /**
  * Lets you update the current configuration of the layout animation or shared
  * element transition for a given component. Configurations are batched and
@@ -23,15 +18,5 @@ import type {
  *   those that were updated later). This is used to retain the correct ordering
  *   of shared elements. Defaults to `false`.
  */
-export declare let updateLayoutAnimations: (
-  viewTag: number,
-  type: LayoutAnimationType,
-  config?:
-    | Keyframe
-    | LayoutAnimationFunction
-    | SharedTransitionAnimationsFunction
-    | ProgressAnimationCallback,
-  sharedTransitionTag?: string,
-  isUnmounting?: boolean
-) => void;
+export declare let updateLayoutAnimations: (viewTag: number, type: LayoutAnimationType, config?: Keyframe | LayoutAnimationFunction | SharedTransitionAnimationsFunction | ProgressAnimationCallback, sharedTransitionTag?: string, isUnmounting?: boolean) => void;
 //# sourceMappingURL=UpdateLayoutAnimations.d.ts.map

@@ -1,6 +1,6 @@
 'use strict';
 
-import { shouldBeUseWeb } from './PlatformChecker.js';
+import { shouldBeUseWeb } from "./PlatformChecker.js";
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 
 /**
@@ -23,19 +23,17 @@ For convenience we moved this cache to a separate file so it doesn't scare us wi
 */
 
 const cache = SHOULD_BE_USE_WEB ? null : new WeakMap();
-export const shareableMappingCache = SHOULD_BE_USE_WEB
-  ? {
-      set() {
-        // NOOP
-      },
-      get() {
-        return null;
-      },
-    }
-  : {
-      set(shareable, shareableRef) {
-        cache.set(shareable, shareableRef || shareableMappingFlag);
-      },
-      get: cache.get.bind(cache),
-    };
+export const shareableMappingCache = SHOULD_BE_USE_WEB ? {
+  set() {
+    // NOOP
+  },
+  get() {
+    return null;
+  }
+} : {
+  set(shareable, shareableRef) {
+    cache.set(shareable, shareableRef || shareableMappingFlag);
+  },
+  get: cache.get.bind(cache)
+};
 //# sourceMappingURL=shareableMappingCache.js.map

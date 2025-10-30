@@ -1,12 +1,7 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
-import {
-  isChromeDebugger,
-  isFabric,
-  isJest,
-  shouldBeUseWeb,
-} from '../PlatformChecker.js';
+import { logger } from "../logger/index.js";
+import { isChromeDebugger, isFabric, isJest, shouldBeUseWeb } from "../PlatformChecker.js";
 import { dispatchCommand } from './dispatchCommand';
 /**
  * Lets you synchronously scroll to a given position of a `ScrollView`.
@@ -24,11 +19,8 @@ function scrollToFabric(animatedRef, x, y, animated) {
   'worklet';
 
   dispatchCommand(
-    // This assertion is needed to comply to `dispatchCommand` interface
-    animatedRef,
-    'scrollTo',
-    [x, y, animated]
-  );
+  // This assertion is needed to comply to `dispatchCommand` interface
+  animatedRef, 'scrollTo', [x, y, animated]);
 }
 function scrollToPaper(animatedRef, x, y, animated) {
   'worklet';

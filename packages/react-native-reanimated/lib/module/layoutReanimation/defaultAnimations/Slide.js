@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Slide from right animation. You can modify the behavior by chaining methods
@@ -22,21 +22,18 @@ export class SlideInRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originX: delayFunction(
-            delay,
-            animation(values.targetOriginX, config)
-          ),
+          originX: delayFunction(delay, animation(values.targetOriginX, config))
         },
         initialValues: {
           originX: values.targetOriginX + values.windowWidth,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -62,21 +59,18 @@ export class SlideInLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originX: delayFunction(
-            delay,
-            animation(values.targetOriginX, config)
-          ),
+          originX: delayFunction(delay, animation(values.targetOriginX, config))
         },
         initialValues: {
           originX: values.targetOriginX - values.windowWidth,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -102,27 +96,18 @@ export class SlideOutRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originX: delayFunction(
-            delay,
-            animation(
-              Math.max(
-                values.currentOriginX + values.windowWidth,
-                values.windowWidth
-              ),
-              config
-            )
-          ),
+          originX: delayFunction(delay, animation(Math.max(values.currentOriginX + values.windowWidth, values.windowWidth), config))
         },
         initialValues: {
           originX: values.currentOriginX,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -148,27 +133,18 @@ export class SlideOutLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originX: delayFunction(
-            delay,
-            animation(
-              Math.min(
-                values.currentOriginX - values.windowWidth,
-                -values.windowWidth
-              ),
-              config
-            )
-          ),
+          originX: delayFunction(delay, animation(Math.min(values.currentOriginX - values.windowWidth, -values.windowWidth), config))
         },
         initialValues: {
           originX: values.currentOriginX,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -194,21 +170,18 @@ export class SlideInUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originY: delayFunction(
-            delay,
-            animation(values.targetOriginY, config)
-          ),
+          originY: delayFunction(delay, animation(values.targetOriginY, config))
         },
         initialValues: {
           originY: -values.windowHeight,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -234,21 +207,18 @@ export class SlideInDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originY: delayFunction(
-            delay,
-            animation(values.targetOriginY, config)
-          ),
+          originY: delayFunction(delay, animation(values.targetOriginY, config))
         },
         initialValues: {
           originY: values.targetOriginY + values.windowHeight,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -274,27 +244,18 @@ export class SlideOutUp extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originY: delayFunction(
-            delay,
-            animation(
-              Math.min(
-                values.currentOriginY - values.windowHeight,
-                -values.windowHeight
-              ),
-              config
-            )
-          ),
+          originY: delayFunction(delay, animation(Math.min(values.currentOriginY - values.windowHeight, -values.windowHeight), config))
         },
         initialValues: {
           originY: values.currentOriginY,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -320,27 +281,18 @@ export class SlideOutDown extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          originY: delayFunction(
-            delay,
-            animation(
-              Math.max(
-                values.currentOriginY + values.windowHeight,
-                values.windowHeight
-              ),
-              config
-            )
-          ),
+          originY: delayFunction(delay, animation(Math.max(values.currentOriginY + values.windowHeight, values.windowHeight), config))
         },
         initialValues: {
           originY: values.currentOriginY,
-          ...initialValues,
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

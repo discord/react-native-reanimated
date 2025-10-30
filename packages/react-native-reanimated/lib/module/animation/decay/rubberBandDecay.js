@@ -1,26 +1,23 @@
 'use strict';
 
-import { SLOPE_FACTOR, VELOCITY_EPS } from './utils.js';
+import { SLOPE_FACTOR, VELOCITY_EPS } from "./utils.js";
 const DERIVATIVE_EPS = 0.1;
 export function rubberBandDecay(animation, now, config) {
   'worklet';
 
-  const { lastTimestamp, startTimestamp, current, velocity } = animation;
+  const {
+    lastTimestamp,
+    startTimestamp,
+    current,
+    velocity
+  } = animation;
   const deltaTime = Math.min(now - lastTimestamp, 64);
-  const clampIndex =
-    Math.abs(current - config.clamp[0]) < Math.abs(current - config.clamp[1])
-      ? 0
-      : 1;
+  const clampIndex = Math.abs(current - config.clamp[0]) < Math.abs(current - config.clamp[1]) ? 0 : 1;
   let derivative = 0;
   if (current < config.clamp[0] || current > config.clamp[1]) {
     derivative = current - config.clamp[clampIndex];
   }
-  const v =
-    velocity *
-      Math.exp(
-        -(1 - config.deceleration) * (now - startTimestamp) * SLOPE_FACTOR
-      ) -
-    derivative * config.rubberBandFactor;
+  const v = velocity * Math.exp(-(1 - config.deceleration) * (now - startTimestamp) * SLOPE_FACTOR) - derivative * config.rubberBandFactor;
   if (Math.abs(derivative) > DERIVATIVE_EPS) {
     animation.springActive = true;
   } else if (animation.springActive) {
@@ -29,7 +26,7 @@ export function rubberBandDecay(animation, now, config) {
   } else if (Math.abs(v) < VELOCITY_EPS) {
     return true;
   }
-  animation.current = current + (v * config.velocityFactor * deltaTime) / 1000;
+  animation.current = current + v * config.velocityFactor * deltaTime / 1000;
   animation.velocity = v;
   animation.lastTimestamp = now;
   return false;

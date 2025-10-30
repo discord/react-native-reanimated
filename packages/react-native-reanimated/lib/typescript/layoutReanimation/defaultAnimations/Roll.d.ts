@@ -1,7 +1,4 @@
-import type {
-  EntryExitAnimationFunction,
-  IEntryExitAnimationBuilder,
-} from '../../commonTypes';
+import type { EntryExitAnimationFunction, IEntryExitAnimationBuilder } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,15 +10,10 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#roll
  */
-export declare class RollInLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class RollInLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Roll from right animation. You can modify the behavior by chaining methods
@@ -32,15 +24,10 @@ export declare class RollInLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#roll
  */
-export declare class RollInRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class RollInRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Roll to left animation. You can modify the behavior by chaining methods like
@@ -51,15 +38,10 @@ export declare class RollInRight
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#roll
  */
-export declare class RollOutLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class RollOutLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Roll to right animation. You can modify the behavior by chaining methods like
@@ -70,14 +52,9 @@ export declare class RollOutLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#roll
  */
-export declare class RollOutRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class RollOutRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 //# sourceMappingURL=Roll.d.ts.map

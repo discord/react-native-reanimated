@@ -1,7 +1,7 @@
 'use strict';
 
-import { RNScreensTurboModule } from './RNScreensTurboModule.js';
-import { applyStyle, applyStyleForBelowTopScreen } from './styleUpdater.js';
+import { RNScreensTurboModule } from "./RNScreensTurboModule.js";
+import { applyStyle, applyStyleForBelowTopScreen } from "./styleUpdater.js";
 const BASE_VELOCITY = 400;
 const ADDITIONAL_VELOCITY_FACTOR_X = 400;
 const ADDITIONAL_VELOCITY_FACTOR_Y = 500;
@@ -33,22 +33,12 @@ function computeProgress(screenTransitionConfig, event, isTransitionCanceled) {
   const progress = isTransitionCanceled ? maxProgress / 2 : maxProgress;
   return progress;
 }
-function maybeScheduleNextFrame(
-  step,
-  didScreenReachDestination,
-  screenTransitionConfig,
-  event,
-  isTransitionCanceled
-) {
+function maybeScheduleNextFrame(step, didScreenReachDestination, screenTransitionConfig, event, isTransitionCanceled) {
   'worklet';
 
   if (!didScreenReachDestination) {
     const stackTag = screenTransitionConfig.stackTag;
-    const progress = computeProgress(
-      screenTransitionConfig,
-      event,
-      isTransitionCanceled
-    );
+    const progress = computeProgress(screenTransitionConfig, event, isTransitionCanceled);
     RNScreensTurboModule.updateTransition(stackTag, progress);
     requestAnimationFrame(step);
   } else {
@@ -60,61 +50,51 @@ export function getSwipeSimulator(event, screenTransitionConfig, lockAxis) {
 
   const screenDimensions = screenTransitionConfig.screenDimensions;
   const startTimestamp = _getAnimationTimestamp();
-  const { isTransitionCanceled } = screenTransitionConfig;
+  const {
+    isTransitionCanceled
+  } = screenTransitionConfig;
   const startingPosition = {
     x: event.translationX,
-    y: event.translationY,
+    y: event.translationY
   };
   const direction = {
     x: Math.sign(event.translationX),
-    y: Math.sign(event.translationY),
+    y: Math.sign(event.translationY)
   };
-  const finalPosition = isTransitionCanceled
-    ? {
-        x: 0,
-        y: 0,
-      }
-    : {
-        x: direction.x * screenDimensions.width,
-        y: direction.y * screenDimensions.height,
-      };
+  const finalPosition = isTransitionCanceled ? {
+    x: 0,
+    y: 0
+  } : {
+    x: direction.x * screenDimensions.width,
+    y: direction.y * screenDimensions.height
+  };
   const distance = {
     x: Math.abs(finalPosition.x - startingPosition.x),
-    y: Math.abs(finalPosition.y - startingPosition.y),
+    y: Math.abs(finalPosition.y - startingPosition.y)
   };
   const didScreenReachDestination = {
     x: false,
-    y: false,
+    y: false
   };
   const velocity = {
     x: BASE_VELOCITY,
-    y: BASE_VELOCITY,
+    y: BASE_VELOCITY
   };
   if (lockAxis === 'x') {
     velocity.y = 0;
-    velocity.x +=
-      (ADDITIONAL_VELOCITY_FACTOR_X * distance.x) / screenDimensions.width;
+    velocity.x += ADDITIONAL_VELOCITY_FACTOR_X * distance.x / screenDimensions.width;
   } else if (lockAxis === 'y') {
     velocity.x = 0;
-    velocity.y +=
-      (ADDITIONAL_VELOCITY_FACTOR_Y * distance.y) / screenDimensions.height;
+    velocity.y += ADDITIONAL_VELOCITY_FACTOR_Y * distance.y / screenDimensions.height;
   } else {
     const euclideanDistance = Math.sqrt(distance.x ** 2 + distance.y ** 2);
-    const screenDiagonal = Math.sqrt(
-      screenDimensions.width ** 2 + screenDimensions.height ** 2
-    );
-    const velocityVectorLength =
-      BASE_VELOCITY +
-      (ADDITIONAL_VELOCITY_FACTOR_XY * euclideanDistance) / screenDiagonal;
+    const screenDiagonal = Math.sqrt(screenDimensions.width ** 2 + screenDimensions.height ** 2);
+    const velocityVectorLength = BASE_VELOCITY + ADDITIONAL_VELOCITY_FACTOR_XY * euclideanDistance / screenDiagonal;
     if (Math.abs(startingPosition.x) > Math.abs(startingPosition.y)) {
       velocity.x = velocityVectorLength;
-      velocity.y =
-        velocityVectorLength *
-        Math.abs(startingPosition.y / startingPosition.x);
+      velocity.y = velocityVectorLength * Math.abs(startingPosition.y / startingPosition.x);
     } else {
-      velocity.x =
-        velocityVectorLength *
-        Math.abs(startingPosition.x / startingPosition.y);
+      velocity.x = velocityVectorLength * Math.abs(startingPosition.x / startingPosition.y);
       velocity.y = velocityVectorLength;
     }
   }
@@ -136,12 +116,10 @@ export function getSwipeSimulator(event, screenTransitionConfig, lockAxis) {
     const computeFrame = () => {
       const progress = {
         x: computeEasingProgress(startTimestamp, distance.x, velocity.x),
-        y: computeEasingProgress(startTimestamp, distance.y, velocity.y),
+        y: computeEasingProgress(startTimestamp, distance.y, velocity.y)
       };
-      event.translationX =
-        startingPosition.x - direction.x * distance.x * easing(progress.x);
-      event.translationY =
-        startingPosition.y - direction.y * distance.y * easing(progress.y);
+      event.translationX = startingPosition.x - direction.x * distance.x * easing(progress.x);
+      event.translationY = startingPosition.y - direction.y * distance.y * easing(progress.y);
       if (direction.x > 0) {
         if (event.translationX <= 0) {
           didScreenReachDestination.x = true;
@@ -169,25 +147,17 @@ export function getSwipeSimulator(event, screenTransitionConfig, lockAxis) {
       if (finished) {
         restoreOriginalStyleForBelowTopScreen();
       }
-      maybeScheduleNextFrame(
-        computeFrame,
-        finished,
-        screenTransitionConfig,
-        event,
-        isTransitionCanceled
-      );
+      maybeScheduleNextFrame(computeFrame, finished, screenTransitionConfig, event, isTransitionCanceled);
     };
     return computeFrame;
   } else {
     const computeFrame = () => {
       const progress = {
         x: computeEasingProgress(startTimestamp, distance.x, velocity.x),
-        y: computeEasingProgress(startTimestamp, distance.y, velocity.y),
+        y: computeEasingProgress(startTimestamp, distance.y, velocity.y)
       };
-      event.translationX =
-        startingPosition.x + direction.x * distance.x * easing(progress.x);
-      event.translationY =
-        startingPosition.y + direction.y * distance.y * easing(progress.y);
+      event.translationX = startingPosition.x + direction.x * distance.x * easing(progress.x);
+      event.translationY = startingPosition.y + direction.y * distance.y * easing(progress.y);
       if (direction.x > 0) {
         if (event.translationX >= screenDimensions.width) {
           didScreenReachDestination.x = true;
@@ -211,13 +181,7 @@ export function getSwipeSimulator(event, screenTransitionConfig, lockAxis) {
         }
       }
       applyStyle(screenTransitionConfig, event);
-      maybeScheduleNextFrame(
-        computeFrame,
-        didScreenReachDestination.x || didScreenReachDestination.y,
-        screenTransitionConfig,
-        event,
-        isTransitionCanceled
-      );
+      maybeScheduleNextFrame(computeFrame, didScreenReachDestination.x || didScreenReachDestination.y, screenTransitionConfig, event, isTransitionCanceled);
     };
     return computeFrame;
   }

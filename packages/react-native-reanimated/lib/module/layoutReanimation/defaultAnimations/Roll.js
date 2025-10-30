@@ -1,6 +1,6 @@
 'use strict';
 
-import { ComplexAnimationBuilder } from '../animationBuilder/index.js';
+import { ComplexAnimationBuilder } from "../animationBuilder/index.js";
 
 /**
  * Roll from left animation. You can modify the behavior by chaining methods
@@ -22,32 +22,26 @@ export class RollInLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              rotate: delayFunction(delay, animation('0deg', config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            rotate: delayFunction(delay, animation('0deg', config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: -values.windowWidth,
-            },
-            {
-              rotate: '-180deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: -values.windowWidth
+          }, {
+            rotate: '-180deg'
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -73,32 +67,26 @@ export class RollInRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(delay, animation(0, config)),
-            },
-            {
-              rotate: delayFunction(delay, animation('0deg', config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(0, config))
+          }, {
+            rotate: delayFunction(delay, animation('0deg', config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: values.windowWidth,
-            },
-            {
-              rotate: '180deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: values.windowWidth
+          }, {
+            rotate: '180deg'
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -124,35 +112,26 @@ export class RollOutLeft extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                animation(-values.windowWidth, config)
-              ),
-            },
-            {
-              rotate: delayFunction(delay, animation('-180deg', config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(-values.windowWidth, config))
+          }, {
+            rotate: delayFunction(delay, animation('-180deg', config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: 0,
-            },
-            {
-              rotate: '0deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }, {
+            rotate: '0deg'
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };
@@ -178,35 +157,26 @@ export class RollOutRight extends ComplexAnimationBuilder {
     const delay = this.getDelay();
     const callback = this.callbackV;
     const initialValues = this.initialValues;
-    return (values) => {
+    return values => {
       'worklet';
 
       return {
         animations: {
-          transform: [
-            {
-              translateX: delayFunction(
-                delay,
-                animation(values.windowWidth, config)
-              ),
-            },
-            {
-              rotate: delayFunction(delay, animation('180deg', config)),
-            },
-          ],
+          transform: [{
+            translateX: delayFunction(delay, animation(values.windowWidth, config))
+          }, {
+            rotate: delayFunction(delay, animation('180deg', config))
+          }]
         },
         initialValues: {
-          transform: [
-            {
-              translateX: 0,
-            },
-            {
-              rotate: '0deg',
-            },
-          ],
-          ...initialValues,
+          transform: [{
+            translateX: 0
+          }, {
+            rotate: '0deg'
+          }],
+          ...initialValues
         },
-        callback,
+        callback
       };
     };
   };

@@ -1,13 +1,8 @@
 'use strict';
 
-import { processColorsInProps } from '../Colors.js';
-import { logger } from '../logger/index.js';
-import {
-  isChromeDebugger,
-  isFabric,
-  isJest,
-  shouldBeUseWeb,
-} from '../PlatformChecker.js';
+import { processColorsInProps } from "../Colors.js";
+import { logger } from "../logger/index.js";
+import { isChromeDebugger, isFabric, isJest, shouldBeUseWeb } from "../PlatformChecker.js";
 /**
  * Lets you imperatively update component properties. You should always reach
  * for
@@ -32,12 +27,10 @@ function setNativePropsFabric(animatedRef, updates) {
   }
   const shadowNodeWrapper = animatedRef();
   processColorsInProps(updates);
-  global._updatePropsFabric([
-    {
-      shadowNodeWrapper,
-      updates,
-    },
-  ]);
+  global._updatePropsFabric([{
+    shadowNodeWrapper,
+    updates
+  }]);
 }
 function setNativePropsPaper(animatedRef, updates) {
   'worklet';
@@ -49,13 +42,11 @@ function setNativePropsPaper(animatedRef, updates) {
   const tag = animatedRef();
   const name = animatedRef.viewName?.value ?? null;
   processColorsInProps(updates);
-  global._updatePropsPaper([
-    {
-      tag,
-      name,
-      updates,
-    },
-  ]);
+  global._updatePropsPaper([{
+    tag,
+    name,
+    updates
+  }]);
 }
 function setNativePropsJest() {
   logger.warn('setNativeProps() is not supported with Jest.');

@@ -1,8 +1,8 @@
 'use strict';
 
-import { isSharedValue } from './isSharedValue.js';
-import { isJest } from './PlatformChecker.js';
-import { runOnUI } from './threads.js';
+import { isSharedValue } from "./isSharedValue.js";
+import { isJest } from "./PlatformChecker.js";
+import { runOnUI } from "./threads.js";
 const IS_JEST = isJest();
 function createMapperRegistry() {
   'worklet';
@@ -33,7 +33,7 @@ function createMapperRegistry() {
     // instead of reversing that order we can use a normal array and push processed
     // mappers to the end. There is no need to reverse that array after we are done.
     const pre = new Map(); // map from sv -> mapper that outputs that sv
-    mappers.forEach((mapper) => {
+    mappers.forEach(mapper => {
       if (mapper.outputs) {
         for (const output of mapper.outputs) {
           const preMappers = pre.get(output);
@@ -61,7 +61,7 @@ function createMapperRegistry() {
       }
       newOrder.push(mapper);
     }
-    mappers.forEach((mapper) => {
+    mappers.forEach(mapper => {
       if (!visited.has(mapper)) {
         dfs(mapper);
       }
@@ -141,7 +141,7 @@ function createMapperRegistry() {
         dirty: true,
         worklet,
         inputs: extractInputs(inputs, []),
-        outputs,
+        outputs
       };
       mappers.set(mapper.id, mapper);
       sortedMappers = [];
@@ -153,7 +153,7 @@ function createMapperRegistry() {
       }
       maybeRequestUpdates();
     },
-    stop: (mapperID) => {
+    stop: mapperID => {
       const mapper = mappers.get(mapperID);
       if (mapper) {
         mappers.delete(mapper.id);
@@ -162,12 +162,12 @@ function createMapperRegistry() {
           sv.removeListener(mapper.id);
         }
       }
-    },
+    }
   };
 }
 let MAPPER_ID = 9999;
 export function startMapper(worklet, inputs = [], outputs = []) {
-  const mapperID = (MAPPER_ID += 1);
+  const mapperID = MAPPER_ID += 1;
   runOnUI(() => {
     let mapperRegistry = global.__mapperRegistry;
     if (mapperRegistry === undefined) {

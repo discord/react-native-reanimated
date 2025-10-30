@@ -1,47 +1,31 @@
 'use strict';
 
-import '../layoutReanimation/animationsManager.js';
+import "../layoutReanimation/animationsManager.js";
 import invariant from 'invariant';
 import React from 'react';
 import { Platform } from 'react-native';
-import { getReduceMotionFromConfig } from '../animation/util.js';
-import { maybeBuild } from '../animationBuilder.js';
-import { LayoutAnimationType } from '../commonTypes.js';
-import { SkipEnteringContext } from '../component/LayoutAnimationConfig.js';
-import { adaptViewConfig } from '../ConfigHelper.js';
-import {
-  enableLayoutAnimations,
-  markNodeAsRemovable,
-  unmarkNodeAsRemovable,
-} from '../core.js';
-import { ReanimatedError } from '../errors.js';
+import { getReduceMotionFromConfig } from "../animation/util.js";
+import { maybeBuild } from "../animationBuilder.js";
+import { LayoutAnimationType } from "../commonTypes.js";
+import { SkipEnteringContext } from "../component/LayoutAnimationConfig.js";
+import { adaptViewConfig } from "../ConfigHelper.js";
+import { enableLayoutAnimations, markNodeAsRemovable, unmarkNodeAsRemovable } from "../core.js";
+import { ReanimatedError } from "../errors.js";
 import { getShadowNodeWrapperFromRef } from '../fabricUtils';
-import { SharedTransition } from '../layoutReanimation/index.js';
-import {
-  configureWebLayoutAnimations,
-  getReducedMotionFromConfig,
-  saveSnapshot,
-  startWebLayoutAnimation,
-  tryActivateLayoutTransition,
-} from '../layoutReanimation/web/index.js';
-import { addHTMLMutationObserver } from '../layoutReanimation/web/domUtils.js';
+import { SharedTransition } from "../layoutReanimation/index.js";
+import { configureWebLayoutAnimations, getReducedMotionFromConfig, saveSnapshot, startWebLayoutAnimation, tryActivateLayoutTransition } from "../layoutReanimation/web/index.js";
+import { addHTMLMutationObserver } from "../layoutReanimation/web/domUtils.js";
 import { findHostInstance } from '../platform-specific/findHostInstance';
-import {
-  isFabric,
-  isJest,
-  isReact19,
-  isWeb,
-  shouldBeUseWeb,
-} from '../PlatformChecker.js';
-import { componentWithRef } from '../reactUtils.js';
-import { updateLayoutAnimations } from '../UpdateLayoutAnimations.js';
-import { getViewInfo } from './getViewInfo.js';
-import { InlinePropManager } from './InlinePropManager.js';
+import { isFabric, isJest, isReact19, isWeb, shouldBeUseWeb } from "../PlatformChecker.js";
+import { componentWithRef } from "../reactUtils.js";
+import { updateLayoutAnimations } from "../UpdateLayoutAnimations.js";
+import { getViewInfo } from "./getViewInfo.js";
+import { InlinePropManager } from "./InlinePropManager.js";
 import JSPropsUpdater from './JSPropsUpdater';
-import { NativeEventsManager } from './NativeEventsManager.js';
-import { PropsFilter } from './PropsFilter.js';
-import setAndForwardRef from './setAndForwardRef.js';
-import { flattenArray } from './utils.js';
+import { NativeEventsManager } from "./NativeEventsManager.js";
+import { PropsFilter } from "./PropsFilter.js";
+import setAndForwardRef from "./setAndForwardRef.js";
+import { flattenArray } from "./utils.js";
 const IS_WEB = isWeb();
 const IS_JEST = isJest();
 const IS_REACT_19 = isReact19();
@@ -50,7 +34,7 @@ if (IS_WEB) {
   configureWebLayoutAnimations();
 }
 function onlyAnimatedStyles(styles) {
-  return styles.filter((style) => style?.viewDescriptors);
+  return styles.filter(style => style?.viewDescriptors);
 }
 
 /**
@@ -72,20 +56,16 @@ function onlyAnimatedStyles(styles) {
 let id = 0;
 export function createAnimatedComponent(Component, options) {
   if (!IS_REACT_19) {
-    invariant(
-      typeof Component !== 'function' ||
-        (Component.prototype && Component.prototype.isReactComponent),
-      `Looks like you're passing a function component \`${Component.name}\` to \`createAnimatedComponent\` function which supports only class components. Please wrap your function component with \`React.forwardRef()\` or use a class component instead.`
-    );
+    invariant(typeof Component !== 'function' || Component.prototype && Component.prototype.isReactComponent, `Looks like you're passing a function component \`${Component.name}\` to \`createAnimatedComponent\` function which supports only class components. Please wrap your function component with \`React.forwardRef()\` or use a class component instead.`);
   }
   class AnimatedComponent extends React.Component {
     _styles = null;
     _isFirstRender = true;
     jestAnimatedStyle = {
-      value: {},
+      value: {}
     };
     jestAnimatedProps = {
-      value: {},
+      value: {}
     };
     _componentRef = null;
     _hasAnimatedRef = false;
@@ -102,18 +82,15 @@ export function createAnimatedComponent(Component, options) {
       super(props);
       if (IS_JEST) {
         this.jestAnimatedStyle = {
-          value: {},
+          value: {}
         };
         this.jestAnimatedProps = {
-          value: {},
+          value: {}
         };
       }
       const skipEntering = this.context?.current;
       if (isFabric() && !skipEntering) {
-        this._configureLayoutAnimation(
-          LayoutAnimationType.ENTERING,
-          this.props.entering
-        );
+        this._configureLayoutAnimation(LayoutAnimationType.ENTERING, this.props.entering);
       }
     }
     componentDidMount() {
@@ -125,14 +102,8 @@ export function createAnimatedComponent(Component, options) {
       this._jsPropsUpdater.addOnJSPropsChangeListener(this);
       this._attachAnimatedStyles();
       this._InlinePropManager.attachInlineProps(this, this._getViewInfo());
-      this._configureLayoutAnimation(
-        LayoutAnimationType.LAYOUT,
-        this.props.layout
-      );
-      this._configureLayoutAnimation(
-        LayoutAnimationType.EXITING,
-        this.props.exiting
-      );
+      this._configureLayoutAnimation(LayoutAnimationType.LAYOUT, this.props.layout);
+      this._configureLayoutAnimation(LayoutAnimationType.EXITING, this.props.exiting);
       if (IS_WEB) {
         if (this.props.exiting && this._componentDOMRef) {
           saveSnapshot(this._componentDOMRef);
@@ -148,22 +119,13 @@ export function createAnimatedComponent(Component, options) {
         }
         const skipEntering = this.context?.current;
         if (!skipEntering) {
-          startWebLayoutAnimation(
-            this.props,
-            this._componentDOMRef,
-            LayoutAnimationType.ENTERING
-          );
+          startWebLayoutAnimation(this.props, this._componentDOMRef, LayoutAnimationType.ENTERING);
         } else if (this._componentDOMRef) {
           this._componentDOMRef.style.visibility = 'initial';
         }
       }
       const viewTag = this._viewInfo?.viewTag;
-      if (
-        !SHOULD_BE_USE_WEB &&
-        isFabric() &&
-        this._willUnmount &&
-        typeof viewTag === 'number'
-      ) {
+      if (!SHOULD_BE_USE_WEB && isFabric() && this._willUnmount && typeof viewTag === 'number') {
         unmarkNodeAsRemovable(viewTag);
       }
       this._isFirstRender = false;
@@ -176,10 +138,7 @@ export function createAnimatedComponent(Component, options) {
       if (this.props.sharedTransitionTag) {
         this._configureSharedTransition(true);
       }
-      this._sharedElementTransition?.unregisterTransition(
-        this.getComponentViewTag(),
-        true
-      );
+      this._sharedElementTransition?.unregisterTransition(this.getComponentViewTag(), true);
       const exiting = this.props.exiting;
       if (IS_WEB && this._componentDOMRef && exiting) {
         if (getReducedMotionFromConfig(exiting)) {
@@ -187,17 +146,9 @@ export function createAnimatedComponent(Component, options) {
           return;
         }
         addHTMLMutationObserver();
-        startWebLayoutAnimation(
-          this.props,
-          this._componentDOMRef,
-          LayoutAnimationType.EXITING
-        );
+        startWebLayoutAnimation(this.props, this._componentDOMRef, LayoutAnimationType.EXITING);
       } else if (exiting && !IS_WEB && !isFabric()) {
-        const reduceMotionInExiting =
-          'getReduceMotion' in exiting &&
-          typeof exiting.getReduceMotion === 'function'
-            ? getReduceMotionFromConfig(exiting.getReduceMotion())
-            : getReduceMotionFromConfig();
+        const reduceMotionInExiting = 'getReduceMotion' in exiting && typeof exiting.getReduceMotion === 'function' ? getReduceMotionFromConfig(exiting.getReduceMotion()) : getReduceMotionFromConfig();
         if (!reduceMotionInExiting) {
           this._configureLayoutAnimation(LayoutAnimationType.EXITING, exiting);
         }
@@ -258,23 +209,19 @@ export function createAnimatedComponent(Component, options) {
             (render function returns null). Example: 
             svg Stop: https://github.com/react-native-svg/react-native-svg/blob/develop/src/elements/Stop.tsx
           */
-          throw new ReanimatedError(
-            'Cannot find host instance for this component. Maybe it renders nothing?'
-          );
+          throw new ReanimatedError('Cannot find host instance for this component. Maybe it renders nothing?');
         }
         const viewInfo = getViewInfo(hostInstance);
         viewTag = viewInfo.viewTag;
         viewName = viewInfo.viewName;
         viewConfig = viewInfo.viewConfig;
-        shadowNodeWrapper = isFabric()
-          ? getShadowNodeWrapperFromRef(this, hostInstance)
-          : null;
+        shadowNodeWrapper = isFabric() ? getShadowNodeWrapperFromRef(this, hostInstance) : null;
       }
       this._viewInfo = {
         viewTag,
         viewName,
         shadowNodeWrapper,
-        viewConfig,
+        viewConfig
       };
       if (DOMElement) {
         this._viewInfo.DOMElement = DOMElement;
@@ -282,40 +229,38 @@ export function createAnimatedComponent(Component, options) {
       return this._viewInfo;
     }
     _attachAnimatedStyles() {
-      const styles = this.props.style
-        ? onlyAnimatedStyles(flattenArray(this.props.style))
-        : [];
+      const styles = this.props.style ? onlyAnimatedStyles(flattenArray(this.props.style)) : [];
       const animatedProps = this.props.animatedProps;
       const prevStyles = this._styles;
       this._styles = styles;
       const prevAnimatedProps = this._animatedProps;
       this._animatedProps = animatedProps;
-      const { viewTag, viewName, shadowNodeWrapper, viewConfig } =
-        this._getViewInfo();
+      const {
+        viewTag,
+        viewName,
+        shadowNodeWrapper,
+        viewConfig
+      } = this._getViewInfo();
 
       // update UI props whitelist for this view
-      const hasReanimated2Props =
-        this.props.animatedProps?.viewDescriptors || styles.length;
+      const hasReanimated2Props = this.props.animatedProps?.viewDescriptors || styles.length;
       if (hasReanimated2Props && viewConfig) {
         adaptViewConfig(viewConfig);
       }
       const newStyles = new Set(styles);
-      const isStyleAttached = (style) => style.viewDescriptors.has(viewTag);
+      const isStyleAttached = style => style.viewDescriptors.has(viewTag);
 
       // remove old styles
       if (prevStyles) {
         // in most of the cases, views have only a single animated style and it remains unchanged
-        const hasOneSameStyle =
-          styles.length === 1 &&
-          prevStyles.length === 1 &&
-          styles[0] === prevStyles[0];
+        const hasOneSameStyle = styles.length === 1 && prevStyles.length === 1 && styles[0] === prevStyles[0];
         if (hasOneSameStyle && isStyleAttached(prevStyles[0])) {
           return;
         }
 
         // otherwise, remove each style that is not present in new styles
         for (const prevStyle of prevStyles) {
-          const isPresent = styles.some((style) => style === prevStyle);
+          const isPresent = styles.some(style => style === prevStyle);
           if (!isPresent && isStyleAttached(prevStyle)) {
             prevStyle.viewDescriptors.remove(viewTag);
           }
@@ -324,17 +269,17 @@ export function createAnimatedComponent(Component, options) {
       if (animatedProps && IS_JEST) {
         this.jestAnimatedProps.value = {
           ...this.jestAnimatedProps.value,
-          ...animatedProps?.initial?.value,
+          ...animatedProps?.initial?.value
         };
         if (animatedProps?.jestAnimatedValues) {
           animatedProps.jestAnimatedValues.current = this.jestAnimatedProps;
         }
       }
-      newStyles.forEach((style) => {
+      newStyles.forEach(style => {
         style.viewDescriptors.add({
           tag: viewTag,
           name: viewName,
-          shadowNodeWrapper,
+          shadowNodeWrapper
         });
         if (IS_JEST) {
           /**
@@ -346,7 +291,7 @@ export function createAnimatedComponent(Component, options) {
            */
           this.jestAnimatedStyle.value = {
             ...this.jestAnimatedStyle.value,
-            ...style.initial.value,
+            ...style.initial.value
           };
           style.jestAnimatedValues.current = this.jestAnimatedStyle;
         }
@@ -362,25 +307,14 @@ export function createAnimatedComponent(Component, options) {
         this.props.animatedProps.viewDescriptors.add({
           tag: viewTag,
           name: viewName,
-          shadowNodeWrapper: shadowNodeWrapper,
+          shadowNodeWrapper: shadowNodeWrapper
         });
       }
     }
     componentDidUpdate(prevProps, _prevState, snapshot) {
-      this._configureLayoutAnimation(
-        LayoutAnimationType.LAYOUT,
-        this.props.layout,
-        prevProps.layout
-      );
-      this._configureLayoutAnimation(
-        LayoutAnimationType.EXITING,
-        this.props.exiting,
-        prevProps.exiting
-      );
-      if (
-        this.props.sharedTransitionTag !== undefined ||
-        prevProps.sharedTransitionTag !== undefined
-      ) {
+      this._configureLayoutAnimation(LayoutAnimationType.LAYOUT, this.props.layout, prevProps.layout);
+      this._configureLayoutAnimation(LayoutAnimationType.EXITING, this.props.exiting, prevProps.exiting);
+      if (this.props.sharedTransitionTag !== undefined || prevProps.sharedTransitionTag !== undefined) {
         this._configureSharedTransition();
       }
       this._NativeEventsManager?.updateEvents(prevProps);
@@ -394,11 +328,7 @@ export function createAnimatedComponent(Component, options) {
           this.props.layout.callbackV?.(true);
           return;
         }
-        tryActivateLayoutTransition(
-          this.props,
-          this._componentDOMRef,
-          snapshot
-        );
+        tryActivateLayoutTransition(this.props, this._componentDOMRef, snapshot);
       }
     }
     _configureLayoutAnimation(type, currentConfig, previousConfig) {
@@ -411,46 +341,25 @@ export function createAnimatedComponent(Component, options) {
         }
         currentConfig = undefined;
       }
-      updateLayoutAnimations(
-        isFabric() && type === LayoutAnimationType.ENTERING
-          ? this.reanimatedID
-          : this.getComponentViewTag(),
-        type,
-        currentConfig &&
-          maybeBuild(
-            currentConfig,
-            type === LayoutAnimationType.LAYOUT
-              ? undefined /* We don't have to warn user if style has common properties with animation for LAYOUT */
-              : this.props?.style,
-            AnimatedComponent.displayName
-          )
-      );
+      updateLayoutAnimations(isFabric() && type === LayoutAnimationType.ENTERING ? this.reanimatedID : this.getComponentViewTag(), type, currentConfig && maybeBuild(currentConfig, type === LayoutAnimationType.LAYOUT ? undefined /* We don't have to warn user if style has common properties with animation for LAYOUT */ : this.props?.style, AnimatedComponent.displayName));
     }
     _configureSharedTransition(isUnmounting = false) {
       if (IS_WEB) {
         return;
       }
-      const { sharedTransitionTag } = this.props;
+      const {
+        sharedTransitionTag
+      } = this.props;
       if (!sharedTransitionTag) {
-        this._sharedElementTransition?.unregisterTransition(
-          this.getComponentViewTag(),
-          isUnmounting
-        );
+        this._sharedElementTransition?.unregisterTransition(this.getComponentViewTag(), isUnmounting);
         this._sharedElementTransition = null;
         return;
       }
-      const sharedElementTransition =
-        this.props.sharedTransitionStyle ??
-        this._sharedElementTransition ??
-        new SharedTransition();
-      sharedElementTransition.registerTransition(
-        this.getComponentViewTag(),
-        sharedTransitionTag,
-        isUnmounting
-      );
+      const sharedElementTransition = this.props.sharedTransitionStyle ?? this._sharedElementTransition ?? new SharedTransition();
+      sharedElementTransition.registerTransition(this.getComponentViewTag(), sharedTransitionTag, isUnmounting);
       this._sharedElementTransition = sharedElementTransition;
     }
-    _resolveComponentRef = (ref) => {
+    _resolveComponentRef = ref => {
       const componentRef = ref;
       // Component can specify ref which should be animated when animated version of the component is created.
       // Otherwise, we animate the component itself.
@@ -470,7 +379,7 @@ export function createAnimatedComponent(Component, options) {
     };
     _setComponentRef = setAndForwardRef({
       getForwardedRef: () => this.props.forwardedRef,
-      setLocalRef: (ref) => {
+      setLocalRef: ref => {
         if (!ref) {
           // component has been unmounted
           return;
@@ -480,7 +389,12 @@ export function createAnimatedComponent(Component, options) {
           // if ref is changed, reset viewInfo
           this._viewInfo = undefined;
         }
-        const { layout, entering, exiting, sharedTransitionTag } = this.props;
+        const {
+          layout,
+          entering,
+          exiting,
+          sharedTransitionTag
+        } = this.props;
         if (layout || entering || exiting || sharedTransitionTag) {
           if (!SHOULD_BE_USE_WEB) {
             enableLayoutAnimations(true, false);
@@ -490,31 +404,20 @@ export function createAnimatedComponent(Component, options) {
           }
           const skipEntering = this.context?.current;
           if (entering && !isFabric() && !skipEntering && !IS_WEB) {
-            this._configureLayoutAnimation(
-              LayoutAnimationType.ENTERING,
-              this.props.entering
-            );
+            this._configureLayoutAnimation(LayoutAnimationType.ENTERING, this.props.entering);
           }
         }
-      },
+      }
     });
     _isReducedMotion(config) {
-      return config &&
-        'getReduceMotion' in config &&
-        typeof config.getReduceMotion === 'function'
-        ? getReduceMotionFromConfig(config.getReduceMotion())
-        : getReduceMotionFromConfig();
+      return config && 'getReduceMotion' in config && typeof config.getReduceMotion === 'function' ? getReduceMotionFromConfig(config.getReduceMotion()) : getReduceMotionFromConfig();
     }
 
     // This is a component lifecycle method from React, therefore we are not calling it directly.
     // It is called before the component gets rerendered. This way we can access components' position before it changed
     // and later on, in componentDidUpdate, calculate translation for layout transition.
     getSnapshotBeforeUpdate() {
-      if (
-        IS_WEB &&
-        this.props.layout &&
-        this._componentDOMRef?.getBoundingClientRect
-      ) {
+      if (IS_WEB && this.props.layout && this._componentDOMRef?.getBoundingClientRect) {
         return this._componentDOMRef.getBoundingClientRect();
       }
 
@@ -532,66 +435,38 @@ export function createAnimatedComponent(Component, options) {
       // Because of that we can encounter a situation in which component is visible for a short amount of time, and later on animation triggers.
       // I've tested that on various browsers and devices and it did not happen to me. To be sure that it won't happen to someone else,
       // I've decided to hide component at first render. Its visibility is reset in `componentDidMount`.
-      if (
-        this._isFirstRender &&
-        IS_WEB &&
-        filteredProps.entering &&
-        !getReducedMotionFromConfig(filteredProps.entering)
-      ) {
-        filteredProps.style = Array.isArray(filteredProps.style)
-          ? filteredProps.style.concat([
-              {
-                visibility: 'hidden',
-              },
-            ])
-          : {
-              ...(filteredProps.style ?? {}),
-              visibility: 'hidden', // Hide component until `componentDidMount` triggers
-            };
+      if (this._isFirstRender && IS_WEB && filteredProps.entering && !getReducedMotionFromConfig(filteredProps.entering)) {
+        filteredProps.style = Array.isArray(filteredProps.style) ? filteredProps.style.concat([{
+          visibility: 'hidden'
+        }]) : {
+          ...(filteredProps.style ?? {}),
+          visibility: 'hidden' // Hide component until `componentDidMount` triggers
+        };
       }
       const platformProps = Platform.select({
         web: {},
         default: {
-          collapsable: false,
-        },
+          collapsable: false
+        }
       });
       const skipEntering = this.context?.current;
-      const nativeID =
-        skipEntering || !isFabric() ? undefined : `${this.reanimatedID}`;
-      const jestProps = IS_JEST
-        ? {
-            jestInlineStyle:
-              this.props.style && filterOutAnimatedStyles(this.props.style),
-            jestAnimatedStyle: this.jestAnimatedStyle,
-            jestAnimatedProps: this.jestAnimatedProps,
-          }
-        : {};
-      return (
-        <Component
-          nativeID={nativeID}
-          {...filteredProps}
-          {...jestProps}
-          // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
-          // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
-          ref={this._setComponentRef}
-          {...platformProps}
-        />
-      );
+      const nativeID = skipEntering || !isFabric() ? undefined : `${this.reanimatedID}`;
+      const jestProps = IS_JEST ? {
+        jestInlineStyle: this.props.style && filterOutAnimatedStyles(this.props.style),
+        jestAnimatedStyle: this.jestAnimatedStyle,
+        jestAnimatedProps: this.jestAnimatedProps
+      } : {};
+      return <Component nativeID={nativeID} {...filteredProps} {...jestProps}
+      // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
+      // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
+      ref={this._setComponentRef} {...platformProps} />;
     }
   }
   AnimatedComponent.displayName = `AnimatedComponent(${Component.displayName || Component.name || 'Component'})`;
-  const animatedComponent = componentWithRef((props, ref) => (
-    <AnimatedComponent
-      {...props}
-      {...(ref === null
-        ? null
-        : {
-            forwardedRef: ref,
-          })}
-    />
-  ));
-  animatedComponent.displayName =
-    Component.displayName || Component.name || 'Component';
+  const animatedComponent = componentWithRef((props, ref) => <AnimatedComponent {...props} {...ref === null ? null : {
+    forwardedRef: ref
+  }} />);
+  animatedComponent.displayName = Component.displayName || Component.name || 'Component';
   return animatedComponent;
 }
 function filterOutAnimatedStyles(style) {
@@ -601,15 +476,11 @@ function filterOutAnimatedStyles(style) {
   if (!Array.isArray(style)) {
     return style?.viewDescriptors ? {} : style;
   }
-  return style
-    .filter(
-      (styleElement) => !(styleElement && 'viewDescriptors' in styleElement)
-    )
-    .map((styleElement) => {
-      if (Array.isArray(styleElement)) {
-        return filterOutAnimatedStyles(styleElement);
-      }
-      return styleElement;
-    });
+  return style.filter(styleElement => !(styleElement && 'viewDescriptors' in styleElement)).map(styleElement => {
+    if (Array.isArray(styleElement)) {
+      return filterOutAnimatedStyles(styleElement);
+    }
+    return styleElement;
+  });
 }
 //# sourceMappingURL=createAnimatedComponent.js.map

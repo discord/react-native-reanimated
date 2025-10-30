@@ -1,15 +1,5 @@
-import type {
-  AnimatableValue,
-  AnimationCallback,
-  ReduceMotion,
-} from '../commonTypes';
-type withRepeatType = <T extends AnimatableValue>(
-  animation: T,
-  numberOfReps?: number,
-  reverse?: boolean,
-  callback?: AnimationCallback,
-  reduceMotion?: ReduceMotion
-) => T;
+import type { AnimatableValue, AnimationCallback, ReduceMotion } from '../commonTypes';
+type withRepeatType = <T extends AnimatableValue>(animation: T, numberOfReps?: number, reverse?: boolean, callback?: AnimationCallback, reduceMotion?: ReduceMotion) => T;
 /**
  * Lets you repeat an animation given number of times or run it indefinitely.
  *

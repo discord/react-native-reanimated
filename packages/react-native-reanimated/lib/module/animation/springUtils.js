@@ -1,6 +1,6 @@
 'use strict';
 
-import { logger } from '../logger/index.js';
+import { logger } from "../logger/index.js";
 
 /**
  * Spring animation configuration.
@@ -36,14 +36,7 @@ export function checkIfConfigIsValid(config) {
   'worklet';
 
   let errorMessage = '';
-  [
-    'stiffness',
-    'damping',
-    'dampingRatio',
-    'restDisplacementThreshold',
-    'restSpeedThreshold',
-    'mass',
-  ].forEach((prop) => {
+  ['stiffness', 'damping', 'dampingRatio', 'restDisplacementThreshold', 'restSpeedThreshold', 'mass'].forEach(prop => {
     const value = config[prop];
     if (value <= 0) {
       errorMessage += `, ${prop} must be grater than zero but got ${value}`;
@@ -52,11 +45,7 @@ export function checkIfConfigIsValid(config) {
   if (config.duration < 0) {
     errorMessage += `, duration can't be negative, got ${config.duration}`;
   }
-  if (
-    config.clamp?.min &&
-    config.clamp?.max &&
-    config.clamp.min > config.clamp.max
-  ) {
+  if (config.clamp?.min && config.clamp?.max && config.clamp.min > config.clamp.max) {
     errorMessage += `, clamp.min should be lower than clamp.max, got clamp: {min: ${config.clamp.min}, max: ${config.clamp.max}} `;
   }
   if (errorMessage !== '') {
@@ -66,7 +55,12 @@ export function checkIfConfigIsValid(config) {
 }
 
 // ts-prune-ignore-next This function is exported to be tested
-export function bisectRoot({ min, max, func, maxIterations = 20 }) {
+export function bisectRoot({
+  min,
+  max,
+  func,
+  maxIterations = 20
+}) {
   'worklet';
 
   const ACCURACY = 0.00005;
@@ -90,11 +84,14 @@ export function initialCalculations(mass = 0, config) {
     return {
       zeta: 0,
       omega0: 0,
-      omega1: 0,
+      omega1: 0
     };
   }
   if (config.useDuration) {
-    const { stiffness: k, dampingRatio: zeta } = config;
+    const {
+      stiffness: k,
+      dampingRatio: zeta
+    } = config;
 
     /**
      * Omega0 and omega1 denote angular frequency and natural angular frequency,
@@ -106,10 +103,14 @@ export function initialCalculations(mass = 0, config) {
     return {
       zeta,
       omega0,
-      omega1,
+      omega1
     };
   } else {
-    const { damping: c, mass: m, stiffness: k } = config;
+    const {
+      damping: c,
+      mass: m,
+      stiffness: k
+    } = config;
     const zeta = c / (2 * Math.sqrt(k * m)); // damping ratio
     const omega0 = Math.sqrt(k / m); // undamped angular frequency of the oscillator (rad/ms)
     const omega1 = omega0 * Math.sqrt(1 - zeta ** 2); // exponential decay
@@ -117,7 +118,7 @@ export function initialCalculations(mass = 0, config) {
     return {
       zeta,
       omega0,
-      omega1,
+      omega1
     };
   }
 }
@@ -130,15 +131,16 @@ export function initialCalculations(mass = 0, config) {
 export function scaleZetaToMatchClamps(animation, clamp) {
   'worklet';
 
-  const { zeta, toValue, startValue } = animation;
+  const {
+    zeta,
+    toValue,
+    startValue
+  } = animation;
   const toValueNum = Number(toValue);
   if (toValueNum === startValue) {
     return zeta;
   }
-  const [firstBound, secondBound] =
-    toValueNum - startValue > 0
-      ? [clamp.min, clamp.max]
-      : [clamp.max, clamp.min];
+  const [firstBound, secondBound] = toValueNum - startValue > 0 ? [clamp.min, clamp.max] : [clamp.max, clamp.min];
 
   /**
    * The extrema we get from equation below are relative (we obtain a ratio), To
@@ -151,14 +153,8 @@ export function scaleZetaToMatchClamps(animation, clamp) {
    * - Otherwise
    */
 
-  const relativeExtremum1 =
-    secondBound !== undefined
-      ? Math.abs((secondBound - toValueNum) / (toValueNum - startValue))
-      : undefined;
-  const relativeExtremum2 =
-    firstBound !== undefined
-      ? Math.abs((firstBound - toValueNum) / (toValueNum - startValue))
-      : undefined;
+  const relativeExtremum1 = secondBound !== undefined ? Math.abs((secondBound - toValueNum) / (toValueNum - startValue)) : undefined;
+  const relativeExtremum2 = firstBound !== undefined ? Math.abs((firstBound - toValueNum) / (toValueNum - startValue)) : undefined;
 
   /**
    * Use this formula http://hyperphysics.phy-astr.gsu.edu/hbase/oscda.html to
@@ -170,17 +166,9 @@ export function scaleZetaToMatchClamps(animation, clamp) {
    *     Math.exp(-zeta * 2 * Math.PI);  (before the target)
    */
 
-  const newZeta1 =
-    relativeExtremum1 !== undefined
-      ? Math.abs(Math.log(relativeExtremum1) / Math.PI)
-      : undefined;
-  const newZeta2 =
-    relativeExtremum2 !== undefined
-      ? Math.abs(Math.log(relativeExtremum2) / (2 * Math.PI))
-      : undefined;
-  const zetaSatisfyingClamp = [newZeta1, newZeta2].filter(
-    (x) => x !== undefined
-  );
+  const newZeta1 = relativeExtremum1 !== undefined ? Math.abs(Math.log(relativeExtremum1) / Math.PI) : undefined;
+  const newZeta2 = relativeExtremum2 !== undefined ? Math.abs(Math.log(relativeExtremum2) / (2 * Math.PI)) : undefined;
+  const zetaSatisfyingClamp = [newZeta1, newZeta2].filter(x => x !== undefined);
   // The bigger is zeta the smaller are bounces, we return the biggest one
   // because it should satisfy all conditions
   return Math.max(...zetaSatisfyingClamp, zeta);
@@ -219,51 +207,57 @@ export function calculateNewMassToMatchDuration(x0, config, v0) {
     stiffness: k,
     dampingRatio: zeta,
     restSpeedThreshold: threshold,
-    duration,
+    duration
   } = config;
-  const durationForMass = (mass) => {
+  const durationForMass = mass => {
     'worklet';
 
-    const amplitude =
-      (mass * v0 * v0 + k * x0 * x0) / (Math.exp(1 - 0.5 * zeta) * k);
+    const amplitude = (mass * v0 * v0 + k * x0 * x0) / (Math.exp(1 - 0.5 * zeta) * k);
     const c = zeta * 2 * Math.sqrt(k * mass);
-    return (
-      1000 * ((-2 * mass) / c) * Math.log((threshold * 0.01) / amplitude) -
-      duration
-    );
+    return 1000 * (-2 * mass / c) * Math.log(threshold * 0.01 / amplitude) - duration;
   };
 
   // Bisection turns out to be much faster than Newton's method in our case
   return bisectRoot({
     min: 0,
     max: 100,
-    func: durationForMass,
+    func: durationForMass
   });
 }
-export function criticallyDampedSpringCalculations(
-  animation,
-  precalculatedValues
-) {
+export function criticallyDampedSpringCalculations(animation, precalculatedValues) {
   'worklet';
 
-  const { toValue } = animation;
-  const { v0, x0, omega0, t } = precalculatedValues;
+  const {
+    toValue
+  } = animation;
+  const {
+    v0,
+    x0,
+    omega0,
+    t
+  } = precalculatedValues;
   const criticallyDampedEnvelope = Math.exp(-omega0 * t);
-  const criticallyDampedPosition =
-    toValue - criticallyDampedEnvelope * (x0 + (v0 + omega0 * x0) * t);
-  const criticallyDampedVelocity =
-    criticallyDampedEnvelope *
-    (v0 * (t * omega0 - 1) + t * x0 * omega0 * omega0);
+  const criticallyDampedPosition = toValue - criticallyDampedEnvelope * (x0 + (v0 + omega0 * x0) * t);
+  const criticallyDampedVelocity = criticallyDampedEnvelope * (v0 * (t * omega0 - 1) + t * x0 * omega0 * omega0);
   return {
     position: criticallyDampedPosition,
-    velocity: criticallyDampedVelocity,
+    velocity: criticallyDampedVelocity
   };
 }
 export function underDampedSpringCalculations(animation, precalculatedValues) {
   'worklet';
 
-  const { toValue, current, velocity } = animation;
-  const { zeta, t, omega0, omega1 } = precalculatedValues;
+  const {
+    toValue,
+    current,
+    velocity
+  } = animation;
+  const {
+    zeta,
+    t,
+    omega0,
+    omega1
+  } = precalculatedValues;
   const v0 = -velocity;
   const x0 = toValue - current;
   const sin1 = Math.sin(omega1 * t);
@@ -271,35 +265,31 @@ export function underDampedSpringCalculations(animation, precalculatedValues) {
 
   // under damped
   const underDampedEnvelope = Math.exp(-zeta * omega0 * t);
-  const underDampedFrag1 =
-    underDampedEnvelope *
-    (sin1 * ((v0 + zeta * omega0 * x0) / omega1) + x0 * cos1);
+  const underDampedFrag1 = underDampedEnvelope * (sin1 * ((v0 + zeta * omega0 * x0) / omega1) + x0 * cos1);
   const underDampedPosition = toValue - underDampedFrag1;
   // This looks crazy -- it's actually just the derivative of the oscillation function
-  const underDampedVelocity =
-    zeta * omega0 * underDampedFrag1 -
-    underDampedEnvelope *
-      (cos1 * (v0 + zeta * omega0 * x0) - omega1 * x0 * sin1);
+  const underDampedVelocity = zeta * omega0 * underDampedFrag1 - underDampedEnvelope * (cos1 * (v0 + zeta * omega0 * x0) - omega1 * x0 * sin1);
   return {
     position: underDampedPosition,
-    velocity: underDampedVelocity,
+    velocity: underDampedVelocity
   };
 }
 export function isAnimationTerminatingCalculation(animation, config) {
   'worklet';
 
-  const { toValue, velocity, startValue, current } = animation;
-  const isOvershooting = config.overshootClamping
-    ? (current > toValue && startValue < toValue) ||
-      (current < toValue && startValue > toValue)
-    : false;
+  const {
+    toValue,
+    velocity,
+    startValue,
+    current
+  } = animation;
+  const isOvershooting = config.overshootClamping ? current > toValue && startValue < toValue || current < toValue && startValue > toValue : false;
   const isVelocity = Math.abs(velocity) < config.restSpeedThreshold;
-  const isDisplacement =
-    Math.abs(toValue - current) < config.restDisplacementThreshold;
+  const isDisplacement = Math.abs(toValue - current) < config.restDisplacementThreshold;
   return {
     isOvershooting,
     isVelocity,
-    isDisplacement,
+    isDisplacement
   };
 }
 //# sourceMappingURL=springUtils.js.map

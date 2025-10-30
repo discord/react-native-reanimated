@@ -1,20 +1,11 @@
 'use strict';
 
-import {
-  blue,
-  green,
-  hsvToColor,
-  opacity,
-  processColor,
-  red,
-  rgbaColor,
-  RGBtoHSV,
-} from './Colors.js';
-import { makeMutable } from './core.js';
-import culori from './culori/index.js';
-import { ReanimatedError } from './errors.js';
-import { useSharedValue } from './hook/useSharedValue.js';
-import { Extrapolation, interpolate } from './interpolation.js';
+import { blue, green, hsvToColor, opacity, processColor, red, rgbaColor, RGBtoHSV } from "./Colors.js";
+import { makeMutable } from "./core.js";
+import culori from "./culori/index.js";
+import { ReanimatedError } from "./errors.js";
+import { useSharedValue } from "./hook/useSharedValue.js";
+import { Extrapolation, interpolate } from "./interpolation.js";
 
 /** @deprecated Please use Extrapolation instead */
 export const Extrapolate = Extrapolation;
@@ -31,7 +22,9 @@ const interpolateColorsHSV = (value, inputRange, colors, options) => {
   'worklet';
 
   let h = 0;
-  const { useCorrectedHSVInterpolation = true } = options;
+  const {
+    useCorrectedHSVInterpolation = true
+  } = options;
   if (useCorrectedHSVInterpolation) {
     // if the difference between hues in a range is > 180 deg
     // then move the hue at the right end of the range +/- 360 deg
@@ -57,15 +50,7 @@ const interpolateColorsHSV = (value, inputRange, colors, options) => {
         correctedH.push(originalH[i]);
       }
     }
-    h =
-      (interpolate(
-        value,
-        correctedInputRange,
-        correctedH,
-        Extrapolation.CLAMP
-      ) +
-        1) %
-      1;
+    h = (interpolate(value, correctedInputRange, correctedH, Extrapolation.CLAMP) + 1) % 1;
   } else {
     h = interpolate(value, inputRange, colors.h, Extrapolation.CLAMP);
   }
@@ -77,7 +62,7 @@ const interpolateColorsHSV = (value, inputRange, colors, options) => {
 const toLinearSpace = (x, gamma) => {
   'worklet';
 
-  return x.map((v) => Math.pow(v / 255, gamma));
+  return x.map(v => Math.pow(v / 255, gamma));
 };
 const toGammaSpace = (x, gamma) => {
   'worklet';
@@ -87,8 +72,14 @@ const toGammaSpace = (x, gamma) => {
 const interpolateColorsRGB = (value, inputRange, colors, options) => {
   'worklet';
 
-  const { gamma = 2.2 } = options;
-  let { r: outputR, g: outputG, b: outputB } = colors;
+  const {
+    gamma = 2.2
+  } = options;
+  let {
+    r: outputR,
+    g: outputG,
+    b: outputB
+  } = colors;
   if (gamma !== 1) {
     outputR = toLinearSpace(outputR, gamma);
     outputG = toLinearSpace(outputG, gamma);
@@ -101,12 +92,7 @@ const interpolateColorsRGB = (value, inputRange, colors, options) => {
   if (gamma === 1) {
     return rgbaColor(r, g, b, a);
   }
-  return rgbaColor(
-    toGammaSpace(r, gamma),
-    toGammaSpace(g, gamma),
-    toGammaSpace(b, gamma),
-    a
-  );
+  return rgbaColor(toGammaSpace(r, gamma), toGammaSpace(g, gamma), toGammaSpace(b, gamma), a);
 };
 const interpolateColorsLAB = (value, inputRange, colors, _options) => {
   'worklet';
@@ -114,22 +100,17 @@ const interpolateColorsLAB = (value, inputRange, colors, _options) => {
   const l = interpolate(value, inputRange, colors.l, Extrapolation.CLAMP);
   const a = interpolate(value, inputRange, colors.a, Extrapolation.CLAMP);
   const b = interpolate(value, inputRange, colors.b, Extrapolation.CLAMP);
-  const alpha = interpolate(
-    value,
-    inputRange,
-    colors.alpha,
-    Extrapolation.CLAMP
-  );
+  const alpha = interpolate(value, inputRange, colors.alpha, Extrapolation.CLAMP);
   const {
     r: _r,
     g: _g,
     b: _b,
-    alpha: _alpha,
+    alpha: _alpha
   } = culori.oklab.convert.toRgb({
     l,
     a,
     b,
-    alpha,
+    alpha
   });
   return rgbaColor(_r, _g, _b, _alpha);
 };
@@ -147,7 +128,7 @@ const _splitColorsIntoChannels = (colors, convFromRgb) => {
       const convertedColor = convFromRgb({
         r: red(processedColor),
         g: green(processedColor),
-        b: blue(processedColor),
+        b: blue(processedColor)
       });
       ch1.push(convertedColor.ch1);
       ch2.push(convertedColor.ch2);
@@ -159,61 +140,73 @@ const _splitColorsIntoChannels = (colors, convFromRgb) => {
     ch1,
     ch2,
     ch3,
-    alpha,
+    alpha
   };
 };
-const getInterpolateRGB = (colors) => {
+const getInterpolateRGB = colors => {
   'worklet';
 
-  const { ch1, ch2, ch3, alpha } = _splitColorsIntoChannels(
-    colors,
-    (color) => ({
-      ch1: color.r,
-      ch2: color.g,
-      ch3: color.b,
-    })
-  );
+  const {
+    ch1,
+    ch2,
+    ch3,
+    alpha
+  } = _splitColorsIntoChannels(colors, color => ({
+    ch1: color.r,
+    ch2: color.g,
+    ch3: color.b
+  }));
   return {
     r: ch1,
     g: ch2,
     b: ch3,
-    a: alpha,
+    a: alpha
   };
 };
-const getInterpolateHSV = (colors) => {
+const getInterpolateHSV = colors => {
   'worklet';
 
-  const { ch1, ch2, ch3, alpha } = _splitColorsIntoChannels(colors, (color) => {
+  const {
+    ch1,
+    ch2,
+    ch3,
+    alpha
+  } = _splitColorsIntoChannels(colors, color => {
     const hsvColor = RGBtoHSV(color.r, color.g, color.b);
     return {
       ch1: hsvColor.h,
       ch2: hsvColor.s,
-      ch3: hsvColor.v,
+      ch3: hsvColor.v
     };
   });
   return {
     h: ch1,
     s: ch2,
     v: ch3,
-    a: alpha,
+    a: alpha
   };
 };
-const getInterpolateLAB = (colors) => {
+const getInterpolateLAB = colors => {
   'worklet';
 
-  const { ch1, ch2, ch3, alpha } = _splitColorsIntoChannels(colors, (color) => {
+  const {
+    ch1,
+    ch2,
+    ch3,
+    alpha
+  } = _splitColorsIntoChannels(colors, color => {
     const labColor = culori.oklab.convert.fromRgb(color);
     return {
       ch1: labColor.l,
       ch2: labColor.a,
-      ch3: labColor.b,
+      ch3: labColor.b
     };
   });
   return {
     l: ch1,
     a: ch2,
     b: ch3,
-    alpha,
+    alpha
   };
 };
 
@@ -236,59 +229,31 @@ const getInterpolateLAB = (colors) => {
  * @see https://docs.swmansion.com/react-native-reanimated/docs/utilities/interpolateColor
  */
 
-export function interpolateColor(
-  value,
-  inputRange,
-  outputRange,
-  colorSpace = 'RGB',
-  options = {}
-) {
+export function interpolateColor(value, inputRange, outputRange, colorSpace = 'RGB', options = {}) {
   'worklet';
 
   if (colorSpace === 'HSV') {
-    return interpolateColorsHSV(
-      value,
-      inputRange,
-      getInterpolateHSV(outputRange),
-      options
-    );
+    return interpolateColorsHSV(value, inputRange, getInterpolateHSV(outputRange), options);
   } else if (colorSpace === 'RGB') {
-    return interpolateColorsRGB(
-      value,
-      inputRange,
-      getInterpolateRGB(outputRange),
-      options
-    );
+    return interpolateColorsRGB(value, inputRange, getInterpolateRGB(outputRange), options);
   } else if (colorSpace === 'LAB') {
-    return interpolateColorsLAB(
-      value,
-      inputRange,
-      getInterpolateLAB(outputRange),
-      options
-    );
+    return interpolateColorsLAB(value, inputRange, getInterpolateLAB(outputRange), options);
   }
-  throw new ReanimatedError(
-    `Invalid color space provided: ${colorSpace}. Supported values are: ['RGB', 'HSV', 'LAB'].`
-  );
+  throw new ReanimatedError(`Invalid color space provided: ${colorSpace}. Supported values are: ['RGB', 'HSV', 'LAB'].`);
 }
-export let ColorSpace = /*#__PURE__*/ (function (ColorSpace) {
-  ColorSpace[(ColorSpace['RGB'] = 0)] = 'RGB';
-  ColorSpace[(ColorSpace['HSV'] = 1)] = 'HSV';
-  ColorSpace[(ColorSpace['LAB'] = 2)] = 'LAB';
+export let ColorSpace = /*#__PURE__*/function (ColorSpace) {
+  ColorSpace[ColorSpace["RGB"] = 0] = "RGB";
+  ColorSpace[ColorSpace["HSV"] = 1] = "HSV";
+  ColorSpace[ColorSpace["LAB"] = 2] = "LAB";
   return ColorSpace;
-})({});
-export function useInterpolateConfig(
-  inputRange,
-  outputRange,
-  colorSpace = ColorSpace.RGB,
-  options = {}
-) {
+}({});
+export function useInterpolateConfig(inputRange, outputRange, colorSpace = ColorSpace.RGB, options = {}) {
   return useSharedValue({
     inputRange,
     outputRange,
     colorSpace,
     cache: makeMutable(null),
-    options,
+    options
   });
 }
 //# sourceMappingURL=interpolateColor.js.map

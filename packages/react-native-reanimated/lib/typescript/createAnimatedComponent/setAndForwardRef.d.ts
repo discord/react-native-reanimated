@@ -29,12 +29,9 @@ import type { RefObject } from 'react';
  *
  * Module.exports = MyViewWithRef;
  */
-declare function setAndForwardRef<T>({
-  getForwardedRef,
-  setLocalRef,
-}: {
-  getForwardedRef: () => RefObject<T> | ((ref: T) => void);
-  setLocalRef: (ref: T) => void;
+declare function setAndForwardRef<T>({ getForwardedRef, setLocalRef, }: {
+    getForwardedRef: () => RefObject<T> | ((ref: T) => void);
+    setLocalRef: (ref: T) => void;
 }): (ref: T) => void;
 export default setAndForwardRef;
 //# sourceMappingURL=setAndForwardRef.d.ts.map

@@ -10,7 +10,5 @@ import type { SharedValue } from '../commonTypes';
  *   `initialValue` - {@link SharedValue}.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/core/useSharedValue
  */
-export declare function useSharedValue<Value>(
-  initialValue: Value
-): SharedValue<Value>;
+export declare function useSharedValue<Value>(initialValue: Value): SharedValue<Value>;
 //# sourceMappingURL=useSharedValue.d.ts.map

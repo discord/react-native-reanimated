@@ -1,11 +1,10 @@
 'use strict';
 
-import { WebEasings } from './Easing.web.js';
+import { WebEasings } from "./Easing.web.js";
 export function convertAnimationObjectToKeyframes(animationObject) {
   let keyframe = `@keyframes ${animationObject.name} { `;
   for (const [timestamp, style] of Object.entries(animationObject.style)) {
-    const step =
-      timestamp === 'from' ? 0 : timestamp === 'to' ? 100 : timestamp;
+    const step = timestamp === 'from' ? 0 : timestamp === 'to' ? 100 : timestamp;
     keyframe += `${step}% { `;
     for (const [property, values] of Object.entries(style)) {
       if (property === 'easing') {
@@ -31,11 +30,8 @@ export function convertAnimationObjectToKeyframes(animationObject) {
         continue;
       }
       keyframe += `transform:`;
-      values.forEach((value) => {
-        for (const [
-          transformProperty,
-          transformPropertyValue,
-        ] of Object.entries(value)) {
+      values.forEach(value => {
+        for (const [transformProperty, transformPropertyValue] of Object.entries(value)) {
           keyframe += ` ${transformProperty}(${transformPropertyValue})`;
         }
       });

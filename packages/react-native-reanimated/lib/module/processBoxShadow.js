@@ -4,8 +4,8 @@
 'use strict';
 
 // @ts-ignore BoxShadowValue isn't available in RN 0.75
-import { ReanimatedError } from './errors.js';
-const isLength = (value) => {
+import { ReanimatedError } from "./errors.js";
+const isLength = value => {
   'worklet';
 
   return value.endsWith('px') || !isNaN(Number(value));
@@ -14,13 +14,11 @@ function parseBoxShadowString(rawBoxShadows) {
   'worklet';
 
   const result = [];
-  for (const rawBoxShadow of rawBoxShadows
-    .split(/,(?![^()]*\))/) // split by comma that is not in parenthesis
-    .map((bS) => bS.trim())
-    .filter((bS) => bS !== '')) {
+  for (const rawBoxShadow of rawBoxShadows.split(/,(?![^()]*\))/) // split by comma that is not in parenthesis
+  .map(bS => bS.trim()).filter(bS => bS !== '')) {
     const boxShadow = {
       offsetX: 0,
-      offsetY: 0,
+      offsetY: 0
     };
     let offsetX = null;
     let offsetY = null;
@@ -114,53 +112,39 @@ export function processBoxShadow(props) {
   } else if (Array.isArray(rawBoxShadows)) {
     boxShadowList = rawBoxShadows;
   } else {
-    throw new ReanimatedError(
-      `Box shadow value must be an array of shadow objects or a string. Received: ${JSON.stringify(rawBoxShadows)}`
-    );
+    throw new ReanimatedError(`Box shadow value must be an array of shadow objects or a string. Received: ${JSON.stringify(rawBoxShadows)}`);
   }
   for (const rawBoxShadow of boxShadowList) {
     const parsedBoxShadow = {
       offsetX: 0,
-      offsetY: 0,
+      offsetY: 0
     };
     let value;
     for (const arg in rawBoxShadow) {
       switch (arg) {
         case 'offsetX':
-          value =
-            typeof rawBoxShadow.offsetX === 'string'
-              ? parseLength(rawBoxShadow.offsetX)
-              : rawBoxShadow.offsetX;
+          value = typeof rawBoxShadow.offsetX === 'string' ? parseLength(rawBoxShadow.offsetX) : rawBoxShadow.offsetX;
           if (value === null) {
             return [];
           }
           parsedBoxShadow.offsetX = value;
           break;
         case 'offsetY':
-          value =
-            typeof rawBoxShadow.offsetY === 'string'
-              ? parseLength(rawBoxShadow.offsetY)
-              : rawBoxShadow.offsetY;
+          value = typeof rawBoxShadow.offsetY === 'string' ? parseLength(rawBoxShadow.offsetY) : rawBoxShadow.offsetY;
           if (value === null) {
             return [];
           }
           parsedBoxShadow.offsetY = value;
           break;
         case 'spreadDistance':
-          value =
-            typeof rawBoxShadow.spreadDistance === 'string'
-              ? parseLength(rawBoxShadow.spreadDistance)
-              : rawBoxShadow.spreadDistance;
+          value = typeof rawBoxShadow.spreadDistance === 'string' ? parseLength(rawBoxShadow.spreadDistance) : rawBoxShadow.spreadDistance;
           if (value === null) {
             return [];
           }
           parsedBoxShadow.spreadDistance = value;
           break;
         case 'blurRadius':
-          value =
-            typeof rawBoxShadow.blurRadius === 'string'
-              ? parseLength(rawBoxShadow.blurRadius)
-              : rawBoxShadow.blurRadius;
+          value = typeof rawBoxShadow.blurRadius === 'string' ? parseLength(rawBoxShadow.blurRadius) : rawBoxShadow.blurRadius;
           if (value === null || value < 0) {
             return [];
           }

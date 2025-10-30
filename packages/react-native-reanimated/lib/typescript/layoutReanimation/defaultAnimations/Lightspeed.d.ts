@@ -1,7 +1,4 @@
-import type {
-  EntryExitAnimationFunction,
-  IEntryExitAnimationBuilder,
-} from '../../commonTypes';
+import type { EntryExitAnimationFunction, IEntryExitAnimationBuilder } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,15 +10,10 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#lightspeed
  */
-export declare class LightSpeedInRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class LightSpeedInRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Entry from left animation with change in skew and opacity. You can modify the
@@ -32,15 +24,10 @@ export declare class LightSpeedInRight
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#lightspeed
  */
-export declare class LightSpeedInLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class LightSpeedInLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Exit to right animation with change in skew and opacity. You can modify the
@@ -51,15 +38,10 @@ export declare class LightSpeedInLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#lightspeed
  */
-export declare class LightSpeedOutRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class LightSpeedOutRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Exit to left animation with change in skew and opacity. You can modify the
@@ -70,14 +52,9 @@ export declare class LightSpeedOutRight
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations/#lightspeed
  */
-export declare class LightSpeedOutLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  build: () => EntryExitAnimationFunction;
+export declare class LightSpeedOutLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    build: () => EntryExitAnimationFunction;
 }
 //# sourceMappingURL=Lightspeed.d.ts.map

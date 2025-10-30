@@ -1,7 +1,4 @@
-import type {
-  EntryExitAnimationFunction,
-  IEntryExitAnimationBuilder,
-} from '../../commonTypes';
+import type { EntryExitAnimationFunction, IEntryExitAnimationBuilder } from '../../commonTypes';
 import type { BaseAnimationBuilder } from '../animationBuilder';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 /**
@@ -13,17 +10,12 @@ import { ComplexAnimationBuilder } from '../animationBuilder';
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceIn
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceIn extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce from bottom animation. You can modify the behavior by chaining methods
@@ -34,17 +26,12 @@ export declare class BounceIn
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceInDown
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceInDown extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce from top animation. You can modify the behavior by chaining methods
@@ -55,17 +42,12 @@ export declare class BounceInDown
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceInUp
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceInUp extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce from left animation. You can modify the behavior by chaining methods
@@ -76,17 +58,12 @@ export declare class BounceInUp
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceInLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceInLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce from right animation. You can modify the behavior by chaining methods
@@ -97,17 +74,12 @@ export declare class BounceInLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceInRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceInRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce exiting animation. You can modify the behavior by chaining methods
@@ -118,17 +90,12 @@ export declare class BounceInRight
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceOut
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceOut extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce to bottom animation. You can modify the behavior by chaining methods
@@ -139,17 +106,12 @@ export declare class BounceOut
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceOutDown
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceOutDown extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce to top animation. You can modify the behavior by chaining methods like
@@ -160,17 +122,12 @@ export declare class BounceOutDown
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceOutUp
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceOutUp extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce to left animation. You can modify the behavior by chaining methods
@@ -181,17 +138,12 @@ export declare class BounceOutUp
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceOutLeft
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceOutLeft extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 /**
  * Bounce to right animation. You can modify the behavior by chaining methods
@@ -202,16 +154,11 @@ export declare class BounceOutLeft
  *
  * @see https://docs.swmansion.com/react-native-reanimated/docs/layout-animations/entering-exiting-animations#bounce
  */
-export declare class BounceOutRight
-  extends ComplexAnimationBuilder
-  implements IEntryExitAnimationBuilder
-{
-  static presetName: string;
-  static createInstance<T extends typeof BaseAnimationBuilder>(
-    this: T
-  ): InstanceType<T>;
-  static getDuration(): number;
-  getDuration(): number;
-  build: () => EntryExitAnimationFunction;
+export declare class BounceOutRight extends ComplexAnimationBuilder implements IEntryExitAnimationBuilder {
+    static presetName: string;
+    static createInstance<T extends typeof BaseAnimationBuilder>(this: T): InstanceType<T>;
+    static getDuration(): number;
+    getDuration(): number;
+    build: () => EntryExitAnimationFunction;
 }
 //# sourceMappingURL=Bounce.d.ts.map

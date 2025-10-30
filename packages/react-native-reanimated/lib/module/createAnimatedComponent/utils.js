@@ -5,8 +5,8 @@ export function flattenArray(array) {
     return [array];
   }
   const resultArr = [];
-  const _flattenArray = (arr) => {
-    arr.forEach((item) => {
+  const _flattenArray = arr => {
+    arr.forEach(item => {
       if (Array.isArray(item)) {
         _flattenArray(item);
       } else {

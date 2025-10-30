@@ -1,12 +1,12 @@
 'use strict';
 
-import { addWhitelistedNativeProps } from './ConfigHelper.js';
+import { addWhitelistedNativeProps } from "./ConfigHelper.js";
 
 // @ts-expect-error This overload is required by our API.
 
 export function createAnimatedPropAdapter(adapter, nativeProps) {
   const nativePropsToAdd = {};
-  nativeProps?.forEach((prop) => {
+  nativeProps?.forEach(prop => {
     nativePropsToAdd[prop] = true;
   });
   addWhitelistedNativeProps(nativePropsToAdd);

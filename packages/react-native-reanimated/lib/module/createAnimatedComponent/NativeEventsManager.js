@@ -1,8 +1,8 @@
 'use strict';
 
 import { findNodeHandle } from '../platformFunctions/findNodeHandle';
-import { WorkletEventHandler } from '../WorkletEventHandler.js';
-import { has } from './utils.js';
+import { WorkletEventHandler } from "../WorkletEventHandler.js";
+import { has } from "./utils.js";
 export class NativeEventsManager {
   #managedComponent;
   #componentOptions;
@@ -18,12 +18,9 @@ export class NativeEventsManager {
     });
   }
   detachEvents() {
-    executeForEachEventHandler(
-      this.#managedComponent.props,
-      (_key, handler) => {
-        handler.unregisterFromEvents(this.#eventViewTag);
-      }
-    );
+    executeForEachEventHandler(this.#managedComponent.props, (_key, handler) => {
+      handler.unregisterFromEvents(this.#eventViewTag);
+    });
   }
   updateEvents(prevProps) {
     const computedEventTag = this.getEventViewTag(true);
@@ -45,10 +42,7 @@ export class NativeEventsManager {
       if (!newProp) {
         // Prop got deleted
         prevHandler.unregisterFromEvents(this.#eventViewTag);
-      } else if (
-        isWorkletEventHandler(newProp) &&
-        newProp.workletEventHandler !== prevHandler
-      ) {
+      } else if (isWorkletEventHandler(newProp) && newProp.workletEventHandler !== prevHandler) {
         // Prop got changed
         prevHandler.unregisterFromEvents(this.#eventViewTag);
         newProp.workletEventHandler.registerForEvents(this.#eventViewTag);
@@ -92,11 +86,7 @@ export class NativeEventsManager {
         _nativeTag is used by Paper components,
         __nativeTag is used by Fabric components.
       */
-      return (
-        componentAnimatedRef.__nativeTag ??
-        componentAnimatedRef._nativeTag ??
-        -1
-      );
+      return componentAnimatedRef.__nativeTag ?? componentAnimatedRef._nativeTag ?? -1;
     }
     /*
       When a component is updated, a child could potentially change and have a different 
@@ -106,10 +96,7 @@ export class NativeEventsManager {
   }
 }
 function isWorkletEventHandler(prop) {
-  return (
-    has('workletEventHandler', prop) &&
-    prop.workletEventHandler instanceof WorkletEventHandler
-  );
+  return has('workletEventHandler', prop) && prop.workletEventHandler instanceof WorkletEventHandler;
 }
 function executeForEachEventHandler(props, callback) {
   for (const key in props) {

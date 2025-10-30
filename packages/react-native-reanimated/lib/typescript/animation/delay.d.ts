@@ -1,9 +1,5 @@
 import type { AnimatableValue, ReduceMotion } from '../commonTypes';
-type withDelayType = <T extends AnimatableValue>(
-  delayMs: number,
-  delayedAnimation: T,
-  reduceMotion?: ReduceMotion
-) => T;
+type withDelayType = <T extends AnimatableValue>(delayMs: number, delayedAnimation: T, reduceMotion?: ReduceMotion) => T;
 /**
  * An animation modifier that lets you start an animation with a delay.
  *

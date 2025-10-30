@@ -1,6 +1,6 @@
 'use strict';
 
-import { defineAnimation, getReduceMotionForAnimation } from './util.js';
+import { defineAnimation, getReduceMotionForAnimation } from "./util.js";
 
 // TODO TYPESCRIPT This is a temporary type to get rid of .d.ts file.
 
@@ -23,10 +23,13 @@ export const withDelay = function (delayMs, _nextAnimation, reduceMotion) {
   return defineAnimation(_nextAnimation, () => {
     'worklet';
 
-    const nextAnimation =
-      typeof _nextAnimation === 'function' ? _nextAnimation() : _nextAnimation;
+    const nextAnimation = typeof _nextAnimation === 'function' ? _nextAnimation() : _nextAnimation;
     function delay(animation, now) {
-      const { startTime, started, previousAnimation } = animation;
+      const {
+        startTime,
+        started,
+        previousAnimation
+      } = animation;
       const current = animation.current;
       if (now - startTime >= delayMs || animation.reduceMotion) {
         if (!started) {
@@ -38,9 +41,7 @@ export const withDelay = function (delayMs, _nextAnimation, reduceMotion) {
         animation.current = nextAnimation.current;
         return finished;
       } else if (previousAnimation) {
-        const finished =
-          previousAnimation.finished ||
-          previousAnimation.onFrame(previousAnimation, now);
+        const finished = previousAnimation.finished || previousAnimation.onFrame(previousAnimation, now);
         animation.current = previousAnimation.current;
         if (finished) {
           animation.previousAnimation = null;
@@ -64,7 +65,7 @@ export const withDelay = function (delayMs, _nextAnimation, reduceMotion) {
         nextAnimation.reduceMotion = animation.reduceMotion;
       }
     }
-    const callback = (finished) => {
+    const callback = finished => {
       if (nextAnimation.callback) {
         nextAnimation.callback(finished);
       }
@@ -78,7 +79,7 @@ export const withDelay = function (delayMs, _nextAnimation, reduceMotion) {
       previousAnimation: null,
       startTime: 0,
       started: false,
-      reduceMotion: getReduceMotionForAnimation(reduceMotion),
+      reduceMotion: getReduceMotionForAnimation(reduceMotion)
     };
   });
 };

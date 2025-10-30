@@ -1,32 +1,16 @@
 'use strict';
 
-import { LayoutAnimationType } from '../../commonTypes.js';
-import { EasingNameSymbol } from '../../Easing.js';
-import { logger } from '../../logger/index.js';
-import { Keyframe } from '../animationBuilder/index.js';
-import { makeElementVisible } from './componentStyle.js';
-import {
-  getProcessedConfig,
-  handleExitingAnimation,
-  handleLayoutTransition,
-  maybeModifyStyleForKeyframe,
-  setElementAnimation,
-} from './componentUtils.js';
-import { Animations } from './config.js';
-import {
-  createAnimationWithInitialValues,
-  createCustomKeyFrameAnimation,
-} from './createAnimation.js';
-import { areDOMRectsEqual } from './domUtils.js';
+import { LayoutAnimationType } from "../../commonTypes.js";
+import { EasingNameSymbol } from "../../Easing.js";
+import { logger } from "../../logger/index.js";
+import { Keyframe } from "../animationBuilder/index.js";
+import { makeElementVisible } from "./componentStyle.js";
+import { getProcessedConfig, handleExitingAnimation, handleLayoutTransition, maybeModifyStyleForKeyframe, setElementAnimation } from "./componentUtils.js";
+import { Animations } from "./config.js";
+import { createAnimationWithInitialValues, createCustomKeyFrameAnimation } from "./createAnimation.js";
+import { areDOMRectsEqual } from "./domUtils.js";
 function chooseConfig(animationType, props) {
-  const config =
-    animationType === LayoutAnimationType.ENTERING
-      ? props.entering
-      : animationType === LayoutAnimationType.EXITING
-        ? props.exiting
-        : animationType === LayoutAnimationType.LAYOUT
-          ? props.layout
-          : null;
+  const config = animationType === LayoutAnimationType.ENTERING ? props.entering : animationType === LayoutAnimationType.EXITING ? props.exiting : animationType === LayoutAnimationType.LAYOUT ? props.layout : null;
   return config;
 }
 function checkUndefinedAnimationFail(initialAnimationName, needsCustomization) {
@@ -35,9 +19,7 @@ function checkUndefinedAnimationFail(initialAnimationName, needsCustomization) {
   if (initialAnimationName in Animations || needsCustomization) {
     return false;
   }
-  logger.warn(
-    "Couldn't load entering/exiting animation. Current version supports only predefined animations with modifiers: duration, delay, easing, randomizeDelay, withCallback, reducedMotion."
-  );
+  logger.warn("Couldn't load entering/exiting animation. Current version supports only predefined animations with modifiers: duration, delay, easing, randomizeDelay, withCallback, reducedMotion.");
   return true;
 }
 function maybeReportOverwrittenProperties(keyframe, styles) {
@@ -46,15 +28,11 @@ function maybeReportOverwrittenProperties(keyframe, styles) {
   for (const match of keyframe.matchAll(propertyRegex)) {
     animationProperties.add(match[1]);
   }
-  const commonProperties = Array.from(styles).filter((style) =>
-    animationProperties.has(style)
-  );
+  const commonProperties = Array.from(styles).filter(style => animationProperties.has(style));
   if (commonProperties.length === 0) {
     return;
   }
-  logger.warn(
-    `${commonProperties.length === 1 ? 'Property' : 'Properties'} [${commonProperties.join(', ')}] may be overwritten by a layout animation. Please wrap your component with an animated view and apply the layout animation on the wrapper.`
-  );
+  logger.warn(`${commonProperties.length === 1 ? 'Property' : 'Properties'} [${commonProperties.join(', ')}] may be overwritten by a layout animation. Please wrap your component with an animated view and apply the layout animation on the wrapper.`);
 }
 function chooseAction(animationType, animationConfig, element, transitionData) {
   switch (animationType) {
@@ -87,48 +65,26 @@ function tryGetAnimationConfig(props, animationType) {
     animationName = config.constructor.presetName;
   }
   if (hasInitialValues) {
-    animationName = createAnimationWithInitialValues(
-      animationName,
-      config.initialValues
-    );
+    animationName = createAnimationWithInitialValues(animationName, config.initialValues);
   }
-  const shouldFail = checkUndefinedAnimationFail(
-    animationName,
-    isLayoutTransition || isCustomKeyframe || hasInitialValues
-  );
+  const shouldFail = checkUndefinedAnimationFail(animationName, isLayoutTransition || isCustomKeyframe || hasInitialValues);
   if (shouldFail) {
     return null;
   }
   if (isCustomKeyframe) {
     const keyframeTimestamps = Object.keys(config.definitions);
-    if (
-      !(keyframeTimestamps.includes('100') || keyframeTimestamps.includes('to'))
-    ) {
-      logger.warn(
-        `Neither '100' nor 'to' was specified in Keyframe definition. This may result in wrong final position of your component. One possible solution is to duplicate last timestamp in definition as '100' (or 'to')`
-      );
+    if (!(keyframeTimestamps.includes('100') || keyframeTimestamps.includes('to'))) {
+      logger.warn(`Neither '100' nor 'to' was specified in Keyframe definition. This may result in wrong final position of your component. One possible solution is to duplicate last timestamp in definition as '100' (or 'to')`);
     }
   }
-  const animationConfig = getProcessedConfig(
-    animationName,
-    animationType,
-    config
-  );
+  const animationConfig = getProcessedConfig(animationName, animationType, config);
   return animationConfig;
 }
-export function startWebLayoutAnimation(
-  props,
-  element,
-  animationType,
-  transitionData
-) {
+export function startWebLayoutAnimation(props, element, animationType, transitionData) {
   const animationConfig = tryGetAnimationConfig(props, animationType);
   maybeModifyStyleForKeyframe(element, props.entering);
   if (animationConfig?.animationName in Animations) {
-    maybeReportOverwrittenProperties(
-      Animations[animationConfig?.animationName].style,
-      element.style
-    );
+    maybeReportOverwrittenProperties(Animations[animationConfig?.animationName].style, element.style);
   }
   if (animationConfig) {
     chooseAction(animationType, animationConfig, element, transitionData);
@@ -158,13 +114,8 @@ export function tryActivateLayoutTransition(props, element, snapshot) {
     easingX: props.layout.easingXV?.[EasingNameSymbol] ?? 'ease',
     easingY: props.layout.easingYV?.[EasingNameSymbol] ?? 'ease',
     entering: enteringAnimation,
-    exiting: exitingAnimation,
+    exiting: exitingAnimation
   };
-  startWebLayoutAnimation(
-    props,
-    element,
-    LayoutAnimationType.LAYOUT,
-    transitionData
-  );
+  startWebLayoutAnimation(props, element, LayoutAnimationType.LAYOUT, transitionData);
 }
 //# sourceMappingURL=animationsManager.js.map

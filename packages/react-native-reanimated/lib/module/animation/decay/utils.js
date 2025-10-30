@@ -1,6 +1,6 @@
 'use strict';
 
-import { isWeb } from '../../PlatformChecker.js';
+import { isWeb } from "../../PlatformChecker.js";
 const IS_WEB = isWeb();
 export const VELOCITY_EPS = IS_WEB ? 1 / 20 : 1;
 export const SLOPE_FACTOR = 0.1;
@@ -29,10 +29,6 @@ export const SLOPE_FACTOR = 0.1;
 export function isValidRubberBandConfig(config) {
   'worklet';
 
-  return (
-    !!config.rubberBandEffect &&
-    Array.isArray(config.clamp) &&
-    config.clamp.length === 2
-  );
+  return !!config.rubberBandEffect && Array.isArray(config.clamp) && config.clamp.length === 2;
 }
 //# sourceMappingURL=utils.js.map

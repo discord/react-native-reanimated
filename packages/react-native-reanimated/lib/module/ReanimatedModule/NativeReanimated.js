@@ -1,20 +1,17 @@
 'use strict';
 
-import { ReanimatedError } from '../errors.js';
+import { ReanimatedError } from "../errors.js";
 import { getShadowNodeWrapperFromRef } from '../fabricUtils';
-import { checkCppVersion } from '../platform-specific/checkCppVersion.js';
-import { jsVersion } from '../platform-specific/jsVersion.js';
-import { isFabric } from '../PlatformChecker.js';
-import { ReanimatedTurboModule } from '../specs/index.js';
-import { WorkletsModule } from '../worklets/index.js';
+import { checkCppVersion } from "../platform-specific/checkCppVersion.js";
+import { jsVersion } from "../platform-specific/jsVersion.js";
+import { isFabric } from "../PlatformChecker.js";
+import { ReanimatedTurboModule } from "../specs/index.js";
+import { WorkletsModule } from "../worklets/index.js";
 export function createNativeReanimatedModule() {
   return new NativeReanimatedModule();
 }
 function assertSingleReanimatedInstance() {
-  if (
-    global._REANIMATED_VERSION_JS !== undefined &&
-    global._REANIMATED_VERSION_JS !== jsVersion
-  ) {
+  if (global._REANIMATED_VERSION_JS !== undefined && global._REANIMATED_VERSION_JS !== jsVersion) {
     throw new ReanimatedError(`Another instance of Reanimated was detected.
 See \`https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#another-instance-of-reanimated-was-detected\` for more details. Previous: ${global._REANIMATED_VERSION_JS}, current: ${jsVersion}.`);
   }
@@ -62,60 +59,35 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
     return this.#reanimatedModuleProxy.createWorkletRuntime(name, initializer);
   }
   scheduleOnRuntime(workletRuntime, shareableWorklet) {
-    return this.#reanimatedModuleProxy.scheduleOnRuntime(
-      workletRuntime,
-      shareableWorklet
-    );
+    return this.#reanimatedModuleProxy.scheduleOnRuntime(workletRuntime, shareableWorklet);
   }
   registerSensor(sensorType, interval, iosReferenceFrame, handler) {
-    return this.#reanimatedModuleProxy.registerSensor(
-      sensorType,
-      interval,
-      iosReferenceFrame,
-      handler
-    );
+    return this.#reanimatedModuleProxy.registerSensor(sensorType, interval, iosReferenceFrame, handler);
   }
   unregisterSensor(sensorId) {
     return this.#reanimatedModuleProxy.unregisterSensor(sensorId);
   }
   registerEventHandler(eventHandler, eventName, emitterReactTag) {
-    return this.#reanimatedModuleProxy.registerEventHandler(
-      eventHandler,
-      eventName,
-      emitterReactTag
-    );
+    return this.#reanimatedModuleProxy.registerEventHandler(eventHandler, eventName, emitterReactTag);
   }
   unregisterEventHandler(id) {
     return this.#reanimatedModuleProxy.unregisterEventHandler(id);
   }
-  getViewProp(
-    viewTag,
-    propName,
-    component,
-    // required on Fabric
-    callback
-  ) {
+  getViewProp(viewTag, propName, component,
+  // required on Fabric
+  callback) {
     let shadowNodeWrapper;
     if (isFabric()) {
       shadowNodeWrapper = getShadowNodeWrapperFromRef(component);
-      return this.#reanimatedModuleProxy.getViewProp(
-        shadowNodeWrapper,
-        propName,
-        callback
-      );
+      return this.#reanimatedModuleProxy.getViewProp(shadowNodeWrapper, propName, callback);
     }
     return this.#reanimatedModuleProxy.getViewProp(viewTag, propName, callback);
   }
   configureLayoutAnimationBatch(layoutAnimationsBatch) {
-    this.#reanimatedModuleProxy.configureLayoutAnimationBatch(
-      layoutAnimationsBatch
-    );
+    this.#reanimatedModuleProxy.configureLayoutAnimationBatch(layoutAnimationsBatch);
   }
   setShouldAnimateExitingForTag(viewTag, shouldAnimate) {
-    this.#reanimatedModuleProxy.setShouldAnimateExitingForTag(
-      viewTag,
-      shouldAnimate
-    );
+    this.#reanimatedModuleProxy.setShouldAnimateExitingForTag(viewTag, shouldAnimate);
   }
   enableLayoutAnimations(flag) {
     this.#reanimatedModuleProxy.enableLayoutAnimations(flag);
@@ -123,16 +95,8 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
   configureProps(uiProps, nativeProps) {
     this.#reanimatedModuleProxy.configureProps(uiProps, nativeProps);
   }
-  subscribeForKeyboardEvents(
-    handler,
-    isStatusBarTranslucent,
-    isNavigationBarTranslucent
-  ) {
-    return this.#reanimatedModuleProxy.subscribeForKeyboardEvents(
-      handler,
-      isStatusBarTranslucent,
-      isNavigationBarTranslucent
-    );
+  subscribeForKeyboardEvents(handler, isStatusBarTranslucent, isNavigationBarTranslucent) {
+    return this.#reanimatedModuleProxy.subscribeForKeyboardEvents(handler, isStatusBarTranslucent, isNavigationBarTranslucent);
   }
   unsubscribeFromKeyboardEvents(listenerId) {
     this.#reanimatedModuleProxy.unsubscribeFromKeyboardEvents(listenerId);

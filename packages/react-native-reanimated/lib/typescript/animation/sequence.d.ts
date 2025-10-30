@@ -11,11 +11,6 @@ import type { AnimatableValue, ReduceMotion } from '../commonTypes';
  *   which holds the current state of the animation/
  * @see https://docs.swmansion.com/react-native-reanimated/docs/animations/withSequence
  */
-export declare function withSequence<T extends AnimatableValue>(
-  _reduceMotion: ReduceMotion,
-  ...animations: T[]
-): T;
-export declare function withSequence<T extends AnimatableValue>(
-  ...animations: T[]
-): T;
+export declare function withSequence<T extends AnimatableValue>(_reduceMotion: ReduceMotion, ...animations: T[]): T;
+export declare function withSequence<T extends AnimatableValue>(...animations: T[]): T;
 //# sourceMappingURL=sequence.d.ts.map

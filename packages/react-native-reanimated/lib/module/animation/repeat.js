@@ -1,6 +1,6 @@
 'use strict';
 
-import { defineAnimation, getReduceMotionForAnimation } from './util.js';
+import { defineAnimation, getReduceMotionForAnimation } from "./util.js";
 
 // TODO TYPESCRIPT This is a temporary type to get rid of .d.ts file.
 
@@ -21,20 +21,13 @@ import { defineAnimation, getReduceMotionForAnimation } from './util.js';
  *   which holds the current state of the animation.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/animations/withRepeat
  */
-export const withRepeat = function (
-  _nextAnimation,
-  numberOfReps = 2,
-  reverse = false,
-  callback,
-  reduceMotion
-) {
+export const withRepeat = function (_nextAnimation, numberOfReps = 2, reverse = false, callback, reduceMotion) {
   'worklet';
 
   return defineAnimation(_nextAnimation, () => {
     'worklet';
 
-    const nextAnimation =
-      typeof _nextAnimation === 'function' ? _nextAnimation() : _nextAnimation;
+    const nextAnimation = typeof _nextAnimation === 'function' ? _nextAnimation() : _nextAnimation;
     function repeat(animation, now) {
       const finished = nextAnimation.onFrame(nextAnimation, now);
       animation.current = nextAnimation.current;
@@ -45,30 +38,20 @@ export const withRepeat = function (
         if (nextAnimation.callback) {
           nextAnimation.callback(true /* finished */, animation.current);
         }
-        if (
-          animation.reduceMotion ||
-          (numberOfReps > 0 && animation.reps >= numberOfReps)
-        ) {
+        if (animation.reduceMotion || numberOfReps > 0 && animation.reps >= numberOfReps) {
           return true;
         }
-        const startValue = reverse
-          ? nextAnimation.current
-          : animation.startValue;
+        const startValue = reverse ? nextAnimation.current : animation.startValue;
         if (reverse) {
           nextAnimation.toValue = animation.startValue;
           animation.startValue = startValue;
         }
-        nextAnimation.onStart(
-          nextAnimation,
-          startValue,
-          now,
-          nextAnimation.previousAnimation
-        );
+        nextAnimation.onStart(nextAnimation, startValue, now, nextAnimation.previousAnimation);
         return false;
       }
       return false;
     }
-    const repCallback = (finished) => {
+    const repCallback = finished => {
       if (callback) {
         callback(finished);
       }
@@ -89,11 +72,7 @@ export const withRepeat = function (
 
       // don't start the animation if reduced motion is enabled and
       // the animation would end at its starting point
-      if (
-        animation.reduceMotion &&
-        reverse &&
-        (numberOfReps <= 0 || numberOfReps % 2 === 0)
-      ) {
+      if (animation.reduceMotion && reverse && (numberOfReps <= 0 || numberOfReps % 2 === 0)) {
         animation.current = animation.startValue;
         animation.onFrame = () => true;
       } else {
@@ -108,7 +87,7 @@ export const withRepeat = function (
       current: nextAnimation.current,
       callback: repCallback,
       startValue: 0,
-      reduceMotion: getReduceMotionForAnimation(reduceMotion),
+      reduceMotion: getReduceMotionForAnimation(reduceMotion)
     };
   });
 };

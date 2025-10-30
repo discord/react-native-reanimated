@@ -47,7 +47,7 @@ import type { EasingFunction } from './commonTypes';
 /** @deprecated Please use {@link EasingFunction} type instead. */
 export type EasingFn = EasingFunction;
 export type EasingFunctionFactory = {
-  factory: () => EasingFunction;
+    factory: () => EasingFunction;
 };
 /** @deprecated Please use {@link EasingFunctionFactory} type instead. */
 export type EasingFactoryFn = EasingFunctionFactory;
@@ -135,18 +135,8 @@ declare function bounce(t: number): number;
  * A useful tool to visualize cubic bezier curves can be found at
  * http://cubic-bezier.com/
  */
-declare function bezier(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number
-): EasingFunctionFactory;
-declare function bezierFn(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number
-): (x: number) => number;
+declare function bezier(x1: number, y1: number, x2: number, y2: number): EasingFunctionFactory;
+declare function bezierFn(x1: number, y1: number, x2: number, y2: number): (x: number) => number;
 /** Runs an easing function forwards. */
 declare function in_(easing: EasingFunction): EasingFunction;
 /** Runs an easing function backwards. */
@@ -166,23 +156,23 @@ declare function inOut(easing: EasingFunction): EasingFunction;
 declare function steps(n?: number, roundToNextStep?: boolean): EasingFunction;
 export declare const EasingNameSymbol: unique symbol;
 export declare const Easing: {
-  linear: typeof linear;
-  ease: typeof ease;
-  quad: typeof quad;
-  cubic: typeof cubic;
-  poly: typeof poly;
-  sin: typeof sin;
-  circle: typeof circle;
-  exp: typeof exp;
-  elastic: typeof elastic;
-  back: typeof back;
-  bounce: typeof bounce;
-  bezier: typeof bezier;
-  bezierFn: typeof bezierFn;
-  steps: typeof steps;
-  in: typeof in_;
-  out: typeof out;
-  inOut: typeof inOut;
+    linear: typeof linear;
+    ease: typeof ease;
+    quad: typeof quad;
+    cubic: typeof cubic;
+    poly: typeof poly;
+    sin: typeof sin;
+    circle: typeof circle;
+    exp: typeof exp;
+    elastic: typeof elastic;
+    back: typeof back;
+    bounce: typeof bounce;
+    bezier: typeof bezier;
+    bezierFn: typeof bezierFn;
+    steps: typeof steps;
+    in: typeof in_;
+    out: typeof out;
+    inOut: typeof inOut;
 };
 export {};
 //# sourceMappingURL=Easing.d.ts.map

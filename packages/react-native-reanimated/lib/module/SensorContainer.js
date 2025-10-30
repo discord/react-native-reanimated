@@ -1,14 +1,10 @@
 'use strict';
 
-import Sensor from './Sensor.js';
+import Sensor from "./Sensor.js";
 export class SensorContainer {
   nativeSensors = new Map();
   getSensorId(sensorType, config) {
-    return (
-      sensorType * 100 +
-      config.iosReferenceFrame * 10 +
-      Number(config.adjustToInterfaceOrientation)
-    );
+    return sensorType * 100 + config.iosReferenceFrame * 10 + Number(config.adjustToInterfaceOrientation);
   }
   initializeSensor(sensorType, config) {
     const sensorId = this.getSensorId(sensorType, config);
@@ -25,11 +21,7 @@ export class SensorContainer {
       return -1;
     }
     const sensor = this.nativeSensors.get(sensorId);
-    if (
-      sensor &&
-      sensor.isAvailable() &&
-      (sensor.isRunning() || sensor.register(handler))
-    ) {
+    if (sensor && sensor.isAvailable() && (sensor.isRunning() || sensor.register(handler))) {
       sensor.listenersNumber++;
       return sensorId;
     }

@@ -1,6 +1,6 @@
 'use strict';
 
-import { ReduceMotion } from '../../commonTypes.js';
+import { ReduceMotion } from "../../commonTypes.js";
 export class SharedTransition {
   custom() {
     return this;

@@ -1,9 +1,9 @@
 'use strict';
 
-import { withSequence, withTiming } from '../../animation/index.js';
-import { logger } from '../../logger/index.js';
-import { BaseAnimationBuilder } from '../animationBuilder/index.js';
-import { FadeIn, FadeOut } from '../defaultAnimations/Fade.js';
+import { withSequence, withTiming } from "../../animation/index.js";
+import { logger } from "../../logger/index.js";
+import { BaseAnimationBuilder } from "../animationBuilder/index.js";
+import { FadeIn, FadeOut } from "../defaultAnimations/Fade.js";
 export class EntryExitTransition extends BaseAnimationBuilder {
   static presetName = 'EntryExitTransition';
   enteringV = FadeIn;
@@ -36,13 +36,13 @@ export class EntryExitTransition extends BaseAnimationBuilder {
     // @ts-ignore Calling `.build()` both static and instance methods works fine here, but `this` types are incompatible. They are not used though, so it's fine.
     const exitingAnimation = this.exitingV.build();
     const exitingDuration = this.exitingV.getDuration();
-    return (values) => {
+    return values => {
       'worklet';
 
       const enteringValues = enteringAnimation(values);
       const exitingValues = exitingAnimation(values);
       const animations = {
-        transform: [],
+        transform: []
       };
       for (const prop of Object.keys(exitingValues.animations)) {
         if (prop === 'transform') {
@@ -52,54 +52,27 @@ export class EntryExitTransition extends BaseAnimationBuilder {
           exitingValues.animations.transform.forEach((value, index) => {
             for (const transformProp of Object.keys(value)) {
               animations.transform.push({
-                [transformProp]: delayFunction(
-                  delay,
-                  withSequence(
-                    value[transformProp],
-                    withTiming(
-                      exitingValues.initialValues.transform
-                        ? // TODO TYPESCRIPT
-                          // @ts-ignore This line of code fails tragically
-                          // in newer versions of React Native, where they have
-                          // narrowed down the type of `transform` even further.
-                          // Since this piece of code improperly typed anyway
-                          // (e.g. it assumes types from RN Animated here) I'd rather
-                          // fix it in the future when types for animations
-                          // are properly defined.
-                          exitingValues.initialValues.transform[index][
-                            transformProp
-                          ]
-                        : 0,
-                      {
-                        duration: 0,
-                      }
-                    )
-                  )
-                ),
+                [transformProp]: delayFunction(delay, withSequence(value[transformProp], withTiming(exitingValues.initialValues.transform ?
+                // TODO TYPESCRIPT
+                // @ts-ignore This line of code fails tragically
+                // in newer versions of React Native, where they have
+                // narrowed down the type of `transform` even further.
+                // Since this piece of code improperly typed anyway
+                // (e.g. it assumes types from RN Animated here) I'd rather
+                // fix it in the future when types for animations
+                // are properly defined.
+                exitingValues.initialValues.transform[index][transformProp] : 0, {
+                  duration: 0
+                })))
               });
             }
           });
         } else {
-          const sequence =
-            enteringValues.animations[prop] !== undefined
-              ? [
-                  exitingValues.animations[prop],
-                  withTiming(enteringValues.initialValues[prop], {
-                    duration: 0,
-                  }),
-                  enteringValues.animations[prop],
-                ]
-              : [
-                  exitingValues.animations[prop],
-                  withTiming(
-                    Object.keys(values).includes(prop)
-                      ? values[prop]
-                      : exitingValues.initialValues[prop],
-                    {
-                      duration: 0,
-                    }
-                  ),
-                ];
+          const sequence = enteringValues.animations[prop] !== undefined ? [exitingValues.animations[prop], withTiming(enteringValues.initialValues[prop], {
+            duration: 0
+          }), enteringValues.animations[prop]] : [exitingValues.animations[prop], withTiming(Object.keys(values).includes(prop) ? values[prop] : exitingValues.initialValues[prop], {
+            duration: 0
+          })];
           animations[prop] = delayFunction(delay, withSequence(...sequence));
         }
       }
@@ -111,22 +84,9 @@ export class EntryExitTransition extends BaseAnimationBuilder {
           enteringValues.animations.transform.forEach((value, index) => {
             for (const transformProp of Object.keys(value)) {
               animations.transform.push({
-                [transformProp]: delayFunction(
-                  delay + exitingDuration,
-                  withSequence(
-                    withTiming(
-                      enteringValues.initialValues.transform
-                        ? enteringValues.initialValues.transform[index][
-                            transformProp
-                          ]
-                        : 0,
-                      {
-                        duration: exitingDuration,
-                      }
-                    ),
-                    value[transformProp]
-                  )
-                ),
+                [transformProp]: delayFunction(delay + exitingDuration, withSequence(withTiming(enteringValues.initialValues.transform ? enteringValues.initialValues.transform[index][transformProp] : 0, {
+                  duration: exitingDuration
+                }), value[transformProp]))
               });
             }
           });
@@ -134,57 +94,42 @@ export class EntryExitTransition extends BaseAnimationBuilder {
           // it was already added in the previous loop
           continue;
         } else {
-          animations[prop] = delayFunction(
-            delay,
-            withSequence(
-              withTiming(enteringValues.initialValues[prop], {
-                duration: 0,
-              }),
-              enteringValues.animations[prop]
-            )
-          );
+          animations[prop] = delayFunction(delay, withSequence(withTiming(enteringValues.initialValues[prop], {
+            duration: 0
+          }), enteringValues.animations[prop]));
         }
       }
-      const mergedTransform = (
-        Array.isArray(exitingValues.initialValues.transform)
-          ? exitingValues.initialValues.transform
-          : []
-      ).concat(
-        (Array.isArray(enteringValues.animations.transform)
-          ? enteringValues.animations.transform
-          : []
-        ).map((value) => {
-          const objectKeys = Object.keys(value);
-          if (objectKeys?.length < 1) {
-            logger.error(`\${value} is not a valid Transform object`);
-            return value;
-          }
-          const transformProp = objectKeys[0];
-          const current =
-            // TODO TYPESCRIPT
-            // @ts-ignore Read similar comment above.
-            value[transformProp].current;
-          if (typeof current === 'string') {
-            if (current.includes('deg')) {
-              return {
-                [transformProp]: '0deg',
-              };
-            } else {
-              return {
-                [transformProp]: '0',
-              };
-            }
-          } else if (transformProp.includes('translate')) {
+      const mergedTransform = (Array.isArray(exitingValues.initialValues.transform) ? exitingValues.initialValues.transform : []).concat((Array.isArray(enteringValues.animations.transform) ? enteringValues.animations.transform : []).map(value => {
+        const objectKeys = Object.keys(value);
+        if (objectKeys?.length < 1) {
+          logger.error(`\${value} is not a valid Transform object`);
+          return value;
+        }
+        const transformProp = objectKeys[0];
+        const current =
+        // TODO TYPESCRIPT
+        // @ts-ignore Read similar comment above.
+        value[transformProp].current;
+        if (typeof current === 'string') {
+          if (current.includes('deg')) {
             return {
-              [transformProp]: 0,
+              [transformProp]: '0deg'
             };
           } else {
             return {
-              [transformProp]: 1,
+              [transformProp]: '0'
             };
           }
-        })
-      );
+        } else if (transformProp.includes('translate')) {
+          return {
+            [transformProp]: 0
+          };
+        } else {
+          return {
+            [transformProp]: 1
+          };
+        }
+      }));
       return {
         initialValues: {
           ...exitingValues.initialValues,
@@ -192,36 +137,24 @@ export class EntryExitTransition extends BaseAnimationBuilder {
           originY: values.currentOriginY,
           width: values.currentWidth,
           height: values.currentHeight,
-          transform: mergedTransform,
+          transform: mergedTransform
         },
         animations: {
-          originX: delayFunction(
-            delay + exitingDuration,
-            withTiming(values.targetOriginX, {
-              duration: exitingDuration,
-            })
-          ),
-          originY: delayFunction(
-            delay + exitingDuration,
-            withTiming(values.targetOriginY, {
-              duration: exitingDuration,
-            })
-          ),
-          width: delayFunction(
-            delay + exitingDuration,
-            withTiming(values.targetWidth, {
-              duration: exitingDuration,
-            })
-          ),
-          height: delayFunction(
-            delay + exitingDuration,
-            withTiming(values.targetHeight, {
-              duration: exitingDuration,
-            })
-          ),
-          ...animations,
+          originX: delayFunction(delay + exitingDuration, withTiming(values.targetOriginX, {
+            duration: exitingDuration
+          })),
+          originY: delayFunction(delay + exitingDuration, withTiming(values.targetOriginY, {
+            duration: exitingDuration
+          })),
+          width: delayFunction(delay + exitingDuration, withTiming(values.targetWidth, {
+            duration: exitingDuration
+          })),
+          height: delayFunction(delay + exitingDuration, withTiming(values.targetHeight, {
+            duration: exitingDuration
+          })),
+          ...animations
         },
-        callback,
+        callback
       };
     };
   };
