@@ -1,12 +1,17 @@
 'use strict';
 import type {
+  FlatList,
+  HostInstance,
   ImageStyle,
+  ScrollView,
+  SectionList,
   TextStyle,
   TransformsStyle,
   ViewStyle,
 } from 'react-native';
 
 import type { EasingFunctionFactory } from './Easing';
+import type { AnyRecord, Maybe } from './helperTypes';
 import type { ReanimatedModuleProxy } from './ReanimatedModule';
 import type { WorkletsModuleProxy } from './worklets';
 
@@ -508,7 +513,7 @@ export enum InterfaceOrientation {
 }
 
 export type ShadowNodeWrapper = {
-  __hostObjectShadowNodeWrapper: never;
+  __nativeStateShadowNodeWrapper: never;
 };
 
 export enum KeyboardState {
@@ -608,3 +613,30 @@ export type AnimateStyle<Style = DefaultStyle> = AnimatedStyle<Style>;
 export type StylesOrDefault<T> = 'style' extends keyof T
   ? MaybeSharedValueRecursive<T['style']>
   : Record<string, unknown>;
+
+type GetProp<T, K extends PropertyKey> = K extends keyof T ? T[K] : undefined;
+
+type ScrollResponderType = InternalHostInstance &
+  Partial<
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    ReturnType<
+      NonNullable<
+        | GetProp<ScrollView, 'getScrollResponder'>
+        | GetProp<FlatList, 'getScrollResponder'>
+        | GetProp<SectionList, 'getScrollResponder'>
+      >
+    > &
+      JSX.Element
+  >;
+
+export type InternalHostInstance = Partial<
+  HostInstance & {
+    getScrollResponder: () => Maybe<ScrollResponderType>;
+    getNativeScrollRef: () => Maybe<
+      Partial<InternalHostInstance & typeof ScrollView>
+    >;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getScrollableNode: () => any;
+    __internalInstanceHandle: AnyRecord;
+  }
+>;

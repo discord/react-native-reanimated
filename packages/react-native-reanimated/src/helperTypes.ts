@@ -155,3 +155,7 @@ export type AnimatedStyleProp<T> =
 
 /** @deprecated Please use {@link AnimatedProps} type instead. */
 export type AnimateProps<Props extends object> = AnimatedProps<Props>;
+
+export type AnyRecord = Record<string, any>;
+
+export type Maybe<T> = T | null | undefined;
