@@ -239,9 +239,9 @@ export function createAnimatedComponent(
         !SHOULD_BE_USE_WEB &&
         isFabric() &&
         this._willUnmount &&
-        typeof viewTag === 'number'
+        typeof this.getComponentViewTag() === 'number'
       ) {
-        unmarkNodeAsRemovable(viewTag);
+        unmarkNodeAsRemovable(this.getComponentViewTag());
       }
 
       this._isFirstRender = false;
