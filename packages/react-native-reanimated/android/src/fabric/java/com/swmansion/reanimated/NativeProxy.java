@@ -9,6 +9,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.swmansion.reanimated.layoutReanimation.LayoutAnimations;
@@ -85,7 +86,11 @@ public class NativeProxy extends NativeProxyCommon {
     for (int i = 0; i < tags.length; i++) {
       // Note: resolveView has assertOnUiThread, which only logs as softexception in debug
       // It is actually completely thread safe and there is a RFC in RN to do something about it
-      if (mFabricUIManager.resolveView(tags[i]) == null) {
+      try {
+        if (mFabricUIManager.resolveView(tags[i]) == null) {
+          tags[i] = -1;
+        }
+      } catch (IllegalViewOperationException ex) {
         tags[i] = -1;
       }
     }
