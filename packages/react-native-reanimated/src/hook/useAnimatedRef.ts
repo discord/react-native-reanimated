@@ -30,11 +30,11 @@ interface MaybeScrollableComponent extends Component {
 }
 
 function getComponentOrScrollable(component: MaybeScrollableComponent) {
-  if (component.getNativeScrollRef) {
-    return component.getNativeScrollRef();
-  }
   if (component.getScrollableNode) {
     return component.getScrollableNode();
+  }
+  if (component.getNativeScrollRef) {
+    return component.getNativeScrollRef();
   }
   return component;
 }
@@ -58,7 +58,7 @@ function useAnimatedRefBase<TComponent extends Component>(
 
         // We have to unwrap the tag from the shadow node wrapper.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        fun.getTag = () => findNodeHandle(ref as any);
+        fun.getTag = () => findNodeHandle(component as any);
         fun.current = component;
 
         if (observers.size) {
@@ -111,11 +111,9 @@ function useAnimatedRefNative<
   const ref = useAnimatedRefBase<TComponent>((component) => {
     const getTagOrWrapper = isFabric()
       ? getShadowNodeWrapperFromRef
-      : findNodeHandle;
+      : (comp: TComponent) => findNodeHandle(getComponentOrScrollable(comp));
 
-    tagOrWrapper.value = getTagOrWrapper(
-      isFabric() ? component : getComponentOrScrollable(component),
-    );
+    tagOrWrapper.value = getTagOrWrapper(component);
 
     if (viewName) {
       viewName.value =
