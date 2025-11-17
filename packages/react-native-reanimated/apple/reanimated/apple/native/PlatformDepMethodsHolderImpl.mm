@@ -358,7 +358,6 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
   PlatformDepMethodsHolder platformDepMethodsHolder = {
       requestRender,
 #ifdef RCT_NEW_ARCH_ENABLED
-      preserveMountedTagsFunction,
       synchronouslyUpdateUIPropsFunction,
 #else
       updatePropsFunction,
@@ -417,7 +416,6 @@ PlatformDepMethodsHolder makePlatformDepMethodsHolderBridgeless(
 
   PlatformDepMethodsHolder platformDepMethodsHolder = {
       requestRender,
-      preserveMountedTagsFunction,
       synchronouslyUpdateUIPropsFunction,
       getAnimationTimestamp,
       progressLayoutAnimation,
