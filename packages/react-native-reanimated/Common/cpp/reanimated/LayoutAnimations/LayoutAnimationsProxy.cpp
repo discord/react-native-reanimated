@@ -890,6 +890,7 @@ void LayoutAnimationsProxy::transferConfigFromNativeID(
     layoutAnimationsManager_->transferConfigFromNativeID(nativeId, tag);
   } catch (std::invalid_argument) {
   } catch (std::out_of_range) {
+  } catch (...) {
   }
 }
 
