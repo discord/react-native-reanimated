@@ -85,6 +85,7 @@ std::shared_ptr<ShadowNode> cloneShadowTreeWithNewPropsRecursive(
 
   Props::Shared newProps = mergeProps(shadowNode, propsMap, *family);
   
+#ifdef ANDROID
   if (newProps) {
       ReanimatedSystraceSection s("ShadowTreeCloner::equalityCheck");
 
@@ -97,6 +98,7 @@ std::shared_ptr<ShadowNode> cloneShadowTreeWithNewPropsRecursive(
           tagsToRemove.push_back(shadowNode.getTag());
       }
   }
+#endif
 
   return shadowNode.clone(
       {newProps ? newProps : ShadowNodeFragment::propsPlaceholder(),
