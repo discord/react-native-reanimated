@@ -85,18 +85,18 @@ std::shared_ptr<ShadowNode> cloneShadowTreeWithNewPropsRecursive(
 
   Props::Shared newProps = mergeProps(shadowNode, propsMap, *family);
   
-  if (newProps) {
-      ReanimatedSystraceSection s("ShadowTreeCloner::equalityCheck");
+  // if (newProps) {
+  //     ReanimatedSystraceSection s("ShadowTreeCloner::equalityCheck");
 
-      const auto& shadowNodeProps = shadowNode.getProps()->rawProps;
-      const auto& newPropsDynamic = newProps->rawProps;
-      bool isSame = newPropsDynamic == shadowNodeProps ||
-               checkPropsEqual(newPropsDynamic, shadowNodeProps);
+  //     const auto& shadowNodeProps = shadowNode.getProps()->rawProps;
+  //     const auto& newPropsDynamic = newProps->rawProps;
+  //     bool isSame = newPropsDynamic == shadowNodeProps ||
+  //              checkPropsEqual(newPropsDynamic, shadowNodeProps);
 
-      if (isSame) {
-          tagsToRemove.push_back(shadowNode.getTag());
-      }
-  }
+  //     if (isSame) {
+  //         tagsToRemove.push_back(shadowNode.getTag());
+  //     }
+  // }
 
   return shadowNode.clone(
       {newProps ? newProps : ShadowNodeFragment::propsPlaceholder(),
