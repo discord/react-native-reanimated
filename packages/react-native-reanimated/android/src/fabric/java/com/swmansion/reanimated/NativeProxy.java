@@ -1,11 +1,9 @@
 package com.swmansion.reanimated;
 
-import android.util.Log;
 import androidx.annotation.OptIn;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -76,11 +74,9 @@ public class NativeProxy extends NativeProxyCommon {
 
   public native boolean isAnyHandlerWaitingForEvent(String eventName, int emitterReactTag);
 
-  public native void performOperations();
+  public native void performOperations(boolean isTriggeredByEvent);
 
-  /**
-   * Modifies tags in place, setting not mounted view tags to -1 at their index.
-   */
+  /** Modifies tags in place, setting not mounted view tags to -1 at their index. */
   @DoNotStrip
   public void preserveMountedTags(int[] tags) {
     for (int i = 0; i < tags.length; i++) {

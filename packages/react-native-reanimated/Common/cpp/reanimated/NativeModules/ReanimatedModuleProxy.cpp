@@ -790,7 +790,7 @@ bool ReanimatedModuleProxy::handleRawEvent(
   // (res == true), but for now handleEvent always returns false. Thankfully,
   // performOperations does not trigger a lot of code if there is nothing to
   // be done so this is fine for now.
-  performOperations();
+  performOperations(true);
   return res;
 }
 
@@ -817,10 +817,10 @@ void ReanimatedModuleProxy::updateProps(
   }
 }
 
-void ReanimatedModuleProxy::performOperations() {
+void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
   ReanimatedSystraceSection s("performOperations");
 
-  if (!layoutAnimationFlushRequests_.empty()) {
+  if (!layoutAnimationFlushRequests_.empty() && !isTriggeredByEvent) {
     auto flushRequestsCopy = std::move(layoutAnimationFlushRequests_);
     for (const auto surfaceId : flushRequestsCopy) {
       uiManager_->getShadowTreeRegistry().visit(
