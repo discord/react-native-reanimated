@@ -104,7 +104,7 @@ void commonInit(REAModule *reaModule, std::shared_ptr<ReanimatedModuleProxy> rea
   std::weak_ptr<ReanimatedModuleProxy> weakReanimatedModuleProxy = reanimatedModuleProxy; // to avoid retain cycle
   [reaModule.nodesManager registerPerformOperations:^() {
     if (auto reanimatedModuleProxy = weakReanimatedModuleProxy.lock()) {
-      reanimatedModuleProxy->performOperations();
+      reanimatedModuleProxy->performOperations(false);
     }
   }];
 #endif // RCT_NEW_ARCH_ENABLED
