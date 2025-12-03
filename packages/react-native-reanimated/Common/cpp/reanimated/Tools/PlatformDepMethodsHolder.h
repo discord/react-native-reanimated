@@ -25,8 +25,10 @@ namespace reanimated {
 
 using SynchronouslyUpdateUIPropsFunction =
     std::function<void(jsi::Runtime &rt, Tag tag, const jsi::Object &props)>;
+#ifndef ANDROID
 using PreserveMountedTagsFunction =
     std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
+#endif // !ANDROID
 using UpdatePropsFunction =
     std::function<void(jsi::Runtime &rt, const jsi::Value &operations)>;
 using ObtainPropFunction = std::function<jsi::Value(

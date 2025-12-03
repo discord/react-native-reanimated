@@ -445,8 +445,10 @@ void NativeProxy::progressLayoutAnimation(
 
 PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
 #ifdef RCT_NEW_ARCH_ENABLED
-    auto synchronouslyUpdateUIPropsFunction =
-            bindThis(&NativeProxy::synchronouslyUpdateUIProps);
+    auto synchronouslyUpdateUIPropsFunction = [this](jsi::Runtime &rt, Tag tag, const jsi::Object &props) {
+        folly::dynamic dynamicProps = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
+        this->synchronouslyUpdateUIProps(tag, dynamicProps);
+    };
 #else
   auto updatePropsFunction = bindThis(&NativeProxy::updateProps);
 
