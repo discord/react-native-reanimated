@@ -36,8 +36,8 @@ class ReanimatedCommitHook
       RootShadowNode::Unshared const &newRootShadowNode,
       const ShadowTreeCommitOptions& commitOptions) noexcept override;
 
-  void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions);
-  void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions);
+  void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) override;
+  void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) override;
 
  private:
   std::shared_ptr<PropsRegistry> propsRegistry_;
