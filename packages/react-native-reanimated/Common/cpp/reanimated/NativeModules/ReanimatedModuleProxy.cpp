@@ -844,17 +844,17 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
   {
     auto lock = propsRegistry_->createLock();
 
-    if (copiedOperationsQueue.size() > 0 &&
-        propsRegistry_->shouldReanimatedSkipCommit()) {
-      propsRegistry_->pleaseCommitAfterPause();
-    }
-
     // remove recently unmounted ShadowNodes from PropsRegistry
     if (!tagsToRemove_.empty()) {
       for (auto tag : tagsToRemove_) {
         propsRegistry_->remove(tag);
       }
       tagsToRemove_.clear();
+    }
+
+    if (copiedOperationsQueue.size() > 0 &&
+        propsRegistry_->shouldReanimatedSkipCommit()) {
+      propsRegistry_->pleaseCommitAfterPause();
     }
 
     // Even if only non-layout props are changed, we need to store the update
@@ -915,6 +915,11 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
   }
 
   for (auto const &[surfaceId, propsMap] : propsMapBySurface) {
+    if (propsMapBySurface.size() == 0) {
+        // Avoid calling commit(sync = true), as that could force React Native to sync flush all pending mount transactions
+      continue;
+    }
+
     shadowTreeRegistry.visit(surfaceId, [&](ShadowTree const &shadowTree) {
       shadowTree.commit(
           [&](RootShadowNode const &oldRootShadowNode)

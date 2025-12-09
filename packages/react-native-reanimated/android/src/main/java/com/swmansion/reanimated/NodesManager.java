@@ -3,8 +3,16 @@ package com.swmansion.reanimated;
 import static java.lang.Float.NaN;
 
 import android.graphics.drawable.Drawable;
+import android.os.Looper;
 import android.os.SystemClock;
+import android.os.Trace;
+import android.view.Choreographer;
 import android.view.View;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
+
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -24,6 +32,8 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -169,6 +179,8 @@ public class NodesManager implements EventDispatcherListener {
 
   private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
   private boolean mTryRunBatchUpdatesSynchronously = false;
+  int count = 0;
+
 
   public NodesManager(ReactContext context, WorkletsModule workletsModule) {
     mContext = context;
@@ -192,6 +204,51 @@ public class NodesManager implements EventDispatcherListener {
             onAnimationFrame(frameTimeNanos);
           }
         };
+
+//      Choreographer.FrameCallback callback = new Choreographer.FrameCallback() {
+//            @Override
+//            public void doFrame(long time) {
+//                android.util.Log.d("HannoDebug", "[Reanimated] [" + count + "] frame animation callback: " + time);
+//                Choreographer.getInstance().postFrameCallback(this);
+//            }
+//      };
+//    Choreographer.getInstance().postFrameCallback(callback); // KICK DRUM
+    // get current looper:
+
+//    android.util.Log.d("HannoDebug", "[Reanimated] Initializing NodesManager, has activity yet: " + (context.getCurrentActivity() != null));
+//    View decorView = context.getCurrentActivity().getWindow().getDecorView();
+//    decorView.getViewTreeObserver().addOnDrawListener(() -> {
+//        int myId = count++;
+//
+//        android.util.Log.d("HannoDebug", "[Reanimated] ["+myId+"] onDraw called");
+//        double start = System.nanoTime() / 1_000_000.0;
+//        // weak?
+//        decorView.post(() -> {
+//            double end = System.nanoTime() / 1_000_000.0;
+//            android.util.Log.d("HannoDebug", "[Reanimated] ["+myId+"] onDraw finished, took ms: " + (end - start));
+//        });
+//    });
+//      Choreographer.getInstance().
+
+
+
+    // TODO: this should run on the UI thread, after we know the Root view / surface has been created?
+//        try {
+//            @Nullable View rootView = mUIManager.resolveView(0);
+//            if (rootView != null) {
+//                android.util.Log.d("HannoDebug", "[Reanimated] Found root view when trying to initialize NodesManager: " + rootView);
+//                RootView rootView2 = RootViewUtil.getRootView(rootView);
+//                if (rootView2 != null) {
+//                    android.util.Log.d("HannoDebug", "[Reanimated] Initializing NodesManager with root view: " + rootView2);
+//                } else {
+//                    android.util.Log.d("HannoDebug", "[Reanimated] Root view 2 is null when trying to initialize NodesManager");
+//                }
+//            } else {
+//                android.util.Log.d("HannoDebug", "[Reanimated] Root view is null when trying to initialize NodesManager");
+//            }
+//        } catch (IllegalViewOperationException ex) {
+//            android.util.Log.d("HannoDebug", "[Reanimated] Caught exception when trying to initialize NodesManager: " + ex.getMessage());
+//        }
 
     if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // We register as event listener at the end, because we pass `this` and we haven't finished
@@ -242,12 +299,27 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
-  public void performOperations(boolean isTriggeredByEvent) {
+  @androidx.annotation.UiThread
+  public void performOperations(boolean isTriggeredByEvent, boolean isDrawing) {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       if (mNativeProxy != null) {
-        isPerformOperationsActive = true;
-        mNativeProxy.performOperations(isTriggeredByEvent);
-        isPerformOperationsActive = false;
+        if (!isDrawing) {
+            // Default case
+            isPerformOperationsActive = true;
+            mNativeProxy.performOperations(isTriggeredByEvent);
+            isPerformOperationsActive = false;
+        } else {
+            // Very special case: performOperations() was called due to an intercepted event.
+            // This event got dispatched during a drawing phase (e.g. scroll event):
+            // e.g. see here: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/core/java/android/view/View.java;l=24107;drc=dc12cf3a98ae51c83fa0c5edae5cc0a72d84f4e7
+            // In that case performOperations() might try to synchronously update the UI, which
+            // could cause view removal, which could crash the drawing phase
+            mContext.runOnUiQueueThread(() -> {
+                isPerformOperationsActive = true;
+                mNativeProxy.performOperations(isTriggeredByEvent);
+                isPerformOperationsActive = false;
+            });
+        }
       }
     } else if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
@@ -320,7 +392,7 @@ public class NodesManager implements EventDispatcherListener {
         }
       }
 
-      performOperations(false);
+      performOperations(false, false);
     }
 
     mCallbackPosted.set(false);
@@ -387,7 +459,7 @@ public class NodesManager implements EventDispatcherListener {
        */
       String eventName = event.getEventName();
       if (eventName.contains("GestureHandler") || eventName.contains("Scroll")) {
-        performOperations(true);
+        performOperations(true, event.isDrawing());
         // Note(@hannojg): there has been a new edit in
         // https://github.com/software-mansion/react-native-reanimated/pull/8459
         // This will prevent to run scheduled layout animation synchronously here when triggered by
