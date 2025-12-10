@@ -74,7 +74,7 @@ public class NativeProxy extends NativeProxyCommon {
 
   public native boolean isAnyHandlerWaitingForEvent(String eventName, int emitterReactTag);
 
-  public native void performOperations(boolean isTriggeredByEvent);
+  public native void performOperations(boolean isTriggeredByEvent, boolean mountSync);
 
   /** Modifies tags in place, setting not mounted view tags to -1 at their index. */
   @DoNotStrip

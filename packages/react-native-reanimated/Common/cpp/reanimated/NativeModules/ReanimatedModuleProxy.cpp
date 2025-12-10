@@ -18,6 +18,7 @@
 
 #ifdef __ANDROID__
 #include <fbjni/fbjni.h>
+#include <folly/json.h>
 #endif // __ANDROID__
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -790,7 +791,7 @@ bool ReanimatedModuleProxy::handleRawEvent(
   // (res == true), but for now handleEvent always returns false. Thankfully,
   // performOperations does not trigger a lot of code if there is nothing to
   // be done so this is fine for now.
-  performOperations(true);
+  performOperations(true, true);
   return res;
 }
 
@@ -817,8 +818,9 @@ void ReanimatedModuleProxy::updateProps(
   }
 }
 
-void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
+void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, const bool mountSync = true) {
   ReanimatedSystraceSection s("performOperations");
+//  LOG(INFO) << "[HANNODEBUG] [reanimated] ------------ performOperations called";
 
   if (!layoutAnimationFlushRequests_.empty() && !isTriggeredByEvent) {
     auto flushRequestsCopy = std::move(layoutAnimationFlushRequests_);
@@ -832,6 +834,7 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
 
   if (operationsInBatch_.empty() && tagsToRemove_.empty()) {
     // nothing to do
+//    LOG(INFO) << "[HANNODEBUG] [reanimated] no op to perform";
     return;
   }
 
@@ -895,6 +898,7 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
     // In this case, we should skip the commit here and let React Native do
     // it. The commit will include the current values from PropsRegistry which
     // will be applied in ReanimatedCommitHook.
+//    LOG(INFO) << "[HANNODEBUG] [reanimated] shouldReanimatedSkipCommit()";
     return;
   }
 
@@ -910,15 +914,24 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
     if (layoutUpdatesByTag.contains(shadowNode->getTag())) {
       // Only push updates for updates that affect layout. Other updates
       // were already handled by updateNoneLayoutProps above
+      LOG(INFO)
+          << "[HANNODEBUG] Scheduling props update for "
+          << shadowNode->getComponentName() << "(" << shadowNode->getTag() << ")" << " props: " << folly::toJson(dynamicFromValue(rt, *props));
       propsMapBySurface[surfaceId][family].emplace_back(rt, std::move(*props));
     }
   }
 
   for (auto const &[surfaceId, propsMap] : propsMapBySurface) {
-    if (propsMapBySurface.size() == 0) {
+    auto size = propsMapBySurface.size();
+    if (size == 0) {
         // Avoid calling commit(sync = true), as that could force React Native to sync flush all pending mount transactions
+//        LOG(INFO) << "[HANNODEBUG] [reanimated] no update, continue";
       continue;
     }
+
+    LOG(INFO)
+        << "[HANNODEBUG] Committing updated props to ShadowTree with " << propsMap.size()
+        << " families to update.";
 
     shadowTreeRegistry.visit(surfaceId, [&](ShadowTree const &shadowTree) {
       shadowTree.commit(
@@ -943,7 +956,7 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent) {
           },
           {/* .enableStateReconciliation = */
            false,
-           /* .mountSynchronously = */ true});
+           /* .mountSynchronously = */ mountSync});
     });
   }
 }

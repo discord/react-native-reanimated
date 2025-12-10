@@ -170,9 +170,9 @@ bool NativeProxy::isAnyHandlerWaitingForEvent(
       eventName, emitterReactTag);
 }
 
-void NativeProxy::performOperations(const bool isTriggeredByEvent) {
+void NativeProxy::performOperations(const bool isTriggeredByEvent, const bool mountSync) {
 #ifdef RCT_NEW_ARCH_ENABLED
-  reanimatedModuleProxy_->performOperations(isTriggeredByEvent);
+  reanimatedModuleProxy_->performOperations(isTriggeredByEvent, mountSync);
 #endif
 }
 

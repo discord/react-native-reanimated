@@ -207,51 +207,6 @@ public class NodesManager implements EventDispatcherListener {
           }
         };
 
-//      Choreographer.FrameCallback callback = new Choreographer.FrameCallback() {
-//            @Override
-//            public void doFrame(long time) {
-//                android.util.Log.d("HannoDebug", "[Reanimated] [" + count + "] frame animation callback: " + time);
-//                Choreographer.getInstance().postFrameCallback(this);
-//            }
-//      };
-//    Choreographer.getInstance().postFrameCallback(callback); // KICK DRUM
-    // get current looper:
-
-//    android.util.Log.d("HannoDebug", "[Reanimated] Initializing NodesManager, has activity yet: " + (context.getCurrentActivity() != null));
-//    View decorView = context.getCurrentActivity().getWindow().getDecorView();
-//    decorView.getViewTreeObserver().addOnDrawListener(() -> {
-//        int myId = count++;
-//
-//        android.util.Log.d("HannoDebug", "[Reanimated] ["+myId+"] onDraw called");
-//        double start = System.nanoTime() / 1_000_000.0;
-//        // weak?
-//        decorView.post(() -> {
-//            double end = System.nanoTime() / 1_000_000.0;
-//            android.util.Log.d("HannoDebug", "[Reanimated] ["+myId+"] onDraw finished, took ms: " + (end - start));
-//        });
-//    });
-//      Choreographer.getInstance().
-
-
-
-    // TODO: this should run on the UI thread, after we know the Root view / surface has been created?
-//        try {
-//            @Nullable View rootView = mUIManager.resolveView(0);
-//            if (rootView != null) {
-//                android.util.Log.d("HannoDebug", "[Reanimated] Found root view when trying to initialize NodesManager: " + rootView);
-//                RootView rootView2 = RootViewUtil.getRootView(rootView);
-//                if (rootView2 != null) {
-//                    android.util.Log.d("HannoDebug", "[Reanimated] Initializing NodesManager with root view: " + rootView2);
-//                } else {
-//                    android.util.Log.d("HannoDebug", "[Reanimated] Root view 2 is null when trying to initialize NodesManager");
-//                }
-//            } else {
-//                android.util.Log.d("HannoDebug", "[Reanimated] Root view is null when trying to initialize NodesManager");
-//            }
-//        } catch (IllegalViewOperationException ex) {
-//            android.util.Log.d("HannoDebug", "[Reanimated] Caught exception when trying to initialize NodesManager: " + ex.getMessage());
-//        }
-
     if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // We register as event listener at the end, because we pass `this` and we haven't finished
       // constructing an object yet.
@@ -303,44 +258,14 @@ public class NodesManager implements EventDispatcherListener {
 
   int scheduled = 0;
   Handler mainHandler = new Handler(Looper.getMainLooper());
-  boolean isScheduled = false;
 
   @androidx.annotation.UiThread
   public void performOperations(boolean isTriggeredByEvent, boolean isDrawing) {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       if (mNativeProxy != null) {
-        if (!isDrawing) {
-            // Default case
-            isPerformOperationsActive = true;
-            mNativeProxy.performOperations(isTriggeredByEvent);
-            isPerformOperationsActive = false;
-        } else {
-            // Very special case: performOperations() was called due to an intercepted event.
-            // This event (e.g. scroll event) got dispatched during a drawing phase:
-            // e.g. see here: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/core/java/android/view/View.java;l=24107;drc=dc12cf3a98ae51c83fa0c5edae5cc0a72d84f4e7
-            // In that case performOperations() might try to synchronously update the UI, which
-            // could cause view removal, which could crash the drawing phase.
-            int currentScheduled = scheduled++;
-
-            if (isScheduled) {
-//                FLog.w("HannODebug",
-//                    "["+currentScheduled+"] performOperations() already scheduled, skipping.");
-                return;
-            }
-
-//            FLog.w("HannODebug",
-//                "["+currentScheduled+"] Scheduling performOperations() asynchronously due to drawing phase.");
-
-            mainHandler.postAtFrontOfQueue(() -> {
-                isScheduled = false;
-//                FLog.w("HannODebug",
-//                    "["+currentScheduled+"] Running scheduled performOperations() now.");
-                isPerformOperationsActive = true;
-                mNativeProxy.performOperations(isTriggeredByEvent);
-                isPerformOperationsActive = false;
-            });
-            isScheduled = true;
-        }
+          isPerformOperationsActive = true;
+          mNativeProxy.performOperations(isTriggeredByEvent, /* mountSync */ !isDrawing);
+          isPerformOperationsActive = false;
       }
     } else if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
