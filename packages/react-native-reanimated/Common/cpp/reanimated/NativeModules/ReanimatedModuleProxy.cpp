@@ -820,7 +820,6 @@ void ReanimatedModuleProxy::updateProps(
 
 void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, const bool mountSync = true) {
   ReanimatedSystraceSection s("performOperations");
-//  LOG(INFO) << "[HANNODEBUG] [reanimated] ------------ performOperations called";
 
   if (!layoutAnimationFlushRequests_.empty() && !isTriggeredByEvent) {
     auto flushRequestsCopy = std::move(layoutAnimationFlushRequests_);
@@ -834,7 +833,6 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
 
   if (operationsInBatch_.empty() && tagsToRemove_.empty()) {
     // nothing to do
-//    LOG(INFO) << "[HANNODEBUG] [reanimated] no op to perform";
     return;
   }
 
@@ -898,7 +896,6 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
     // In this case, we should skip the commit here and let React Native do
     // it. The commit will include the current values from PropsRegistry which
     // will be applied in ReanimatedCommitHook.
-//    LOG(INFO) << "[HANNODEBUG] [reanimated] shouldReanimatedSkipCommit()";
     return;
   }
 
@@ -914,9 +911,6 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
     if (layoutUpdatesByTag.contains(shadowNode->getTag())) {
       // Only push updates for updates that affect layout. Other updates
       // were already handled by updateNoneLayoutProps above
-      LOG(INFO)
-          << "[HANNODEBUG] Scheduling props update for "
-          << shadowNode->getComponentName() << "(" << shadowNode->getTag() << ")" << " props: " << folly::toJson(dynamicFromValue(rt, *props));
       propsMapBySurface[surfaceId][family].emplace_back(rt, std::move(*props));
     }
   }
@@ -925,13 +919,8 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
     auto size = propsMapBySurface.size();
     if (size == 0) {
         // Avoid calling commit(sync = true), as that could force React Native to sync flush all pending mount transactions
-//        LOG(INFO) << "[HANNODEBUG] [reanimated] no update, continue";
       continue;
     }
-
-    LOG(INFO)
-        << "[HANNODEBUG] Committing updated props to ShadowTree with " << propsMap.size()
-        << " families to update.";
 
     shadowTreeRegistry.visit(surfaceId, [&](ShadowTree const &shadowTree) {
       shadowTree.commit(
@@ -956,6 +945,13 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
           },
           {/* .enableStateReconciliation = */
            false,
+            // mountSync=true: default case, immediately flush our updates to the native layer
+            // mountSycn=false: performOperations() was called due to an intercepted event.
+            // This event (e.g. scroll event) got dispatched during a drawing phase:
+            // e.g. see here: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/core/java/android/view/View.java;l=24107;drc=dc12cf3a98ae51c83fa0c5edae5cc0a72d84f4e7
+            // In that case performOperations() might try to synchronously update the UI, which
+            // could cause view removal, which could crash the drawing phase.
+            // Thats why in those cases we want to avoid synchronous mounting.
            /* .mountSynchronously = */ mountSync});
     });
   }
