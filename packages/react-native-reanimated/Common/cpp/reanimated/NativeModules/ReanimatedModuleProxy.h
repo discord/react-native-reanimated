@@ -124,7 +124,7 @@ class ReanimatedModuleProxy
 
   void removeFromPropsRegistry(jsi::Runtime &rt, const jsi::Value &viewTags);
 
-  void performOperations(const bool isTriggeredByEvent);
+  void performOperations(const bool isTriggeredByEvent, const bool mountSync);
 
   void markNodeAsRemovable(
       jsi::Runtime &rt,

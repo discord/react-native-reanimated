@@ -195,7 +195,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   bool isAnyHandlerWaitingForEvent(
       const std::string &eventName,
       const int emitterReactTag);
-  void performOperations(const bool isTriggeredByEvent);
+  void performOperations(const bool isTriggeredByEvent, const bool mountSync);
   bool getIsReducedMotion();
   void requestRender(std::function<void(double)> onRender);
   void registerEventHandler();

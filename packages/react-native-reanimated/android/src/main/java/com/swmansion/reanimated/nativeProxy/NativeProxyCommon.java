@@ -249,7 +249,7 @@ public abstract class NativeProxyCommon {
   @DoNotStrip
   void maybeFlushUIUpdatesQueue() {
     if (!mNodesManager.isAnimationRunning()) {
-      mNodesManager.performOperations(false);
+      mNodesManager.performOperations(false, false);
     }
   }
 }

@@ -3,8 +3,18 @@ package com.swmansion.reanimated;
 import static java.lang.Float.NaN;
 
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
+import android.os.Trace;
+import android.view.Choreographer;
 import android.view.View;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
+
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -24,6 +34,8 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -169,6 +181,8 @@ public class NodesManager implements EventDispatcherListener {
 
   private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
   private boolean mTryRunBatchUpdatesSynchronously = false;
+  int count = 0;
+
 
   public NodesManager(ReactContext context, WorkletsModule workletsModule) {
     mContext = context;
@@ -242,12 +256,16 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
-  public void performOperations(boolean isTriggeredByEvent) {
+  int scheduled = 0;
+  Handler mainHandler = new Handler(Looper.getMainLooper());
+
+  @androidx.annotation.UiThread
+  public void performOperations(boolean isTriggeredByEvent, boolean isDrawing) {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       if (mNativeProxy != null) {
-        isPerformOperationsActive = true;
-        mNativeProxy.performOperations(isTriggeredByEvent);
-        isPerformOperationsActive = false;
+          isPerformOperationsActive = true;
+          mNativeProxy.performOperations(isTriggeredByEvent, /* mountSync */ !isDrawing);
+          isPerformOperationsActive = false;
       }
     } else if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
@@ -320,7 +338,7 @@ public class NodesManager implements EventDispatcherListener {
         }
       }
 
-      performOperations(false);
+      performOperations(false, false);
     }
 
     mCallbackPosted.set(false);
@@ -387,7 +405,7 @@ public class NodesManager implements EventDispatcherListener {
        */
       String eventName = event.getEventName();
       if (eventName.contains("GestureHandler") || eventName.contains("Scroll")) {
-        performOperations(true);
+        performOperations(true, event.isDrawing());
         // Note(@hannojg): there has been a new edit in
         // https://github.com/software-mansion/react-native-reanimated/pull/8459
         // This will prevent to run scheduled layout animation synchronously here when triggered by
