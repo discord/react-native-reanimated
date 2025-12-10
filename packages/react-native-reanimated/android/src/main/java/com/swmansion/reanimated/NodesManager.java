@@ -3,7 +3,9 @@ package com.swmansion.reanimated;
 import static java.lang.Float.NaN;
 
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
 import android.os.Trace;
 import android.view.Choreographer;
@@ -299,6 +301,10 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
+  int scheduled = 0;
+  Handler mainHandler = new Handler(Looper.getMainLooper());
+  boolean isScheduled = false;
+
   @androidx.annotation.UiThread
   public void performOperations(boolean isTriggeredByEvent, boolean isDrawing) {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
@@ -310,15 +316,30 @@ public class NodesManager implements EventDispatcherListener {
             isPerformOperationsActive = false;
         } else {
             // Very special case: performOperations() was called due to an intercepted event.
-            // This event got dispatched during a drawing phase (e.g. scroll event):
+            // This event (e.g. scroll event) got dispatched during a drawing phase:
             // e.g. see here: https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/core/java/android/view/View.java;l=24107;drc=dc12cf3a98ae51c83fa0c5edae5cc0a72d84f4e7
             // In that case performOperations() might try to synchronously update the UI, which
-            // could cause view removal, which could crash the drawing phase
-            mContext.runOnUiQueueThread(() -> {
+            // could cause view removal, which could crash the drawing phase.
+            int currentScheduled = scheduled++;
+
+            if (isScheduled) {
+//                FLog.w("HannODebug",
+//                    "["+currentScheduled+"] performOperations() already scheduled, skipping.");
+                return;
+            }
+
+//            FLog.w("HannODebug",
+//                "["+currentScheduled+"] Scheduling performOperations() asynchronously due to drawing phase.");
+
+            mainHandler.postAtFrontOfQueue(() -> {
+                isScheduled = false;
+//                FLog.w("HannODebug",
+//                    "["+currentScheduled+"] Running scheduled performOperations() now.");
                 isPerformOperationsActive = true;
                 mNativeProxy.performOperations(isTriggeredByEvent);
                 isPerformOperationsActive = false;
             });
+            isScheduled = true;
         }
       }
     } else if (!mOperationsInBatch.isEmpty()) {
