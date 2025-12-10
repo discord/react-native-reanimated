@@ -102,16 +102,6 @@ RequestRenderFunction makeRequestRender(REANodesManager *nodesManager)
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-PreserveMountedTagsFunction makePreserveMountedTagsFunction()
-{
-    //std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
-    auto preserveMountedTagsFunction = [](std::vector<int> &tags) -> std::optional<std::unique_ptr<int[]>> {
-        // TODO: Implement me
-        return nullptr;
-    };
-    return preserveMountedTagsFunction;
-}
-
 SynchronouslyUpdateUIPropsFunction makeSynchronouslyUpdateUIPropsFunction(REANodesManager *nodesManager)
 {
   auto synchronouslyUpdateUIPropsFunction = [nodesManager](jsi::Runtime &rt, Tag tag, const jsi::Object &props) -> void {
@@ -296,9 +286,7 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
 {
   auto requestRender = makeRequestRender(nodesManager);
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  auto preserveMountedTagsFunction = makePreserveMountedTagsFunction();
-    
+#ifdef RCT_NEW_ARCH_ENABLED    
   auto synchronouslyUpdateUIPropsFunction = makeSynchronouslyUpdateUIPropsFunction(nodesManager);
 #else
   RCTUIManager *uiManager = nodesManager.uiManager;
@@ -387,9 +375,7 @@ PlatformDepMethodsHolder makePlatformDepMethodsHolderBridgeless(
     REAModule *reaModule)
 {
   auto requestRender = makeRequestRender(nodesManager);
-    
-  auto preserveMountedTagsFunction = makePreserveMountedTagsFunction();
-    
+
   auto synchronouslyUpdateUIPropsFunction = makeSynchronouslyUpdateUIPropsFunction(nodesManager);
 
   auto getAnimationTimestamp = makeGetAnimationTimestamp();
