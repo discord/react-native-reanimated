@@ -432,7 +432,7 @@ void LayoutAnimationsProxy::addOngoingAnimations(
   for (auto &[tag, updateValues] : updateMap) {
 #ifdef ANDROID
     i++;
-    if (correctedTags[i] == -1) {
+    if (correctedTags && (*correctedTags)[i] == -1) {
       // skip views that have not been mounted yet
       // on Android we start entering animations from the JS thread
       // so it might happen, that the first frame of the animation goes through
