@@ -24,7 +24,11 @@ namespace reanimated {
 #ifdef RCT_NEW_ARCH_ENABLED
 
 using SynchronouslyUpdateUIPropsFunction =
-    std::function<void(Tag tag, const folly::dynamic &props)>;
+    std::function<void(jsi::Runtime &rt, Tag tag, const jsi::Object &props)>;
+#ifdef ANDROID
+using PreserveMountedTagsFunction =
+    std::function<std::optional<std::unique_ptr<int[]>>(std::vector<int> &)>;
+#endif // ANDROID
 using UpdatePropsFunction =
     std::function<void(jsi::Runtime &rt, const jsi::Value &operations)>;
 using ObtainPropFunction = std::function<jsi::Value(
@@ -58,10 +62,6 @@ using ObtainPropFunction =
 
 using RequestRenderFunction =
     std::function<void(std::function<void(const double)>)>;
-#ifdef ANDROID
-using PreserveMountedTagsFunction =
-    std::function<std::unique_ptr<int[]>(std::vector<int> &)>;
-#endif // ANDROID
 using GetAnimationTimestampFunction = std::function<double(void)>;
 
 using ProgressLayoutAnimationFunction =

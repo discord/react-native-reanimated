@@ -5,6 +5,7 @@
 #include <reanimated/LayoutAnimations/LayoutAnimationsProxy.h>
 
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
+#include <react/renderer/mounting/ShadowTree.h>
 
 #include <memory>
 

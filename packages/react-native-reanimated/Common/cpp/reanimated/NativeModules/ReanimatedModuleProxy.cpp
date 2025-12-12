@@ -697,28 +697,38 @@ void ReanimatedModuleProxy::unmarkNodeAsRemovable(
 /**
  * Returns false if there are no layout props, true if there are.
  */
- bool ReanimatedModuleProxy::updateNoneLayoutProps(const folly::dynamic &props, Tag tag) {
-  folly::dynamic nonLayoutProps = nullptr;
-  bool hasLayoutProps = false;
-  for (const auto& prop : props.items()) {
-      const std::string propName = prop.first.asString();
-      bool isLayoutProp = collection::contains(nativePropNames_, propName);
-      if (isLayoutProp) {
-          hasLayoutProps = true;
-          continue;
-      }
+ bool ReanimatedModuleProxy::updateNoneLayoutProps(
+    jsi::Runtime &rt,
+    const jsi::Object &props,
+    Tag tag) {
 
-      if (nonLayoutProps == nullptr) {
-          nonLayoutProps = folly::dynamic::object();
-      }
-      nonLayoutProps.insert(propName, prop.second);
-  }
+    jsi::Object nonLayoutPropsJSI(rt);
+    bool hasNonLayoutProps = false;
+    bool hasLayoutProps = false;
 
-  if (nonLayoutProps.isObject())  {
-      synchronouslyUpdateUIPropsFunction_(tag, nonLayoutProps);
-  }
+    auto propNames = props.getPropertyNames(rt);
+    size_t size = propNames.size(rt);
 
-  return hasLayoutProps;
+    for (size_t i = 0; i < size; i++) {
+        auto propName = propNames.getValueAtIndex(rt, i).asString(rt);
+        std::string propNameStr = propName.utf8(rt);
+
+        bool isLayoutProp = collection::contains(nativePropNames_, propNameStr);
+
+        if (isLayoutProp) {
+            hasLayoutProps = true;
+        } else {
+            hasNonLayoutProps = true;
+            auto propValue = props.getProperty(rt, propName);
+            nonLayoutPropsJSI.setProperty(rt, propName, propValue);
+        }
+    }
+
+    if (hasNonLayoutProps) {
+        synchronouslyUpdateUIPropsFunction_(rt, tag, nonLayoutPropsJSI);
+    }
+
+    return hasLayoutProps;
 }
 
 jsi::Value ReanimatedModuleProxy::filterNonAnimatableProps(
@@ -864,13 +874,17 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
     // way but backgroundColor, shadowOpacity etc. would get overwritten (see
     // `_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN`).
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
-      folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
-      auto tag = shadowNode->getTag();
-      bool hasLayoutUpdates = updateNoneLayoutProps(propsDynamic, tag);
-      if (hasLayoutUpdates) {
-          layoutUpdatesByTag.insert(tag);
-      }
-      propsRegistry_->update(shadowNode, std::move(propsDynamic));
+        auto tag = shadowNode->getTag();
+        
+        // Pass the JSI object directly
+        bool hasLayoutUpdates = updateNoneLayoutProps(rt, props->asObject(rt), tag);
+        if (hasLayoutUpdates) {
+            layoutUpdatesByTag.insert(tag);
+        }
+        
+        // Still need to convert to dynamic for propsRegistry
+        folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
+        propsRegistry_->update(shadowNode, std::move(propsDynamic));
     }
   }
 
