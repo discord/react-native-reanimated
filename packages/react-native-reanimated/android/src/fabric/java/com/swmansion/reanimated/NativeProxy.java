@@ -4,6 +4,7 @@ import androidx.annotation.OptIn;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -78,11 +79,18 @@ public class NativeProxy extends NativeProxyCommon {
 
   /** Modifies tags in place, setting not mounted view tags to -1 at their index. */
   @DoNotStrip
-  public void preserveMountedTags(int[] tags) {
+  public boolean preserveMountedTags(int[] tags) {
+    if (!UiThreadUtil.isOnUiThread()) {
+        // We want to avoid executing LayoutAnimationProxy::addOngoingAnimation
+        // from the JS thread to avoid the occurrence of this bug:
+        // https://github.com/software-mansion/react-native-reanimated/issues/7493#issuecomment-3728435106
+        return false;
+    }
+
     for (int i = 0; i < tags.length; i++) {
+      try {
       // Note: resolveView has assertOnUiThread, which only logs as softexception in debug
       // It is actually completely thread safe and there is a RFC in RN to do something about it
-      try {
         if (mFabricUIManager.resolveView(tags[i]) == null) {
           tags[i] = -1;
         }
@@ -90,6 +98,8 @@ public class NativeProxy extends NativeProxyCommon {
         tags[i] = -1;
       }
     }
+
+    return true;
   }
 
   @Override
