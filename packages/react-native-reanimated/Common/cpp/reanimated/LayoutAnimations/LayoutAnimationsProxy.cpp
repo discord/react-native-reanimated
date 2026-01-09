@@ -72,6 +72,16 @@ std::optional<SurfaceId> LayoutAnimationsProxy::progressLayoutAnimation(
     return {};
   }
 
+  if (finishedAnimationTags_.end() !=
+      std::find(
+          finishedAnimationTags_.begin(),
+          finishedAnimationTags_.end(),
+          tag)) {
+    // NOTE: This was added by discord as precautionary measure against RetryableMountingLayerException crash.
+    // When props 2.0 is enabled this is potentially no longer needed.
+    return {};
+  }
+
   auto &layoutAnimation = layoutAnimationIt->second;
 
   maybeRestoreOpacity(layoutAnimation, newStyle);
