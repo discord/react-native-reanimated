@@ -424,6 +424,10 @@ void LayoutAnimationsProxy::addOngoingAnimations(
   }
 
   auto correctedTags = preserveMountedTags_(tagsToUpdate);
+  if (!correctedTags.has_value()) {
+      // this is nullopt if this is being called from the JS thread.
+      return;
+  }
 
   // since the map is not updated, we can assume that the ordering of tags in
   // correctedTags matches the iterator
