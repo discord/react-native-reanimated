@@ -80,12 +80,13 @@ public class NativeProxy extends NativeProxyCommon {
   /** Modifies tags in place, setting not mounted view tags to -1 at their index. */
   @DoNotStrip
   public boolean preserveMountedTags(int[] tags) {
-    if (!UiThreadUtil.isOnUiThread()) {
-        // We want to avoid executing LayoutAnimationProxy::addOngoingAnimation
-        // from the JS thread to avoid the occurrence of this bug:
-        // https://github.com/software-mansion/react-native-reanimated/issues/7493#issuecomment-3728435106
-        return false;
-    }
+    // Discord note: this causes UI glitches such as documented in https://github.com/software-mansion/react-native-reanimated/pull/8450/
+    // if (!UiThreadUtil.isOnUiThread()) {
+    //     // We want to avoid executing LayoutAnimationProxy::addOngoingAnimation
+    //     // from the JS thread to avoid the occurrence of this bug:
+    //     // https://github.com/software-mansion/react-native-reanimated/issues/7493#issuecomment-3728435106
+    //     return false;
+    // }
 
     for (int i = 0; i < tags.length; i++) {
       try {
