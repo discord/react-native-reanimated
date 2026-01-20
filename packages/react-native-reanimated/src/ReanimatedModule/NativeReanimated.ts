@@ -5,6 +5,7 @@ import type {
   IReanimatedModule,
   IWorkletsModule,
   LayoutAnimationBatchItem,
+  SettledUpdate,
   ShadowNodeWrapper,
   ShareableRef,
   Value3D,
@@ -199,6 +200,10 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
   setNodeRemovalCallback(callback: (tag: number, isFrozen: boolean) => void) {
     this.#reanimatedModuleProxy.setNodeRemovalCallback(callback);
   }
+
+  getSettledUpdates(): SettledUpdate[] {
+    return this.#reanimatedModuleProxy.getSettledUpdates();
+  }
 }
 
 class DummyReanimatedModuleProxy implements ReanimatedModuleProxy {
@@ -237,5 +242,9 @@ class DummyReanimatedModuleProxy implements ReanimatedModuleProxy {
   unregisterEventHandler(): void {}
   getViewProp() {
     return null!;
+  }
+
+  getSettledUpdates(): SettledUpdate[] {
+    return [];
   }
 }

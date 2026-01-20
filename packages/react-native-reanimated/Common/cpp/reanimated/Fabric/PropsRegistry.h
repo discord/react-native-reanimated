@@ -22,13 +22,17 @@ class PropsRegistry {
 
   void update(
       const std::shared_ptr<const ShadowNode> &shadowNode,
-      folly::dynamic &&props);
+      folly::dynamic &&props,
+    double timestamp);
 
   void for_each(std::function<void(
                     const ShadowNodeFamily &family,
                     const folly::dynamic &props)> callback) const;
 
   void remove(const Tag tag);
+
+  jsi::Value getUpdatesOlderThanTimestamp(jsi::Runtime &rt, double timestamp);
+  void removeUpdatesOlderThanTimestamp(double timestamp);
 
   void pauseReanimatedCommits() {
     isPaused_ = true;
@@ -81,6 +85,7 @@ class PropsRegistry {
 
   std::atomic<bool> isPaused_;
   std::atomic<bool> shouldCommitAfterPause_;
+  std::unordered_map<Tag, double> timestampMap_; // viewTag -> timestamp, protected by `mutex_`
 };
 
 } // namespace reanimated

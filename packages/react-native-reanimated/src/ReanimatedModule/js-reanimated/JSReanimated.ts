@@ -2,6 +2,7 @@
 import type {
   IReanimatedModule,
   IWorkletsModule,
+  SettledUpdate,
   ShadowNodeWrapper,
   ShareableRef,
   Value3D,
@@ -265,6 +266,12 @@ class JSReanimated implements IReanimatedModule {
       case SensorType.ROTATION:
         return 'AbsoluteOrientationSensor';
     }
+  }
+
+  getSettledUpdates(): SettledUpdate[] {
+    throw new ReanimatedError(
+      '`getSettledUpdates` is not available in JSReanimated.'
+    );
   }
 
   detectPlatform() {

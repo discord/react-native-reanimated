@@ -13,7 +13,7 @@ import type {
 } from 'react';
 import React from 'react';
 import type { FlatList, FlatListProps } from 'react-native';
-import { Platform, processColor } from 'react-native';
+import { Platform, processColor, StyleSheet } from 'react-native';
 
 import { getReduceMotionFromConfig } from '../animation/util';
 import { maybeBuild } from '../animationBuilder';
@@ -50,6 +50,7 @@ import {
   isWeb,
   shouldBeUseWeb,
 } from '../PlatformChecker';
+import { PropsRegistryGarbageCollector } from '../PropsRegistryGarbageCollector';
 import { componentWithRef } from '../reactUtils';
 import type { ReanimatedHTMLElement } from '../ReanimatedModule/js-reanimated';
 import { updateLayoutAnimations } from '../UpdateLayoutAnimations';
@@ -172,7 +173,7 @@ export function createAnimatedComponent(
   class AnimatedComponent
     extends React.Component<
       AnimatedComponentProps<InitialComponentProps>,
-      { reanimatedProps: { [key: string]: unknown } }
+      { reanimatedProps: { [key: string]: unknown }; settledProps: StyleProps }
     >
     implements IAnimatedComponentInternal
   {
@@ -200,14 +201,12 @@ export function createAnimatedComponent(
 
     constructor(props: AnimatedComponentProps<InitialComponentProps>) {
       super(props);
+
+      this.state = { settledProps: {}, reanimatedProps: {} };
       if (IS_JEST) {
         this.jestAnimatedStyle = { value: {} };
         this.jestAnimatedProps = { value: {} };
       }
-
-      this.state = {
-        reanimatedProps: {},
-      };
 
       const skipEntering = this.context?.current;
       if (isFabric() && !skipEntering) {
@@ -229,6 +228,11 @@ export function createAnimatedComponent(
       this._InlinePropManager.attachInlineProps(this, this._getViewInfo());
 
       const viewTag = this.getComponentViewTag();
+
+      if (viewTag !== -1) {
+        PropsRegistryGarbageCollector.registerView(viewTag, this);
+      }
+
       if (viewTag !== -1) {
         ComponentRegistry.register(viewTag, this);
       }
@@ -299,6 +303,9 @@ export function createAnimatedComponent(
       this._jsPropsUpdater.removeOnJSPropsChangeListener(this);
 
       const viewTag = this.getComponentViewTag();
+      if (viewTag !== -1) {
+        PropsRegistryGarbageCollector.unregisterView(viewTag);
+      }
 
       // Defer cleanup for Fabric (freeze detection via callback), immediate for Paper/Web
       if (!SHOULD_BE_USE_WEB && isFabric()) {
@@ -356,6 +363,10 @@ export function createAnimatedComponent(
         // remounted (e.g., when frozen) after componentWillUnmount is called.
         markNodeAsRemovable(wrapper);
       }
+    }
+
+    _syncStylePropsBackToReact(props: StyleProps) {
+      this.setState({ reanimatedProps: props });
     }
 
     getComponentViewTag() {
@@ -758,7 +769,6 @@ export function createAnimatedComponent(
 
     render() {
       const filteredProps = this._PropsFilter.filterNonAnimatedProps(this);
-
       if (IS_JEST) {
         filteredProps.jestAnimatedStyle = this.jestAnimatedStyle;
         filteredProps.jestAnimatedProps = this.jestAnimatedProps;
@@ -800,12 +810,20 @@ export function createAnimatedComponent(
           }
         : {};
 
+      const flatStyles = StyleSheet.flatten(filteredProps.style as object);
+      const mergedStyles = {
+        ...flatStyles,
+        ...this.state.reanimatedProps,
+      };
+
       return (
         <Component
           nativeID={nativeID}
           {...filteredProps}
           {...jestProps}
           {...this.state.reanimatedProps}
+          {...this.state.settledProps}
+          style={mergedStyles}
           // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
           // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
           ref={this._setComponentRef as (ref: Component) => void}

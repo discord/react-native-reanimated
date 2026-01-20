@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use strict';
 import type {
   HostInstance,
@@ -511,6 +512,11 @@ export enum InterfaceOrientation {
 
 export type ShadowNodeWrapper = {
   __nativeStateShadowNodeWrapper: never;
+};
+
+export type SettledUpdate = {
+  viewTag: number;
+  styleProps: StyleProps;
 };
 
 export enum KeyboardState {

@@ -1,3 +1,4 @@
+#define RCT_NEW_ARCH_ENABLED 1
 #ifdef RCT_NEW_ARCH_ENABLED
 
 #include <reanimated/Fabric/PropsRegistry.h>
@@ -11,17 +12,21 @@ std::lock_guard<std::mutex> PropsRegistry::createLock() const {
 
 void PropsRegistry::update(
     const std::shared_ptr<const ShadowNode> &shadowNode,
-    folly::dynamic &&props) {
+    folly::dynamic &&props,
+    double timestamp) {
   const auto tag = shadowNode->getTag();
   const auto it = map_.find(tag);
   if (it == map_.cend()) {
     // we need to store ShadowNode because `ShadowNode::getFamily`
     // returns `ShadowNodeFamily const &` which is non-owning
     map_[tag] = std::make_pair(shadowNode, props);
+    timestampMap_[shadowNode->getTag()] = timestamp;
   } else {
     // no need to update `.first` because ShadowNode's family never changes
     // merge new props with old props
     it->second.second.update(props);
+
+    timestampMap_[shadowNode->getTag()] = timestamp;
   }
 }
 
@@ -102,6 +107,40 @@ void PropsRegistry::removeImmediateRemovableNodes() {
       map_.erase(tag);
   }
   immediateRemovableShadowNodes_.clear();
+}
+
+jsi::Value PropsRegistry::getUpdatesOlderThanTimestamp(jsi::Runtime &rt, const double timestamp) {
+  std::vector<std::pair<Tag, std::reference_wrapper<const folly::dynamic>>> updates;
+
+  for (const auto &[viewTag, pair] : map_) {
+    if (timestampMap_.at(viewTag) < timestamp) {
+      updates.emplace_back(viewTag, std::cref(pair.second));
+    }
+  }
+
+  const jsi::Array array(rt, updates.size());
+  size_t i = 0;
+  for (const auto &[viewTag, styleProps] : updates) {
+    const jsi::Object item(rt);
+    item.setProperty(rt, "viewTag", viewTag);
+    item.setProperty(rt, "styleProps", jsi::valueFromDynamic(rt, styleProps.get()));
+    array.setValueAtIndex(rt, i++, item);
+  }
+
+  return jsi::Value(rt, array);
+}
+
+void PropsRegistry::removeUpdatesOlderThanTimestamp(const double timestamp) {
+  for (auto it = timestampMap_.begin(); it != timestampMap_.end();) {
+    const auto viewTag = it->first;
+    const auto viewTimestamp = it->second;
+    if (viewTimestamp < timestamp) {
+      it = timestampMap_.erase(it);
+      map_.erase(viewTag);
+    } else {
+      it++;
+    }
+  }
 }
 
 } // namespace reanimated

@@ -203,6 +203,8 @@ class ReanimatedModuleProxy
     return workletsModuleProxy_;
   }
 
+  jsi::Value getSettledUpdates(jsi::Runtime &rt);
+
  private:
   void requestAnimationFrame(jsi::Runtime &rt, const jsi::Value &callback);
 
@@ -221,6 +223,7 @@ class ReanimatedModuleProxy
 
   std::unique_ptr<EventHandlerRegistry> eventHandlerRegistry_;
   const RequestRenderFunction requestRender_;
+  const GetAnimationTimestampFunction getAnimationTimestamp_;
   std::vector<std::shared_ptr<jsi::Value>> frameCallbacks_;
   volatile bool renderRequested_{false};
   std::function<void(const double)> onRenderCallback_;

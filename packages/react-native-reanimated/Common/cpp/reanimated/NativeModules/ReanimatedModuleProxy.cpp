@@ -88,6 +88,7 @@ ReanimatedModuleProxy::ReanimatedModuleProxy(
               valueUnpackerCode_)),
       eventHandlerRegistry_(std::make_unique<EventHandlerRegistry>()),
       requestRender_(platformDepMethodsHolder.requestRender),
+      getAnimationTimestamp_(platformDepMethodsHolder.getAnimationTimestamp),
       animatedSensorModule_(platformDepMethodsHolder),
       jsLogger_(
           std::make_shared<JSLogger>(workletsModuleProxy->getJSScheduler())),
@@ -753,6 +754,22 @@ jsi::Value ReanimatedModuleProxy::filterNonAnimatableProps(
   }
   return nonAnimatableProps;
 }
+
+jsi::Value ReanimatedModuleProxy::getSettledUpdates(jsi::Runtime &rt) {
+  // TODO(future): use unified timestamp
+  const auto currentTimestamp = getAnimationTimestamp_();
+
+  const auto lock = propsRegistry_->createLock();
+
+  // TODO: fix bug when threshold difference is smaller than 1 second
+  // TODO(future): flush updates from CSS animations and CSS transitions registries
+  propsRegistry_->removeUpdatesOlderThanTimestamp(currentTimestamp - 2000); // 2 seconds
+
+  // TODO(future): find a better way to obtain timestamp for removing updates
+  // TODO(future): move removing old updates to separate method
+
+  return propsRegistry_->getUpdatesOlderThanTimestamp(rt, currentTimestamp - 1000); // 1 second
+}
 #endif // RCT_NEW_ARCH_ENABLED
 
 bool ReanimatedModuleProxy::handleEvent(
@@ -867,6 +884,8 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
         propsRegistry_->shouldReanimatedSkipCommit()) {
       propsRegistry_->pleaseCommitAfterPause();
     }
+    const auto currentTimestamp = this->getAnimationTimestamp_();
+
 
     // Even if only non-layout props are changed, we need to store the update
     // in PropsRegistry anyway so that React doesn't overwrite it in the next
@@ -884,7 +903,8 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
         
         // Still need to convert to dynamic for propsRegistry
         folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
-        propsRegistry_->update(shadowNode, std::move(propsDynamic));
+
+        propsRegistry_->update(shadowNode, std::move(propsDynamic), currentTimestamp);
     }
   }
 

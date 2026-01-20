@@ -2,6 +2,7 @@
 
 import type {
   LayoutAnimationBatchItem,
+  SettledUpdate,
   ShadowNodeWrapper,
   ShareableRef,
   Value3D,
@@ -73,4 +74,6 @@ export interface ReanimatedModuleProxy {
   setNodeRemovalCallback(
     callback: (tag: number, isFrozen: boolean) => void
   ): void;
+
+  getSettledUpdates(): SettledUpdate[];
 }
