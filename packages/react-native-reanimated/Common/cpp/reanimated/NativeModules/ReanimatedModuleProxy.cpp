@@ -757,7 +757,6 @@ jsi::Value ReanimatedModuleProxy::filterNonAnimatableProps(
   return nonAnimatableProps;
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 jsi::Value ReanimatedModuleProxy::getSettledUpdates(jsi::Runtime &rt) {
   // TODO(future): use unified timestamp
   const auto currentTimestamp = getAnimationTimestamp_();
