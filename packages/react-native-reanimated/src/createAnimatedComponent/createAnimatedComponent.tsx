@@ -202,11 +202,12 @@ export function createAnimatedComponent(
     constructor(props: AnimatedComponentProps<InitialComponentProps>) {
       super(props);
 
-      this.state = { settledProps: {}, reanimatedProps: {} };
       if (IS_JEST) {
         this.jestAnimatedStyle = { value: {} };
         this.jestAnimatedProps = { value: {} };
       }
+
+      this.state = { settledProps: {}, reanimatedProps: {} };
 
       const skipEntering = this.context?.current;
       if (isFabric() && !skipEntering) {
@@ -229,7 +230,7 @@ export function createAnimatedComponent(
 
       const viewTag = this.getComponentViewTag();
 
-      if (viewTag !== -1) {
+      if (isFabric() && viewTag !== -1) {
         PropsRegistryGarbageCollector.registerView(viewTag, this);
       }
 
@@ -303,7 +304,7 @@ export function createAnimatedComponent(
       this._jsPropsUpdater.removeOnJSPropsChangeListener(this);
 
       const viewTag = this.getComponentViewTag();
-      if (viewTag !== -1) {
+      if (isFabric() && viewTag !== -1) {
         PropsRegistryGarbageCollector.unregisterView(viewTag);
       }
 
@@ -810,11 +811,28 @@ export function createAnimatedComponent(
           }
         : {};
 
-      const flatStyles = StyleSheet.flatten(filteredProps.style as object);
-      const mergedStyles = {
-        ...flatStyles,
-        ...this.state.reanimatedProps,
-      };
+      if (isFabric()) {
+        const flatStyles = StyleSheet.flatten(filteredProps.style as object);
+        const mergedStyles = {
+          ...flatStyles,
+          ...this.state.reanimatedProps,
+        };
+
+        return (
+          <Component
+            nativeID={nativeID}
+            {...filteredProps}
+            {...jestProps}
+            {...this.state.reanimatedProps}
+            {...this.state.settledProps}
+            style={mergedStyles}
+            // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
+            // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
+            ref={this._setComponentRef as (ref: Component) => void}
+            {...platformProps}
+          />
+        );
+      }
 
       return (
         <Component
@@ -822,8 +840,6 @@ export function createAnimatedComponent(
           {...filteredProps}
           {...jestProps}
           {...this.state.reanimatedProps}
-          {...this.state.settledProps}
-          style={mergedStyles}
           // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
           // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
           ref={this._setComponentRef as (ref: Component) => void}

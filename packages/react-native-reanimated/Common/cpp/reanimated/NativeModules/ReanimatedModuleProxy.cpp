@@ -88,7 +88,9 @@ ReanimatedModuleProxy::ReanimatedModuleProxy(
               valueUnpackerCode_)),
       eventHandlerRegistry_(std::make_unique<EventHandlerRegistry>()),
       requestRender_(platformDepMethodsHolder.requestRender),
+      #ifdef RCT_NEW_ARCH_ENABLED
       getAnimationTimestamp_(platformDepMethodsHolder.getAnimationTimestamp),
+      #endif // RCT_NEW_ARCH_ENABLED
       animatedSensorModule_(platformDepMethodsHolder),
       jsLogger_(
           std::make_shared<JSLogger>(workletsModuleProxy->getJSScheduler())),
@@ -755,6 +757,7 @@ jsi::Value ReanimatedModuleProxy::filterNonAnimatableProps(
   return nonAnimatableProps;
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
 jsi::Value ReanimatedModuleProxy::getSettledUpdates(jsi::Runtime &rt) {
   // TODO(future): use unified timestamp
   const auto currentTimestamp = getAnimationTimestamp_();
@@ -884,8 +887,9 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
         propsRegistry_->shouldReanimatedSkipCommit()) {
       propsRegistry_->pleaseCommitAfterPause();
     }
+    #ifdef RCT_NEW_ARCH_ENABLED
     const auto currentTimestamp = this->getAnimationTimestamp_();
-
+    #endif // RCT_NEW_ARCH_ENABLED
 
     // Even if only non-layout props are changed, we need to store the update
     // in PropsRegistry anyway so that React doesn't overwrite it in the next
@@ -904,7 +908,11 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
         // Still need to convert to dynamic for propsRegistry
         folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
 
+        #ifdef RCT_NEW_ARCH_ENABLED
         propsRegistry_->update(shadowNode, std::move(propsDynamic), currentTimestamp);
+        #else
+        propsRegistry_->update(shadowNode, std::move(propsDynamic));
+        #endif // RCT_NEW_ARCH_ENABLED
     }
   }
 

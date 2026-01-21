@@ -10,6 +10,7 @@ std::lock_guard<std::mutex> PropsRegistry::createLock() const {
   return std::lock_guard<std::mutex>(mutex_);
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
 void PropsRegistry::update(
     const std::shared_ptr<const ShadowNode> &shadowNode,
     folly::dynamic &&props,
@@ -29,6 +30,23 @@ void PropsRegistry::update(
     timestampMap_[shadowNode->getTag()] = timestamp;
   }
 }
+#else
+void PropsRegistry::update(
+  const std::shared_ptr<const ShadowNode> &shadowNode,
+  folly::dynamic &&props) {
+  const auto tag = shadowNode->getTag();
+  const auto it = map_.find(tag);
+  if (it == map_.cend()) {
+    // we need to store ShadowNode because `ShadowNode::getFamily`
+    // returns `ShadowNodeFamily const &` which is non-owning
+    map_[tag] = std::make_pair(shadowNode, props);
+  } else {
+    // no need to update `.first` because ShadowNode's family never changes
+    // merge new props with old props
+    it->second.second.update(props);
+  }
+}
+#endif // RCT_NEW_ARCH_ENABLED
 
 void PropsRegistry::for_each(std::function<void(
                                  const ShadowNodeFamily &family,
@@ -109,6 +127,7 @@ void PropsRegistry::removeImmediateRemovableNodes() {
   immediateRemovableShadowNodes_.clear();
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
 jsi::Value PropsRegistry::getUpdatesOlderThanTimestamp(jsi::Runtime &rt, const double timestamp) {
   std::vector<std::pair<Tag, std::reference_wrapper<const folly::dynamic>>> updates;
 
@@ -142,6 +161,7 @@ void PropsRegistry::removeUpdatesOlderThanTimestamp(const double timestamp) {
     }
   }
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 } // namespace reanimated
 
