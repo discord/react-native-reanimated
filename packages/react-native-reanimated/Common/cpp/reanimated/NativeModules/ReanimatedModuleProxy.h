@@ -203,7 +203,11 @@ class ReanimatedModuleProxy
     return workletsModuleProxy_;
   }
 
+  #ifdef ANDROID
+  jsi::Value getSettledUpdates(jsi::Runtime &rt) override;
+  #else // IOS
   jsi::Value getSettledUpdates(jsi::Runtime &rt);
+  #endif // ANDROID
 
  private:
   void requestAnimationFrame(jsi::Runtime &rt, const jsi::Value &callback);

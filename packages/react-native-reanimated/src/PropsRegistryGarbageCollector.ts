@@ -16,7 +16,6 @@ export const PropsRegistryGarbageCollector = {
   intervalId: null as NodeJS.Timeout | null,
 
   registerView(viewTag: number, component: IAnimatedComponentInternal) {
-    console.log('kubson registerView', viewTag);
     if (this.viewsMap.has(viewTag)) {
       // In case of nested AnimatedComponents (like <GestureDetector> with <Animated.View> inside),
       // `registerView` method is called first for the inner component (e.g. <Animated.View>)
@@ -33,7 +32,6 @@ export const PropsRegistryGarbageCollector = {
   },
 
   unregisterView(viewTag: number) {
-    console.log('kubson unregisterView', viewTag);
     this.viewsMap.delete(viewTag);
     this.viewsCount--;
     if (this.viewsCount === 0) {
@@ -42,7 +40,6 @@ export const PropsRegistryGarbageCollector = {
   },
 
   syncPropsBackToReact() {
-    console.log('kubson syncPropsBackToReact');
     const settledUpdates = ReanimatedModule.getSettledUpdates();
     for (const { viewTag, styleProps } of settledUpdates) {
       const component = this.viewsMap.get(viewTag);

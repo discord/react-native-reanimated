@@ -23,6 +23,8 @@ Props::Shared mergeProps(
   const auto &propsVector = it->second;
   auto newProps = shadowNode.getProps();
 
+// [note for piaskowyk]: I tried to remove this changes since we already have similar fixes from under the FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS flag,
+//  but removing these changes causes noticable performance degradation 
 #ifdef ANDROID
   if (propsVector.size() > 1) {
     folly::dynamic newPropsDynamic = folly::dynamic::object;
