@@ -203,6 +203,14 @@ class ReanimatedModuleProxy
     return workletsModuleProxy_;
   }
 
+#ifdef RCT_NEW_ARCH_ENABLED
+  #ifdef ANDROID
+  jsi::Value getSettledUpdates(jsi::Runtime &rt) override;
+  #else // IOS
+  jsi::Value getSettledUpdates(jsi::Runtime &rt);
+  #endif // ANDROID
+#endif // RCT_NEW_ARCH_ENABLED
+
  private:
   void requestAnimationFrame(jsi::Runtime &rt, const jsi::Value &callback);
 
@@ -221,6 +229,7 @@ class ReanimatedModuleProxy
 
   std::unique_ptr<EventHandlerRegistry> eventHandlerRegistry_;
   const RequestRenderFunction requestRender_;
+  const GetAnimationTimestampFunction getAnimationTimestamp_;
   std::vector<std::shared_ptr<jsi::Value>> frameCallbacks_;
   volatile bool renderRequested_{false};
   std::function<void(const double)> onRenderCallback_;
