@@ -192,11 +192,6 @@ static jsi::Value REANIMATED_SPEC_PREFIX(setNodeRemovalCallback)(
   return jsi::Value::undefined();
 }
 
-static jsi::Value REANIMATED_SPEC_PREFIX(
-    getSettledUpdates)(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value *args, size_t) {
-  return static_cast<ReanimatedModuleProxySpec *>(&turboModule)->getSettledUpdates(rt);
-}
-
 #endif // RCT_NEW_ARCH_ENABLED
 
 ReanimatedModuleProxySpec::ReanimatedModuleProxySpec(
@@ -243,8 +238,6 @@ ReanimatedModuleProxySpec::ReanimatedModuleProxySpec(
       MethodMetadata{1, REANIMATED_SPEC_PREFIX(unmarkNodeAsRemovable)};
   methodMap_["setNodeRemovalCallback"] =
       MethodMetadata{1, REANIMATED_SPEC_PREFIX(setNodeRemovalCallback)};
-  methodMap_["getSettledUpdates"] =
-      MethodMetadata{1, REANIMATED_SPEC_PREFIX(getSettledUpdates)};
 #endif // RCT_NEW_ARCH_ENABLED
 }
 } // namespace reanimated

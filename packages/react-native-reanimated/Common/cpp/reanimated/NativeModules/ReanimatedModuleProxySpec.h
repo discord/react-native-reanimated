@@ -106,7 +106,6 @@ class JSI_EXPORT ReanimatedModuleProxySpec : public TurboModule {
   virtual void setNodeRemovalCallback(
       jsi::Runtime &rt,
       const jsi::Value &callback) = 0;
-  virtual jsi::Value getSettledUpdates(jsi::Runtime &rt) = 0;
 #endif // RCT_NEW_ARCH_ENABLED
 };
 
