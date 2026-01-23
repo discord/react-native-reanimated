@@ -629,9 +629,7 @@ export const hsvToColor = (
   return rgbaColor(r, g, b, a);
 };
 
-export function processColorInitially(
-  color: unknown
-): number | null | undefined {
+function processColorInitially(color: unknown): number | null | undefined {
   'worklet';
   if (color === null || color === undefined) {
     return color;

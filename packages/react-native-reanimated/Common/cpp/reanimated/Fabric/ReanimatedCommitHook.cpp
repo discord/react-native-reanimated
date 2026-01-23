@@ -68,12 +68,6 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
     return newRootShadowNode;
   }
 
-  #ifdef RCT_NEW_ARCH_ENABLED
-  if (commitOptions.source != ShadowTreeCommitSource::React) {
-    return newRootShadowNode;
-  }
-  #endif // RCT_NEW_ARCH_ENABLED
-
   // ShadowTree not commited by Reanimated, apply updates from PropsRegistry
   reaShadowNode->unsetReanimatedMountTrait();
   RootShadowNode::Unshared rootNode = newRootShadowNode;

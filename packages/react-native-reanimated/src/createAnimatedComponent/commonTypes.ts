@@ -141,8 +141,6 @@ export interface IAnimatedComponentInternal {
   _updateReanimatedProps: (props: StyleProps) => void;
   /** Detach styles from view descriptors */
   _detachStyles: () => void;
-
-  _syncStylePropsBackToReact: (props: StyleProps) => void;
 }
 
 export type NestedArray<T> = T | NestedArray<T>[];
