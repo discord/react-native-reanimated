@@ -367,7 +367,7 @@ export function createAnimatedComponent(
     }
 
     _syncStylePropsBackToReact(props: StyleProps) {
-      this.setState({ reanimatedProps: props });
+      this.setState({ settledProps: props });
     }
 
     getComponentViewTag() {
@@ -815,7 +815,7 @@ export function createAnimatedComponent(
         const flatStyles = StyleSheet.flatten(filteredProps.style as object);
         const mergedStyles = {
           ...flatStyles,
-          ...this.state.reanimatedProps,
+          ...this.state.settledProps,
         };
 
         return (
@@ -823,9 +823,9 @@ export function createAnimatedComponent(
             nativeID={nativeID}
             {...filteredProps}
             {...jestProps}
-            {...this.state.reanimatedProps}
-            {...this.state.settledProps}
             style={mergedStyles}
+            {...this.state.settledProps}
+            {...this.state.reanimatedProps}
             // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
             // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
             ref={this._setComponentRef as (ref: Component) => void}
