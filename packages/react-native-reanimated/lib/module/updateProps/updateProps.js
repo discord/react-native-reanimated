@@ -65,9 +65,6 @@ function updatePropsOnReactJS(tag, props) {
   const component = ComponentRegistry.getComponent(tag);
   if (component) {
     component._updateReanimatedProps(props);
-  } else {
-    // if component is not found, cache the update (i.e component was frozen)
-    ComponentRegistry.cacheUpdate(tag, props);
   }
 }
 const createUpdatePropsManager = isFabric()

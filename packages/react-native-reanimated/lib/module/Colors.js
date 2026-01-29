@@ -7,29 +7,47 @@
  */
 
 /* eslint no-bitwise: 0 */
-import { makeShareable } from "./core.js";
-import { isAndroid } from "./PlatformChecker.js";
+import { makeShareable } from './core.js';
+import { isAndroid } from './PlatformChecker.js';
 const NUMBER = '[-+]?\\d*\\.?\\d+';
 const PERCENTAGE = NUMBER + '%';
 function call(...args) {
   return '\\(\\s*(' + args.join(')\\s*,?\\s*(') + ')\\s*\\)';
 }
 function callWithSlashSeparator(...args) {
-  return '\\(\\s*(' + args.slice(0, args.length - 1).join(')\\s*,?\\s*(') + ')\\s*/\\s*(' + args[args.length - 1] + ')\\s*\\)';
+  return (
+    '\\(\\s*(' +
+    args.slice(0, args.length - 1).join(')\\s*,?\\s*(') +
+    ')\\s*/\\s*(' +
+    args[args.length - 1] +
+    ')\\s*\\)'
+  );
 }
 function commaSeparatedCall(...args) {
   return '\\(\\s*(' + args.join(')\\s*,\\s*(') + ')\\s*\\)';
 }
 const MATCHERS = {
   rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
-  rgba: new RegExp('rgba(' + commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER) + '|' + callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER) + ')'),
+  rgba: new RegExp(
+    'rgba(' +
+      commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER) +
+      '|' +
+      callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER) +
+      ')'
+  ),
   hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
-  hsla: new RegExp('hsla(' + commaSeparatedCall(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) + '|' + callWithSlashSeparator(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) + ')'),
+  hsla: new RegExp(
+    'hsla(' +
+      commaSeparatedCall(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
+      '|' +
+      callWithSlashSeparator(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
+      ')'
+  ),
   hwb: new RegExp('hwb' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
   hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
   hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
   hex6: /^#([0-9a-fA-F]{6})$/,
-  hex8: /^#([0-9a-fA-F]{8})$/
+  hex8: /^#([0-9a-fA-F]{8})$/,
 };
 function hue2rgb(p, q, t) {
   'worklet';
@@ -59,19 +77,27 @@ function hslToRgb(h, s, l) {
   const r = hue2rgb(p, q, h + 1 / 3);
   const g = hue2rgb(p, q, h);
   const b = hue2rgb(p, q, h - 1 / 3);
-  return Math.round(r * 255) << 24 | Math.round(g * 255) << 16 | Math.round(b * 255) << 8;
+  return (
+    (Math.round(r * 255) << 24) |
+    (Math.round(g * 255) << 16) |
+    (Math.round(b * 255) << 8)
+  );
 }
 function hwbToRgb(h, w, b) {
   'worklet';
 
   if (w + b >= 1) {
-    const gray = Math.round(w * 255 / (w + b));
-    return gray << 24 | gray << 16 | gray << 8;
+    const gray = Math.round((w * 255) / (w + b));
+    return (gray << 24) | (gray << 16) | (gray << 8);
   }
   const red = hue2rgb(0, 1, h + 1 / 3) * (1 - w - b) + w;
   const green = hue2rgb(0, 1, h) * (1 - w - b) + w;
   const blue = hue2rgb(0, 1, h - 1 / 3) * (1 - w - b) + w;
-  return Math.round(red * 255) << 24 | Math.round(green * 255) << 16 | Math.round(blue * 255) << 8;
+  return (
+    (Math.round(red * 255) << 24) |
+    (Math.round(green * 255) << 16) |
+    (Math.round(blue * 255) << 8)
+  );
 }
 function parse255(str) {
   'worklet';
@@ -89,7 +115,7 @@ function parse360(str) {
   'worklet';
 
   const int = Number.parseFloat(str);
-  return (int % 360 + 360) % 360 / 360;
+  return (((int % 360) + 360) % 360) / 360;
 }
 function parse1(str) {
   'worklet';
@@ -275,16 +301,39 @@ const names = makeShareable({
   white: 0xffffffff,
   whitesmoke: 0xf5f5f5ff,
   yellow: 0xffff00ff,
-  yellowgreen: 0x9acd32ff
+  yellowgreen: 0x9acd32ff,
   /* spell-checker: enable */
 });
 
 // copied from react-native/Libraries/Components/View/ReactNativeStyleAttributes
-export const ColorProperties = makeShareable(['backgroundColor', 'borderBottomColor', 'borderColor', 'borderLeftColor', 'borderRightColor', 'borderTopColor', 'borderStartColor', 'borderEndColor', 'borderBlockColor', 'borderBlockEndColor', 'borderBlockStartColor', 'color', 'outlineColor', 'shadowColor', 'textDecorationColor', 'tintColor', 'textShadowColor', 'overlayColor',
-// SVG color properties
-'fill', 'floodColor', 'lightingColor', 'stopColor', 'stroke']);
+export const ColorProperties = makeShareable([
+  'backgroundColor',
+  'borderBottomColor',
+  'borderColor',
+  'borderLeftColor',
+  'borderRightColor',
+  'borderTopColor',
+  'borderStartColor',
+  'borderEndColor',
+  'borderBlockColor',
+  'borderBlockEndColor',
+  'borderBlockStartColor',
+  'color',
+  'outlineColor',
+  'shadowColor',
+  'textDecorationColor',
+  'tintColor',
+  'textShadowColor',
+  'overlayColor',
+  // SVG color properties
+  'fill',
+  'floodColor',
+  'lightingColor',
+  'stopColor',
+  'stroke',
+]);
 const NestedColorProperties = makeShareable({
-  boxShadow: 'color'
+  boxShadow: 'color',
 });
 
 // // ts-prune-ignore-next Exported for the purpose of tests only
@@ -303,137 +352,173 @@ export function normalizeColor(color) {
   let match;
 
   // Ordered based on occurrences on Facebook codebase
-  if (match = MATCHERS.hex6.exec(color)) {
+  if ((match = MATCHERS.hex6.exec(color))) {
     return Number.parseInt(match[1] + 'ff', 16) >>> 0;
   }
   if (names[color] !== undefined) {
     return names[color];
   }
-  if (match = MATCHERS.rgb.exec(color)) {
+  if ((match = MATCHERS.rgb.exec(color))) {
     return (
       // b
-      (parse255(match[1]) << 24 |
-      // r
-      parse255(match[2]) << 16 |
-      // g
-      parse255(match[3]) << 8 | 0x000000ff) >>>
+      ((parse255(match[1]) << 24) |
+        // r
+        (parse255(match[2]) << 16) |
+        // g
+        (parse255(match[3]) << 8) |
+        0x000000ff) >>>
       // a
       0
     );
   }
-  if (match = MATCHERS.rgba.exec(color)) {
+  if ((match = MATCHERS.rgba.exec(color))) {
     // rgba(R G B / A) notation
     if (match[6] !== undefined) {
-      return (parse255(match[6]) << 24 |
-      // r
-      parse255(match[7]) << 16 |
-      // g
-      parse255(match[8]) << 8 |
-      // b
-      parse1(match[9])) >>>
-      // a
-      0;
+      return (
+        ((parse255(match[6]) << 24) |
+          // r
+          (parse255(match[7]) << 16) |
+          // g
+          (parse255(match[8]) << 8) |
+          // b
+          parse1(match[9])) >>>
+        // a
+        0
+      );
     }
 
     // rgba(R, G, B, A) notation
-    return (parse255(match[2]) << 24 |
-    // r
-    parse255(match[3]) << 16 |
-    // g
-    parse255(match[4]) << 8 |
-    // b
-    parse1(match[5])) >>>
-    // a
-    0;
+    return (
+      ((parse255(match[2]) << 24) |
+        // r
+        (parse255(match[3]) << 16) |
+        // g
+        (parse255(match[4]) << 8) |
+        // b
+        parse1(match[5])) >>>
+      // a
+      0
+    );
   }
-  if (match = MATCHERS.hex3.exec(color)) {
-    return Number.parseInt(match[1] + match[1] +
-    // r
-    match[2] + match[2] +
-    // g
-    match[3] + match[3] +
-    // b
-    'ff',
-    // a
-    16) >>> 0;
+  if ((match = MATCHERS.hex3.exec(color))) {
+    return (
+      Number.parseInt(
+        match[1] +
+          match[1] +
+          // r
+          match[2] +
+          match[2] +
+          // g
+          match[3] +
+          match[3] +
+          // b
+          'ff',
+        // a
+        16
+      ) >>> 0
+    );
   }
 
   // https://drafts.csswg.org/css-color-4/#hex-notation
-  if (match = MATCHERS.hex8.exec(color)) {
+  if ((match = MATCHERS.hex8.exec(color))) {
     return Number.parseInt(match[1], 16) >>> 0;
   }
-  if (match = MATCHERS.hex4.exec(color)) {
-    return Number.parseInt(match[1] + match[1] +
-    // r
-    match[2] + match[2] +
-    // g
-    match[3] + match[3] +
-    // b
-    match[4] + match[4],
-    // a
-    16) >>> 0;
+  if ((match = MATCHERS.hex4.exec(color))) {
+    return (
+      Number.parseInt(
+        match[1] +
+          match[1] +
+          // r
+          match[2] +
+          match[2] +
+          // g
+          match[3] +
+          match[3] +
+          // b
+          match[4] +
+          match[4],
+        // a
+        16
+      ) >>> 0
+    );
   }
-  if (match = MATCHERS.hsl.exec(color)) {
-    return (hslToRgb(parse360(match[1]),
-    // h
-    parsePercentage(match[2]),
-    // s
-    parsePercentage(match[3]) // l
-    ) | 0x000000ff) >>>
-    // a
-    0;
+  if ((match = MATCHERS.hsl.exec(color))) {
+    return (
+      (hslToRgb(
+        parse360(match[1]),
+        // h
+        parsePercentage(match[2]),
+        // s
+        parsePercentage(match[3]) // l
+      ) |
+        0x000000ff) >>>
+      // a
+      0
+    );
   }
-  if (match = MATCHERS.hsla.exec(color)) {
+  if ((match = MATCHERS.hsla.exec(color))) {
     // hsla(H S L / A) notation
     if (match[6] !== undefined) {
-      return (hslToRgb(parse360(match[6]),
-      // h
-      parsePercentage(match[7]),
-      // s
-      parsePercentage(match[8]) // l
-      ) | parse1(match[9])) >>>
-      // a
-      0;
+      return (
+        (hslToRgb(
+          parse360(match[6]),
+          // h
+          parsePercentage(match[7]),
+          // s
+          parsePercentage(match[8]) // l
+        ) |
+          parse1(match[9])) >>>
+        // a
+        0
+      );
     }
 
     // hsla(H, S, L, A) notation
-    return (hslToRgb(parse360(match[2]),
-    // h
-    parsePercentage(match[3]),
-    // s
-    parsePercentage(match[4]) // l
-    ) | parse1(match[5])) >>>
-    // a
-    0;
+    return (
+      (hslToRgb(
+        parse360(match[2]),
+        // h
+        parsePercentage(match[3]),
+        // s
+        parsePercentage(match[4]) // l
+      ) |
+        parse1(match[5])) >>>
+      // a
+      0
+    );
   }
-  if (match = MATCHERS.hwb.exec(color)) {
-    return (hwbToRgb(parse360(match[1]),
-    // h
-    parsePercentage(match[2]),
-    // w
-    parsePercentage(match[3]) // b
-    ) | 0x000000ff) >>>
-    // a
-    0;
+  if ((match = MATCHERS.hwb.exec(color))) {
+    return (
+      (hwbToRgb(
+        parse360(match[1]),
+        // h
+        parsePercentage(match[2]),
+        // w
+        parsePercentage(match[3]) // b
+      ) |
+        0x000000ff) >>>
+      // a
+      0
+    );
   }
   return null;
 }
-export const opacity = c => {
+export const opacity = (c) => {
   'worklet';
 
-  return (c >> 24 & 255) / 255;
+  return ((c >> 24) & 255) / 255;
 };
-export const red = c => {
+export const red = (c) => {
   'worklet';
 
-  return c >> 16 & 255;
+  return (c >> 16) & 255;
 };
-export const green = c => {
+export const green = (c) => {
   'worklet';
 
-  return c >> 8 & 255;
+  return (c >> 8) & 255;
 };
-export const blue = c => {
+export const blue = (c) => {
   'worklet';
 
   return c & 255;
@@ -480,7 +565,7 @@ export function RGBtoHSV(r, g, b) {
   return {
     h,
     s,
-    v
+    v,
   };
 }
 
@@ -522,20 +607,16 @@ function HSVtoRGB(h, s, v) {
   return {
     r: Math.round(r * 255),
     g: Math.round(g * 255),
-    b: Math.round(b * 255)
+    b: Math.round(b * 255),
   };
 }
 export const hsvToColor = (h, s, v, a) => {
   'worklet';
 
-  const {
-    r,
-    g,
-    b
-  } = HSVtoRGB(h, s, v);
+  const { r, g, b } = HSVtoRGB(h, s, v);
   return rgbaColor(r, g, b, a);
 };
-function processColorInitially(color) {
+export function processColorInitially(color) {
   'worklet';
 
   if (color === null || color === undefined) {
@@ -554,7 +635,7 @@ function processColorInitially(color) {
     }
     colorNumber = normalizedColor;
   }
-  return (colorNumber << 24 | colorNumber >>> 8) >>> 0; // alpha rgb
+  return ((colorNumber << 24) | (colorNumber >>> 8)) >>> 0; // alpha rgb
 }
 export function isColor(value) {
   'worklet';
@@ -590,7 +671,7 @@ export function processColorsInProps(props) {
   for (const key in props) {
     if (ColorProperties.includes(key)) {
       if (Array.isArray(props[key])) {
-        props[key] = props[key].map(color => processColor(color));
+        props[key] = props[key].map((color) => processColor(color));
       } else {
         props[key] = processColor(props[key]);
       }
@@ -599,7 +680,9 @@ export function processColorsInProps(props) {
       for (const propGroup of propGroupList) {
         const nestedPropertyName = NestedColorProperties[key];
         if (propGroup[nestedPropertyName] !== undefined) {
-          propGroup[nestedPropertyName] = processColor(propGroup[nestedPropertyName]);
+          propGroup[nestedPropertyName] = processColor(
+            propGroup[nestedPropertyName]
+          );
         }
       }
     }
@@ -610,9 +693,9 @@ export function convertToRGBA(color) {
 
   const processedColor = processColorInitially(color); // alpha rgb;
   const a = (processedColor >>> 24) / 255;
-  const r = (processedColor << 8 >>> 24) / 255;
-  const g = (processedColor << 16 >>> 24) / 255;
-  const b = (processedColor << 24 >>> 24) / 255;
+  const r = ((processedColor << 8) >>> 24) / 255;
+  const g = ((processedColor << 16) >>> 24) / 255;
+  const b = ((processedColor << 24) >>> 24) / 255;
   return [r, g, b, a];
 }
 export function rgbaArrayToRGBAColor(RGBA) {

@@ -1,6 +1,29 @@
 import type { AnimatedPropsAdapterFunction } from '../commonTypes';
 import type { DependencyList } from './commonTypes';
-type UseAnimatedProps = <Props extends object>(updater: () => Partial<Props>, dependencies?: DependencyList | null, adapters?: AnimatedPropsAdapterFunction | AnimatedPropsAdapterFunction[] | null, isAnimatedProps?: boolean) => Partial<Props>;
+/**
+ * Type for useAnimatedProps that preserves the exact return type of the
+ * updater. This allows TypeScript to know which specific props are being
+ * animated, enabling those props to become optional on the animated component.
+ *
+ * Usage patterns:
+ *
+ * 1. With explicit Props type: useAnimatedProps<MyProps>(() => ({ prop: value }))
+ *    Returns: Partial<MyProps>
+ * 2. Without type argument: useAnimatedProps(() => ({ prop: value })) Returns: the
+ *    exact type of the returned object
+ */
+type UseAnimatedProps = <
+  Props extends object,
+  TResult extends Partial<Props> = Partial<Props>,
+>(
+  updater: () => TResult,
+  dependencies?: DependencyList | null,
+  adapters?:
+    | AnimatedPropsAdapterFunction
+    | AnimatedPropsAdapterFunction[]
+    | null,
+  isAnimatedProps?: boolean
+) => TResult;
 /**
  * Lets you create an animated props object which can be animated using shared
  * values.

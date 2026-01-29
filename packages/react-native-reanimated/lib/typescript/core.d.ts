@@ -1,5 +1,14 @@
 /// <reference types="react" />
-import type { AnimatedKeyboardOptions, LayoutAnimationBatchItem, SensorConfig, SensorType, ShadowNodeWrapper, SharedValue, Value3D, ValueRotation } from './commonTypes';
+import type {
+  AnimatedKeyboardOptions,
+  LayoutAnimationBatchItem,
+  SensorConfig,
+  SensorType,
+  ShadowNodeWrapper,
+  SharedValue,
+  Value3D,
+  ValueRotation,
+} from './commonTypes';
 export { startMapper, stopMapper } from './mappers';
 export { makeMutable } from './mutables';
 export type { WorkletRuntime } from './runtimes';
@@ -15,18 +24,55 @@ export declare const isReanimated3: () => boolean;
  * @returns `true` in Reanimated 3, doesn't exist in Reanimated 2
  */
 export declare const isConfigured: () => boolean;
-export declare function getViewProp<T>(viewTag: number, propName: string, component?: React.Component): Promise<T>;
-export declare function registerEventHandler<T>(eventHandler: (event: T) => void, eventName: string, emitterReactTag?: number): number;
+export declare function getViewProp<T>(
+  viewTag: number,
+  propName: string,
+  component?: React.Component
+): Promise<T>;
+export declare function registerEventHandler<T>(
+  eventHandler: (event: T) => void,
+  eventName: string,
+  emitterReactTag?: number
+): number;
 export declare function unregisterEventHandler(id: number): void;
-export declare function subscribeForKeyboardEvents(eventHandler: (state: number, height: number) => void, options: AnimatedKeyboardOptions): number;
+export declare function subscribeForKeyboardEvents(
+  eventHandler: (state: number, height: number) => void,
+  options: AnimatedKeyboardOptions
+): number;
 export declare function unsubscribeFromKeyboardEvents(listenerId: number): void;
-export declare function registerSensor(sensorType: SensorType, config: SensorConfig, eventHandler: (data: Value3D | ValueRotation, orientationDegrees: number) => void): number;
-export declare function initializeSensor(sensorType: SensorType, config: SensorConfig): SharedValue<Value3D | ValueRotation>;
+export declare function registerSensor(
+  sensorType: SensorType,
+  config: SensorConfig,
+  eventHandler: (
+    data: Value3D | ValueRotation,
+    orientationDegrees: number
+  ) => void
+): number;
+export declare function initializeSensor(
+  sensorType: SensorType,
+  config: SensorConfig
+): SharedValue<Value3D | ValueRotation>;
 export declare function unregisterSensor(sensorId: number): void;
-export declare function enableLayoutAnimations(flag: boolean, isCallByUser?: boolean): void;
-export declare function configureLayoutAnimationBatch(layoutAnimationsBatch: LayoutAnimationBatchItem[]): void;
-export declare function setShouldAnimateExitingForTag(viewTag: number | HTMLElement, shouldAnimate: boolean): void;
-export declare function jsiConfigureProps(uiProps: string[], nativeProps: string[]): void;
-export declare function markNodeAsRemovable(shadowNodeWrapper: ShadowNodeWrapper): void;
+export declare function enableLayoutAnimations(
+  flag: boolean,
+  isCallByUser?: boolean
+): void;
+export declare function configureLayoutAnimationBatch(
+  layoutAnimationsBatch: LayoutAnimationBatchItem[]
+): void;
+export declare function setShouldAnimateExitingForTag(
+  viewTag: number | HTMLElement,
+  shouldAnimate: boolean
+): void;
+export declare function jsiConfigureProps(
+  uiProps: string[],
+  nativeProps: string[]
+): void;
+export declare function markNodeAsRemovable(
+  shadowNodeWrapper: ShadowNodeWrapper
+): void;
 export declare function unmarkNodeAsRemovable(viewTag: number): void;
+export declare function setNodeRemovalCallback(
+  callback: (tag: number, isFrozen: boolean) => void
+): void;
 //# sourceMappingURL=core.d.ts.map

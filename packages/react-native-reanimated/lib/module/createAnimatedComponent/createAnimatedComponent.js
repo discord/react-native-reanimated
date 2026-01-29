@@ -3,7 +3,7 @@
 import '../layoutReanimation/animationsManager.js';
 import invariant from 'invariant';
 import React from 'react';
-import { Platform, processColor } from 'react-native';
+import { Platform, processColor, StyleSheet } from 'react-native';
 import { getReduceMotionFromConfig } from '../animation/util.js';
 import { maybeBuild } from '../animationBuilder.js';
 import { LayoutAnimationType } from '../commonTypes.js';
@@ -12,6 +12,7 @@ import { adaptViewConfig } from '../ConfigHelper.js';
 import {
   enableLayoutAnimations,
   markNodeAsRemovable,
+  setNodeRemovalCallback,
   unmarkNodeAsRemovable,
 } from '../core.js';
 import { ReanimatedError } from '../errors.js';
@@ -33,8 +34,10 @@ import {
   isWeb,
   shouldBeUseWeb,
 } from '../PlatformChecker.js';
+import { PropsRegistryGarbageCollector } from '../PropsRegistryGarbageCollector.js';
 import { componentWithRef } from '../reactUtils.js';
 import { updateLayoutAnimations } from '../UpdateLayoutAnimations.js';
+import { ComponentRegistry } from '../updateProps/ComponentRegistry.js';
 import { getViewInfo } from './getViewInfo.js';
 import { InlinePropManager } from './InlinePropManager.js';
 import JSPropsUpdater from './JSPropsUpdater';
@@ -42,13 +45,32 @@ import { NativeEventsManager } from './NativeEventsManager.js';
 import { PropsFilter } from './PropsFilter.js';
 import setAndForwardRef from './setAndForwardRef.js';
 import { flattenArray } from './utils.js';
-import { ComponentRegistry } from '../updateProps/ComponentRegistry.js';
 const IS_WEB = isWeb();
 const IS_JEST = isJest();
 const IS_REACT_19 = isReact19();
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 if (IS_WEB) {
   configureWebLayoutAnimations();
+}
+
+// Register callback for freeze detection (Fabric only)
+// Extends PR #7316's markNodeAsRemovable infrastructure with Suspense-based freeze detection
+if (isFabric()) {
+  setNodeRemovalCallback((tag, isFrozen) => {
+    const component = ComponentRegistry.getComponent(tag);
+    if (!component || !component._willUnmount) {
+      // Skip if component doesn't exist or already handled (remounted before callback fired)
+      return;
+    }
+    if (!isFrozen) {
+      // Component truly unmounted - safe to clean up
+      component._detachStyles();
+      ComponentRegistry.unregister(tag);
+    }
+
+    // Always clear flag whether frozen or unmounted
+    component._willUnmount = false;
+  });
 }
 function onlyAnimatedStyles(styles) {
   return styles.filter((style) => style?.viewDescriptors);
@@ -110,9 +132,9 @@ export function createAnimatedComponent(Component, options) {
         };
       }
       this.state = {
+        settledProps: {},
         reanimatedProps: {},
       };
-      const entering = this.props.entering;
       const skipEntering = this.context?.current;
       if (isFabric() && !skipEntering) {
         this._configureLayoutAnimation(
@@ -131,6 +153,9 @@ export function createAnimatedComponent(Component, options) {
       this._attachAnimatedStyles();
       this._InlinePropManager.attachInlineProps(this, this._getViewInfo());
       const viewTag = this.getComponentViewTag();
+      if (isFabric() && viewTag !== -1) {
+        PropsRegistryGarbageCollector.registerView(viewTag, this);
+      }
       if (viewTag !== -1) {
         ComponentRegistry.register(viewTag, this);
       }
@@ -142,9 +167,17 @@ export function createAnimatedComponent(Component, options) {
         LayoutAnimationType.EXITING,
         this.props.exiting
       );
-      if (IS_WEB) {
-        if (this.props.exiting && this._componentDOMRef) {
-          saveSnapshot(this._componentDOMRef);
+      if (IS_WEB && this._componentDOMRef) {
+        const element = this._componentDOMRef;
+        const dummyClone = element.dummyClone;
+        // If the element was cloned (because of the exiting animation), we need bring it
+        // back to the DOM
+        while (dummyClone?.firstChild) {
+          element.appendChild(dummyClone.firstChild);
+        }
+        delete element.dummyClone;
+        if (this.props.exiting) {
+          saveSnapshot(element);
         }
         if (!this.props.entering) {
           this._isFirstRender = false;
@@ -159,11 +192,11 @@ export function createAnimatedComponent(Component, options) {
         if (!skipEntering) {
           startWebLayoutAnimation(
             this.props,
-            this._componentDOMRef,
+            element,
             LayoutAnimationType.ENTERING
           );
-        } else if (this._componentDOMRef) {
-          this._componentDOMRef.style.visibility = 'initial';
+        } else if (element.style) {
+          element.style.visibility = 'initial';
         }
       }
       if (
@@ -172,6 +205,8 @@ export function createAnimatedComponent(Component, options) {
         this._willUnmount &&
         typeof viewTag === 'number'
       ) {
+        // Component was frozen and is now remounting - cancel pending cleanup
+        this._willUnmount = false;
         unmarkNodeAsRemovable(viewTag);
       }
       this._isFirstRender = false;
@@ -179,7 +214,19 @@ export function createAnimatedComponent(Component, options) {
     componentWillUnmount() {
       this._NativeEventsManager?.detachEvents();
       this._jsPropsUpdater.removeOnJSPropsChangeListener(this);
-      this._detachStyles();
+      const viewTag = this.getComponentViewTag();
+      if (isFabric() && viewTag !== -1) {
+        PropsRegistryGarbageCollector.unregisterView(viewTag);
+      }
+
+      // Defer cleanup for Fabric (freeze detection via callback), immediate for Paper/Web
+      if (!SHOULD_BE_USE_WEB && isFabric()) {
+        // Mark as unmounting - callback will determine if frozen or truly unmounted
+        this._willUnmount = true;
+      } else {
+        // Paper/Web: Can't distinguish freeze from unmount, clean up immediately
+        this._detachStyles();
+      }
       this._InlinePropManager.detachInlineProps();
       if (this.props.sharedTransitionTag) {
         this._configureSharedTransition(true);
@@ -189,8 +236,9 @@ export function createAnimatedComponent(Component, options) {
         true
       );
       const exiting = this.props.exiting;
-      const viewTag = this.getComponentViewTag();
-      if (viewTag !== -1) {
+
+      // Unregister from ComponentRegistry (Paper only - Fabric handled in callback)
+      if (!SHOULD_BE_USE_WEB && !isFabric() && viewTag !== -1) {
         ComponentRegistry.unregister(viewTag);
       }
       if (IS_WEB && this._componentDOMRef && exiting) {
@@ -222,7 +270,11 @@ export function createAnimatedComponent(Component, options) {
         // remounted (e.g., when frozen) after componentWillUnmount is called.
         markNodeAsRemovable(wrapper);
       }
-      this._willUnmount = true;
+    }
+    _syncStylePropsBackToReact(props) {
+      this.setState({
+        settledProps: props,
+      });
     }
     getComponentViewTag() {
       return this._getViewInfo().viewTag;
@@ -267,8 +319,8 @@ export function createAnimatedComponent(Component, options) {
         ) {
           value = processColor(value);
         } else if (
-          prop == 'top' ||
-          prop == 'bottom' ||
+          prop === 'top' ||
+          prop === 'bottom' ||
           prop.startsWith('margin') ||
           prop.startsWith('padding')
         ) {
@@ -305,9 +357,9 @@ export function createAnimatedComponent(Component, options) {
       } else {
         const hostInstance = findHostInstance(this);
         if (!hostInstance) {
-          /* 
-            findHostInstance can return null for a component that doesn't render anything 
-            (render function returns null). Example: 
+          /*
+            findHostInstance can return null for a component that doesn't render anything
+            (render function returns null). Example:
             svg Stop: https://github.com/react-native-svg/react-native-svg/blob/develop/src/elements/Stop.tsx
           */
           throw new ReanimatedError(
@@ -624,6 +676,27 @@ export function createAnimatedComponent(Component, options) {
             jestAnimatedProps: this.jestAnimatedProps,
           }
         : {};
+      if (isFabric()) {
+        const flatStyles = StyleSheet.flatten(filteredProps.style);
+        const mergedStyles = {
+          ...flatStyles,
+          ...this.state.settledProps,
+        };
+        return (
+          <Component
+            nativeID={nativeID}
+            {...filteredProps}
+            {...jestProps}
+            style={mergedStyles}
+            {...this.state.settledProps}
+            {...this.state.reanimatedProps}
+            // Casting is used here, because ref can be null - in that case it cannot be assigned to HTMLElement.
+            // After spending some time trying to figure out what to do with this problem, we decided to leave it this way
+            ref={this._setComponentRef}
+            {...platformProps}
+          />
+        );
+      }
       return (
         <Component
           nativeID={nativeID}
@@ -651,6 +724,10 @@ export function createAnimatedComponent(Component, options) {
   ));
   animatedComponent.displayName =
     Component.displayName || Component.name || 'Component';
+
+  // Cast to AnimatedComponentType to enable generic animatedProps inference.
+  // The runtime behavior is correct; this cast just helps TypeScript understand
+  // that props provided via animatedProps should be optional on the component.
   return animatedComponent;
 }
 function filterOutAnimatedStyles(style) {

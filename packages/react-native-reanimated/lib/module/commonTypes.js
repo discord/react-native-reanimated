@@ -1,25 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use strict';
 
 // this is just a temporary mock
 
-export let LayoutAnimationType = /*#__PURE__*/function (LayoutAnimationType) {
-  LayoutAnimationType[LayoutAnimationType["ENTERING"] = 1] = "ENTERING";
-  LayoutAnimationType[LayoutAnimationType["EXITING"] = 2] = "EXITING";
-  LayoutAnimationType[LayoutAnimationType["LAYOUT"] = 3] = "LAYOUT";
-  LayoutAnimationType[LayoutAnimationType["SHARED_ELEMENT_TRANSITION"] = 4] = "SHARED_ELEMENT_TRANSITION";
-  LayoutAnimationType[LayoutAnimationType["SHARED_ELEMENT_TRANSITION_PROGRESS"] = 5] = "SHARED_ELEMENT_TRANSITION_PROGRESS";
+export let LayoutAnimationType = /*#__PURE__*/ (function (LayoutAnimationType) {
+  LayoutAnimationType[(LayoutAnimationType['ENTERING'] = 1)] = 'ENTERING';
+  LayoutAnimationType[(LayoutAnimationType['EXITING'] = 2)] = 'EXITING';
+  LayoutAnimationType[(LayoutAnimationType['LAYOUT'] = 3)] = 'LAYOUT';
+  LayoutAnimationType[(LayoutAnimationType['SHARED_ELEMENT_TRANSITION'] = 4)] =
+    'SHARED_ELEMENT_TRANSITION';
+  LayoutAnimationType[
+    (LayoutAnimationType['SHARED_ELEMENT_TRANSITION_PROGRESS'] = 5)
+  ] = 'SHARED_ELEMENT_TRANSITION_PROGRESS';
   return LayoutAnimationType;
-}({});
+})({});
 /**
  * Used to configure the `.defaultTransitionType()` shared transition modifier.
  *
  * @experimental
  */
-export let SharedTransitionType = /*#__PURE__*/function (SharedTransitionType) {
-  SharedTransitionType["ANIMATION"] = "animation";
-  SharedTransitionType["PROGRESS_ANIMATION"] = "progressAnimation";
+export let SharedTransitionType = /*#__PURE__*/ (function (
+  SharedTransitionType
+) {
+  SharedTransitionType['ANIMATION'] = 'animation';
+  SharedTransitionType['PROGRESS_ANIMATION'] = 'progressAnimation';
   return SharedTransitionType;
-}({});
+})({});
 
 /**
  * A value that can be used both on the [JavaScript
@@ -84,22 +90,26 @@ export function isWorkletFunction(value) {
     typeof value === 'function' && !!value.__workletHash
   );
 }
-export let SensorType = /*#__PURE__*/function (SensorType) {
-  SensorType[SensorType["ACCELEROMETER"] = 1] = "ACCELEROMETER";
-  SensorType[SensorType["GYROSCOPE"] = 2] = "GYROSCOPE";
-  SensorType[SensorType["GRAVITY"] = 3] = "GRAVITY";
-  SensorType[SensorType["MAGNETIC_FIELD"] = 4] = "MAGNETIC_FIELD";
-  SensorType[SensorType["ROTATION"] = 5] = "ROTATION";
+export let SensorType = /*#__PURE__*/ (function (SensorType) {
+  SensorType[(SensorType['ACCELEROMETER'] = 1)] = 'ACCELEROMETER';
+  SensorType[(SensorType['GYROSCOPE'] = 2)] = 'GYROSCOPE';
+  SensorType[(SensorType['GRAVITY'] = 3)] = 'GRAVITY';
+  SensorType[(SensorType['MAGNETIC_FIELD'] = 4)] = 'MAGNETIC_FIELD';
+  SensorType[(SensorType['ROTATION'] = 5)] = 'ROTATION';
   return SensorType;
-}({});
-export let IOSReferenceFrame = /*#__PURE__*/function (IOSReferenceFrame) {
-  IOSReferenceFrame[IOSReferenceFrame["XArbitraryZVertical"] = 0] = "XArbitraryZVertical";
-  IOSReferenceFrame[IOSReferenceFrame["XArbitraryCorrectedZVertical"] = 1] = "XArbitraryCorrectedZVertical";
-  IOSReferenceFrame[IOSReferenceFrame["XMagneticNorthZVertical"] = 2] = "XMagneticNorthZVertical";
-  IOSReferenceFrame[IOSReferenceFrame["XTrueNorthZVertical"] = 3] = "XTrueNorthZVertical";
-  IOSReferenceFrame[IOSReferenceFrame["Auto"] = 4] = "Auto";
+})({});
+export let IOSReferenceFrame = /*#__PURE__*/ (function (IOSReferenceFrame) {
+  IOSReferenceFrame[(IOSReferenceFrame['XArbitraryZVertical'] = 0)] =
+    'XArbitraryZVertical';
+  IOSReferenceFrame[(IOSReferenceFrame['XArbitraryCorrectedZVertical'] = 1)] =
+    'XArbitraryCorrectedZVertical';
+  IOSReferenceFrame[(IOSReferenceFrame['XMagneticNorthZVertical'] = 2)] =
+    'XMagneticNorthZVertical';
+  IOSReferenceFrame[(IOSReferenceFrame['XTrueNorthZVertical'] = 3)] =
+    'XTrueNorthZVertical';
+  IOSReferenceFrame[(IOSReferenceFrame['Auto'] = 4)] = 'Auto';
   return IOSReferenceFrame;
-}({});
+})({});
 
 /**
  * A function called upon animation completion. If the animation is cancelled,
@@ -107,21 +117,26 @@ export let IOSReferenceFrame = /*#__PURE__*/function (IOSReferenceFrame) {
  * `true`.
  */
 
-export let InterfaceOrientation = /*#__PURE__*/function (InterfaceOrientation) {
-  InterfaceOrientation[InterfaceOrientation["ROTATION_0"] = 0] = "ROTATION_0";
-  InterfaceOrientation[InterfaceOrientation["ROTATION_90"] = 90] = "ROTATION_90";
-  InterfaceOrientation[InterfaceOrientation["ROTATION_180"] = 180] = "ROTATION_180";
-  InterfaceOrientation[InterfaceOrientation["ROTATION_270"] = 270] = "ROTATION_270";
+export let InterfaceOrientation = /*#__PURE__*/ (function (
+  InterfaceOrientation
+) {
+  InterfaceOrientation[(InterfaceOrientation['ROTATION_0'] = 0)] = 'ROTATION_0';
+  InterfaceOrientation[(InterfaceOrientation['ROTATION_90'] = 90)] =
+    'ROTATION_90';
+  InterfaceOrientation[(InterfaceOrientation['ROTATION_180'] = 180)] =
+    'ROTATION_180';
+  InterfaceOrientation[(InterfaceOrientation['ROTATION_270'] = 270)] =
+    'ROTATION_270';
   return InterfaceOrientation;
-}({});
-export let KeyboardState = /*#__PURE__*/function (KeyboardState) {
-  KeyboardState[KeyboardState["UNKNOWN"] = 0] = "UNKNOWN";
-  KeyboardState[KeyboardState["OPENING"] = 1] = "OPENING";
-  KeyboardState[KeyboardState["OPEN"] = 2] = "OPEN";
-  KeyboardState[KeyboardState["CLOSING"] = 3] = "CLOSING";
-  KeyboardState[KeyboardState["CLOSED"] = 4] = "CLOSED";
+})({});
+export let KeyboardState = /*#__PURE__*/ (function (KeyboardState) {
+  KeyboardState[(KeyboardState['UNKNOWN'] = 0)] = 'UNKNOWN';
+  KeyboardState[(KeyboardState['OPENING'] = 1)] = 'OPENING';
+  KeyboardState[(KeyboardState['OPEN'] = 2)] = 'OPEN';
+  KeyboardState[(KeyboardState['CLOSING'] = 3)] = 'CLOSING';
+  KeyboardState[(KeyboardState['CLOSED'] = 4)] = 'CLOSED';
   return KeyboardState;
-}({});
+})({});
 
 /**
  * @param x - A number representing X coordinate relative to the parent
@@ -142,12 +157,12 @@ export let KeyboardState = /*#__PURE__*/function (KeyboardState) {
  * @param Never - Enable the animation.
  * @see https://docs.swmansion.com/react-native-reanimated/docs/guides/accessibility
  */
-export let ReduceMotion = /*#__PURE__*/function (ReduceMotion) {
-  ReduceMotion["System"] = "system";
-  ReduceMotion["Always"] = "always";
-  ReduceMotion["Never"] = "never";
+export let ReduceMotion = /*#__PURE__*/ (function (ReduceMotion) {
+  ReduceMotion['System'] = 'system';
+  ReduceMotion['Always'] = 'always';
+  ReduceMotion['Never'] = 'never';
   return ReduceMotion;
-}({});
+})({});
 
 // Ideally we want AnimatedStyle to not be generic, but there are
 // so many dependencies on it being generic that it's not feasible at the moment.

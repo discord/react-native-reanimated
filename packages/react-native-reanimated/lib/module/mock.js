@@ -1,20 +1,40 @@
 /* eslint-disable n/no-callback-literal */
 'use strict';
 
-import { Animated as AnimatedRN, Image as ImageRN, processColor as processColorRN, Text as TextRN, View as ViewRN } from 'react-native';
-import { advanceAnimationByFrame, advanceAnimationByTime, ColorSpace, Extrapolation, getAnimatedStyle, InterfaceOrientation, IOSReferenceFrame, KeyboardState, ReduceMotion, SensorType, setUpTests, SharedTransitionType, withReanimatedTimer } from "./index.js";
+import {
+  Animated as AnimatedRN,
+  Image as ImageRN,
+  processColor as processColorRN,
+  Text as TextRN,
+  View as ViewRN,
+} from 'react-native';
+import {
+  advanceAnimationByFrame,
+  advanceAnimationByTime,
+  ColorSpace,
+  Extrapolation,
+  getAnimatedStyle,
+  InterfaceOrientation,
+  IOSReferenceFrame,
+  KeyboardState,
+  ReduceMotion,
+  SensorType,
+  setUpTests,
+  SharedTransitionType,
+  withReanimatedTimer,
+} from './index.js';
 const NOOP = () => {};
 const NOOP_FACTORY = () => NOOP;
-const ID = t => t;
-const IMMEDIATE_CALLBACK_INVOCATION = callback => callback();
+const ID = (t) => t;
+const IMMEDIATE_CALLBACK_INVOCATION = (callback) => callback();
 const hook = {
   useAnimatedProps: IMMEDIATE_CALLBACK_INVOCATION,
   useEvent: (_handler, _eventNames, _rebuild) => NOOP,
   // useHandler: ADD ME IF NEEDED
   useWorkletCallback: ID,
-  useSharedValue: init => {
+  useSharedValue: (init) => {
     const value = {
-      value: init
+      value: init,
     };
     return new Proxy(value, {
       get(target, prop) {
@@ -25,7 +45,7 @@ const hook = {
           return () => target.value;
         }
         if (prop === 'set') {
-          return newValue => {
+          return (newValue) => {
             if (typeof newValue === 'function') {
               target.value = newValue(target.value);
             } else {
@@ -40,7 +60,7 @@ const hook = {
           return true;
         }
         return false;
-      }
+      },
     });
   },
   // useReducedMotion: ADD ME IF NEEDED
@@ -48,14 +68,14 @@ const hook = {
   useAnimatedGestureHandler: NOOP_FACTORY,
   useAnimatedReaction: NOOP,
   useAnimatedRef: () => ({
-    current: null
+    current: null,
   }),
   useAnimatedScrollHandler: NOOP_FACTORY,
-  useDerivedValue: processor => {
+  useDerivedValue: (processor) => {
     const result = processor();
     return {
       value: result,
-      get: () => result
+      get: () => result,
     };
   },
   useAnimatedSensor: () => ({
@@ -71,22 +91,22 @@ const hook = {
         qz: 0,
         yaw: 0,
         pitch: 0,
-        roll: 0
-      }
+        roll: 0,
+      },
     },
     unregister: NOOP,
     isAvailable: false,
     config: {
       interval: 0,
       adjustToInterfaceOrientation: false,
-      iosReferenceFrame: 0
-    }
+      iosReferenceFrame: 0,
+    },
   }),
   // useFrameCallback: ADD ME IF NEEDED
   useAnimatedKeyboard: () => ({
     height: 0,
-    state: 0
-  })
+    state: 0,
+  }),
   // useScrollViewOffset: ADD ME IF NEEDED
 };
 const animation = {
@@ -109,18 +129,18 @@ const animation = {
   withTiming: (toValue, _userConfig, callback) => {
     callback?.(true);
     return toValue;
-  }
+  },
 };
 const interpolation = {
   Extrapolation,
   interpolate: NOOP,
-  clamp: NOOP
+  clamp: NOOP,
 };
 const interpolateColor = {
   Extrapolate: Extrapolation,
   Extrapolation,
   ColorSpace,
-  interpolateColor: NOOP
+  interpolateColor: NOOP,
   // useInterpolateConfig: ADD ME IF NEEDED
 };
 const Easing = {
@@ -137,14 +157,14 @@ const Easing = {
     back: ID,
     bounce: ID,
     bezier: () => ({
-      factory: ID
+      factory: ID,
     }),
     bezierFn: ID,
     steps: ID,
     in: ID,
     out: ID,
-    inOut: ID
-  }
+    inOut: ID,
+  },
 };
 const platformFunctions = {
   measure: () => ({
@@ -153,17 +173,17 @@ const platformFunctions = {
     width: 0,
     height: 0,
     pageX: 0,
-    pageY: 0
+    pageY: 0,
   }),
   // dispatchCommand: ADD ME IF NEEDED
-  scrollTo: NOOP
+  scrollTo: NOOP,
   // setGestureState: ADD ME IF NEEDED
   // setNativeProps: ADD ME IF NEEDED
   // getRelativeCoords: ADD ME IF NEEDED
 };
 const Colors = {
   // isColor: ADD ME IF NEEDED
-  processColor: processColorRN
+  processColor: processColorRN,
   // convertToRGBA: ADD ME IF NEEDED
 };
 const PropAdapters = {
@@ -233,7 +253,7 @@ class BaseAnimationMock {
   build() {
     return () => ({
       initialValues: {},
-      animations: {}
+      animations: {},
     });
   }
   reduceMotion() {
@@ -249,13 +269,13 @@ const core = {
   makeShareableCloneRecursive: ID,
   isReanimated3: () => true,
   // isConfigured: ADD ME IF NEEDED
-  enableLayoutAnimations: NOOP
+  enableLayoutAnimations: NOOP,
   // getViewProp: ADD ME IF NEEDED
 };
 const layoutReanimation = {
   BaseAnimationBuilder: new BaseAnimationMock(),
   ComplexAnimationBuilder: new BaseAnimationMock(),
-  Keyframe: new BaseAnimationMock(),
+  Keyframe: BaseAnimationMock,
   // Flip
   FlipInXUp: new BaseAnimationMock(),
   FlipInYLeft: new BaseAnimationMock(),
@@ -355,7 +375,7 @@ const layoutReanimation = {
   // combineTransitions: ADD ME IF NEEDED
   // SET
   // SharedTransition: ADD ME IF NEEDED
-  SharedTransitionType
+  SharedTransitionType,
 };
 const isSharedValue = {
   // isSharedValue: ADD ME IF NEEDED
@@ -365,7 +385,7 @@ const commonTypes = {
   IOSReferenceFrame,
   InterfaceOrientation,
   KeyboardState,
-  ReduceMotion
+  ReduceMotion,
 };
 const pluginUtils = {
   // getUseOfValueInStyleWarning: ADD ME IF NEEDED
@@ -375,7 +395,7 @@ const jestUtils = {
   advanceAnimationByTime,
   advanceAnimationByFrame,
   setUpTests,
-  getAnimatedStyle
+  getAnimatedStyle,
 };
 const LayoutAnimationConfig = {
   // LayoutAnimationConfig: ADD ME IF NEEDED
@@ -396,7 +416,7 @@ const Animated = {
   clamp: NOOP,
   createAnimatedComponent: ID,
   addWhitelistedUIProps: NOOP,
-  addWhitelistedNativeProps: NOOP
+  addWhitelistedNativeProps: NOOP,
 };
 const Reanimated = {
   ...core,
@@ -414,11 +434,11 @@ const Reanimated = {
   ...pluginUtils,
   ...jestUtils,
   ...LayoutAnimationConfig,
-  ...mappers
+  ...mappers,
 };
 module.exports = {
   __esModule: true,
   ...Reanimated,
-  default: Animated
+  default: Animated,
 };
 //# sourceMappingURL=mock.js.map
