@@ -26,7 +26,7 @@ std::optional<MountingTransaction> LayoutAnimationsProxy::pullTransaction(
 #ifdef LAYOUT_ANIMATIONS_LOGS
   LOG(INFO) << std::endl;
   LOG(INFO) << "\npullTransaction " << std::this_thread::get_id() << " "
-             << surfaceId << std::endl;
+            << surfaceId << std::endl;
 #endif
   auto lock = std::unique_lock<std::recursive_mutex>(mutex);
   PropsParserContext propsParserContext{surfaceId, *contextContainer_};
@@ -74,11 +74,10 @@ std::optional<SurfaceId> LayoutAnimationsProxy::progressLayoutAnimation(
 
   if (finishedAnimationTags_.end() !=
       std::find(
-          finishedAnimationTags_.begin(),
-          finishedAnimationTags_.end(),
-          tag)) {
-    // NOTE: This was added by discord as precautionary measure against RetryableMountingLayerException crash.
-    // When props 2.0 is enabled this is potentially no longer needed.
+          finishedAnimationTags_.begin(), finishedAnimationTags_.end(), tag)) {
+    // NOTE: This was added by discord as precautionary measure against
+    // RetryableMountingLayerException crash. When props 2.0 is enabled this is
+    // potentially no longer needed.
     return {};
   }
 
@@ -273,12 +272,13 @@ void LayoutAnimationsProxy::handleRemovals(
 
       node->unflattenedParent->removeChildFromUnflattenedTree(node); //???
 #ifdef LAYOUT_ANIMATIONS_LOGS
-        LOG(INFO) << "delete " << node->tag << std::endl;
+      LOG(INFO) << "delete " << node->tag << std::endl;
 #endif
       if (node->state != MOVED) {
         maybeCancelAnimation(node->tag);
-        filteredMutations.push_back(ShadowViewMutation::DeleteMutation(
-            node->mutation.oldChildShadowView));
+        filteredMutations.push_back(
+            ShadowViewMutation::DeleteMutation(
+                node->mutation.oldChildShadowView));
         nodeForTag_.erase(node->tag);
         node->state = DELETED;
 #ifdef LAYOUT_ANIMATIONS_LOGS
@@ -435,8 +435,8 @@ void LayoutAnimationsProxy::addOngoingAnimations(
 
   auto correctedTags = preserveMountedTags_(tagsToUpdate);
   if (!correctedTags.has_value()) {
-      // this is nullopt if this is being called from the JS thread.
-      return;
+    // this is nullopt if this is being called from the JS thread.
+    return;
   }
 
   // since the map is not updated, we can assume that the ordering of tags in
@@ -698,6 +698,13 @@ void LayoutAnimationsProxy::createLayoutAnimation(
           ? mutation.oldChildShadowView
           : mutation.newChildShadowView);
   auto currentView = std::make_shared<ShadowView>(oldView);
+
+  auto tagPos = std::find(
+      finishedAnimationTags_.begin(), finishedAnimationTags_.end(), tag);
+
+  if (tagPos != finishedAnimationTags_.end()) {
+    finishedAnimationTags_.erase(tagPos);
+  }
 
 #if REACT_NATIVE_MINOR_VERSION >= 78
   layoutAnimations_.insert_or_assign(
@@ -987,7 +994,8 @@ void LayoutAnimationsProxy::restoreOpacityInCaseOfFlakyEnteringAnimation(
               [=](RootShadowNode const &oldRootShadowNode) {
                 const auto self = weakThis.lock();
                 if (!self) {
-                  return cloneShadowTreeWithNewProps(oldRootShadowNode, {}).newRoot;
+                  return cloneShadowTreeWithNewProps(oldRootShadowNode, {})
+                      .newRoot;
                 }
                 const auto &rootShadowNode =
                     static_cast<const ShadowNode &>(oldRootShadowNode);
@@ -1000,7 +1008,8 @@ void LayoutAnimationsProxy::restoreOpacityInCaseOfFlakyEnteringAnimation(
                         folly::dynamic::object("opacity", opacity));
                   }
                 }
-                return cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot;
+                return cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap)
+                    .newRoot;
               },
               {});
         });
