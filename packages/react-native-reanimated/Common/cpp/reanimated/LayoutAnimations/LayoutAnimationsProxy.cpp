@@ -9,6 +9,9 @@
 #include <set>
 #include <utility>
 
+#include <android/log.h>
+#include <folly/json.h>
+
 namespace reanimated {
 
 // We never modify the Shadow Tree, we just send some additional
@@ -26,8 +29,10 @@ std::optional<MountingTransaction> LayoutAnimationsProxy::pullTransaction(
 #ifdef LAYOUT_ANIMATIONS_LOGS
   LOG(INFO) << std::endl;
   LOG(INFO) << "\npullTransaction " << std::this_thread::get_id() << " "
-             << surfaceId << std::endl;
+            << surfaceId << std::endl;
 #endif
+  //   __android_log_print(ANDROID_LOG_ERROR, "HannoDebug", "[%ld]
+  //   pullTransaction start", transactionNumber);
   auto lock = std::unique_lock<std::recursive_mutex>(mutex);
   PropsParserContext propsParserContext{surfaceId, *contextContainer_};
   ShadowViewMutationList filteredMutations;
@@ -55,6 +60,9 @@ std::optional<MountingTransaction> LayoutAnimationsProxy::pullTransaction(
 
   addOngoingAnimations(surfaceId, filteredMutations);
 
+  //   __android_log_print(ANDROID_LOG_ERROR, "HannoDebug", "[%ld]
+  //   pullTransaction end", transactionNumber);
+
   return MountingTransaction{
       surfaceId, transactionNumber, std::move(filteredMutations), telemetry};
 }
@@ -69,16 +77,25 @@ std::optional<SurfaceId> LayoutAnimationsProxy::progressLayoutAnimation(
   auto layoutAnimationIt = layoutAnimations_.find(tag);
 
   if (layoutAnimationIt == layoutAnimations_.end()) {
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        " > progressLayoutAnimation no layout animation [%d]",
+        tag);
     return {};
   }
 
   if (finishedAnimationTags_.end() !=
       std::find(
-          finishedAnimationTags_.begin(),
-          finishedAnimationTags_.end(),
-          tag)) {
-    // NOTE: This was added by discord as precautionary measure against RetryableMountingLayerException crash.
-    // When props 2.0 is enabled this is potentially no longer needed.
+          finishedAnimationTags_.begin(), finishedAnimationTags_.end(), tag)) {
+    // NOTE: This was added by discord as precautionary measure against
+    // RetryableMountingLayerException crash. When props 2.0 is enabled this is
+    // potentially no longer needed.
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        " > progressLayoutAnimation already finished [%d]",
+        tag);
     return {};
   }
 
@@ -105,6 +122,19 @@ std::optional<SurfaceId> LayoutAnimationsProxy::progressLayoutAnimation(
       surfaceManager.getUpdateMap(layoutAnimation.finalView->surfaceId);
   updateMap.insert_or_assign(
       tag, UpdateValues{newProps, Frame(uiRuntime_, newStyle)});
+
+  if (layoutAnimation.finalView->props->nativeId == "debug" ||
+      layoutAnimation.finalView->props->nativeId == "background" ||
+      layoutAnimation.finalView->props->nativeId == "text" ||
+      layoutAnimation.finalView->props->nativeId == "imageWrapper") {
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        "[%s][%d] progressLayoutAnimation=%s",
+        layoutAnimation.finalView->props->nativeId.c_str(),
+        layoutAnimation.finalView->tag,
+        folly::toJson(newProps->rawProps).c_str());
+  }
 
   return layoutAnimation.finalView->surfaceId;
 }
@@ -135,6 +165,19 @@ std::optional<SurfaceId> LayoutAnimationsProxy::endLayoutAnimation(
   }
   finishedAnimationTags_.push_back(tag);
   auto surfaceId = layoutAnimation.finalView->surfaceId;
+
+  auto nativeId = layoutAnimation.finalView->props->nativeId;
+  if (nativeId == "debug" || nativeId == "background" || nativeId == "text" ||
+      nativeId == "imageWrapper") {
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        "[%s][%d] endLayoutAnimation shouldRemove=%d",
+        nativeId.c_str(),
+        layoutAnimation.finalView->tag,
+        shouldRemove);
+    // TODO: test for !nodeForTag_.contains(tag) ?
+  }
 
   if (!shouldRemove || !nodeForTag_.contains(tag)) {
     return {};
@@ -273,12 +316,13 @@ void LayoutAnimationsProxy::handleRemovals(
 
       node->unflattenedParent->removeChildFromUnflattenedTree(node); //???
 #ifdef LAYOUT_ANIMATIONS_LOGS
-        LOG(INFO) << "delete " << node->tag << std::endl;
+      LOG(INFO) << "delete " << node->tag << std::endl;
 #endif
       if (node->state != MOVED) {
         maybeCancelAnimation(node->tag);
-        filteredMutations.push_back(ShadowViewMutation::DeleteMutation(
-            node->mutation.oldChildShadowView));
+        filteredMutations.push_back(
+            ShadowViewMutation::DeleteMutation(
+                node->mutation.oldChildShadowView));
         nodeForTag_.erase(node->tag);
         node->state = DELETED;
 #ifdef LAYOUT_ANIMATIONS_LOGS
@@ -379,6 +423,9 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
 
       case ShadowViewMutation::Type::Update: {
         auto shouldAnimate = hasLayoutChanged(mutation);
+        auto nativeId = mutation.newChildShadowView.props->nativeId;
+        auto shouldDebug = nativeId == "debug" || nativeId == "background" ||
+            nativeId == "text" || nativeId == "imageWrapper";
         if (!layoutAnimationsManager_->hasLayoutAnimation(tag, LAYOUT) ||
             (!shouldAnimate && !layoutAnimations_.contains(tag))) {
           // We should cancel any ongoing animation here to ensure that the
@@ -389,8 +436,29 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
           // is pushed onto a stack
           // TODO: find a better solution for this problem
           filteredMutations.push_back(mutation);
+          if (shouldDebug) {
+            __android_log_print(
+                ANDROID_LOG_ERROR,
+                "HannoDebug",
+                "[%s][%d] <handleUpdateAndEnterings> update without animation %s",
+                nativeId.c_str(),
+                tag,
+                folly::toJson(mutation.newChildShadowView.props->rawProps)
+                    .c_str());
+          }
+
           continue;
         } else if (!shouldAnimate) {
+          if (shouldDebug) {
+            __android_log_print(
+                ANDROID_LOG_ERROR,
+                "HannoDebug",
+                "[%s][%d] <handleUpdateAndEnterings> update without layout change %s",
+                nativeId.c_str(),
+                tag,
+                folly::toJson(mutation.newChildShadowView.props->rawProps)
+                    .c_str());
+          }
           updateOngoingAnimationTarget(tag, mutation);
           continue;
         }
@@ -403,6 +471,27 @@ void LayoutAnimationsProxy::handleUpdatesAndEnterings(
         }
         if (mutation.parentTag != -1) {
           startLayoutAnimation(tag, mutation);
+          if (shouldDebug) {
+            __android_log_print(
+                ANDROID_LOG_ERROR,
+                "HannoDebug",
+                "[%s][%d] <handleUpdateAndEnterings> update with animation %s",
+                nativeId.c_str(),
+                tag,
+                folly::toJson(mutation.newChildShadowView.props->rawProps)
+                    .c_str());
+          }
+        } else {
+          if (shouldDebug) {
+            __android_log_print(
+                ANDROID_LOG_ERROR,
+                "HannoDebug",
+                "[%s][%d] <handleUpdateAndEnterings> update with animation but no parent %s",
+                nativeId.c_str(),
+                tag,
+                folly::toJson(mutation.newChildShadowView.props->rawProps)
+                    .c_str());
+          }
         }
         break;
       }
@@ -423,6 +512,10 @@ void LayoutAnimationsProxy::addOngoingAnimations(
     ShadowViewMutationList &mutations) const {
   auto &updateMap = surfaceManager.getUpdateMap(surfaceId);
   if (updateMap.empty()) {
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        " > addOngoingAnimations() updateMap.empty() early return");
     return;
   }
 
@@ -435,8 +528,12 @@ void LayoutAnimationsProxy::addOngoingAnimations(
 
   auto correctedTags = preserveMountedTags_(tagsToUpdate);
   if (!correctedTags.has_value()) {
-      // this is nullopt if this is being called from the JS thread.
-      return;
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        " > addOngoingAnimations() preserveMountedTags_ returned nullopt");
+    // this is nullopt if this is being called from the JS thread.
+    return;
   }
 
   // since the map is not updated, we can assume that the ordering of tags in
@@ -447,6 +544,11 @@ void LayoutAnimationsProxy::addOngoingAnimations(
 #ifdef ANDROID
     i++;
     if (correctedTags && (*correctedTags)[i] == -1) {
+      __android_log_print(
+          ANDROID_LOG_ERROR,
+          "HannoDebug",
+          " > addOngoingAnimations() skipping tag [%d]",
+          tag);
       // skip views that have not been mounted yet
       // on Android we start entering animations from the JS thread
       // so it might happen, that the first frame of the animation goes through
@@ -459,6 +561,11 @@ void LayoutAnimationsProxy::addOngoingAnimations(
     auto layoutAnimationIt = layoutAnimations_.find(tag);
 
     if (layoutAnimationIt == layoutAnimations_.end()) {
+      __android_log_print(
+          ANDROID_LOG_ERROR,
+          "HannoDebug",
+          " > addOngoingAnimations() no ongoing animation for tag [%d]",
+          tag);
       continue;
     }
 
@@ -467,6 +574,19 @@ void LayoutAnimationsProxy::addOngoingAnimations(
     auto newView = std::make_shared<ShadowView>(*layoutAnimation.finalView);
     newView->props = updateValues.newProps;
     updateLayoutMetrics(newView->layoutMetrics, updateValues.frame);
+
+    if (newView->props->nativeId == "debug" ||
+        newView->props->nativeId == "background" ||
+        newView->props->nativeId == "text" ||
+        newView->props->nativeId == "imageWrapper") {
+      __android_log_print(
+          ANDROID_LOG_ERROR,
+          "HannoDebug",
+          "[%s][%d] addOngoingAnimations= %s",
+          newView->props->nativeId.c_str(),
+          tag,
+          folly::toJson(newView->props->rawProps).c_str());
+    }
 
     mutations.push_back(
         ShadowViewMutation::UpdateMutation(
@@ -699,6 +819,18 @@ void LayoutAnimationsProxy::createLayoutAnimation(
           : mutation.newChildShadowView);
   auto currentView = std::make_shared<ShadowView>(oldView);
 
+  auto nativeId = finalView->props->nativeId;
+  if (nativeId == "debug" || nativeId == "background" || nativeId == "text" ||
+      nativeId == "imageWrapper") {
+    __android_log_print(
+        ANDROID_LOG_ERROR,
+        "HannoDebug",
+        "[%s][%d] createLayoutAnimation finalView= %s",
+        nativeId.c_str(),
+        tag,
+        folly::toJson(finalView->props->rawProps).c_str());
+  }
+
 #if REACT_NATIVE_MINOR_VERSION >= 78
   layoutAnimations_.insert_or_assign(
       tag,
@@ -881,8 +1013,9 @@ void LayoutAnimationsProxy::maybeCancelAnimation(const int tag) const {
   if (!layoutAnimations_.contains(tag)) {
     return;
   }
+  auto nativeId = layoutAnimations_[tag].finalView->props->nativeId;
   layoutAnimations_.erase(tag);
-  uiScheduler_->scheduleOnUI([weakThis = weak_from_this(), tag]() {
+  uiScheduler_->scheduleOnUI([weakThis = weak_from_this(), tag, nativeId]() {
     auto strongThis = weakThis.lock();
     if (!strongThis) {
       return;
@@ -890,6 +1023,14 @@ void LayoutAnimationsProxy::maybeCancelAnimation(const int tag) const {
 
     auto &uiRuntime = strongThis->uiRuntime_;
     strongThis->layoutAnimationsManager_->cancelLayoutAnimation(uiRuntime, tag);
+    if (nativeId == "debug" || nativeId == "background" || nativeId == "text" ||
+        nativeId == "imageWrapper") {
+      __android_log_print(
+          ANDROID_LOG_ERROR,
+          "HannoDebug",
+          "[%s] cancelLayoutAnimation",
+          nativeId.c_str());
+    }
   });
 }
 
@@ -987,7 +1128,8 @@ void LayoutAnimationsProxy::restoreOpacityInCaseOfFlakyEnteringAnimation(
               [=](RootShadowNode const &oldRootShadowNode) {
                 const auto self = weakThis.lock();
                 if (!self) {
-                  return cloneShadowTreeWithNewProps(oldRootShadowNode, {}).newRoot;
+                  return cloneShadowTreeWithNewProps(oldRootShadowNode, {})
+                      .newRoot;
                 }
                 const auto &rootShadowNode =
                     static_cast<const ShadowNode &>(oldRootShadowNode);
@@ -1000,7 +1142,8 @@ void LayoutAnimationsProxy::restoreOpacityInCaseOfFlakyEnteringAnimation(
                         folly::dynamic::object("opacity", opacity));
                   }
                 }
-                return cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot;
+                return cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap)
+                    .newRoot;
               },
               {});
         });
