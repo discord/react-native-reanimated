@@ -831,6 +831,13 @@ void LayoutAnimationsProxy::createLayoutAnimation(
         folly::toJson(finalView->props->rawProps).c_str());
   }
 
+  auto tagPos = std::find(
+      finishedAnimationTags_.begin(), finishedAnimationTags_.end(), tag);
+
+  if (tagPos != finishedAnimationTags_.end()) {
+    finishedAnimationTags_.erase(tagPos);
+  }
+
 #if REACT_NATIVE_MINOR_VERSION >= 78
   layoutAnimations_.insert_or_assign(
       tag,
