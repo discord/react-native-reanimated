@@ -439,6 +439,24 @@ using namespace facebook::react;
   // so that's why we need to call `finalizeUpdates` here.
   [componentView finalizeUpdates:RNComponentViewUpdateMask{}];
 }
+
+- (void)synchronouslyUpdateUIProps:(const int)viewTag props:(const folly::dynamic &)props
+{
+  RCTAssertMainQueue();
+
+  RCTSurfacePresenter *surfacePresenter = _bridge.surfacePresenter ?: _surfacePresenter;
+  RCTComponentViewRegistry *componentViewRegistry = surfacePresenter.mountingManager.componentViewRegistry;
+  REAUIView<RCTComponentViewProtocol> *componentView =
+      [componentViewRegistry findComponentViewWithTag:viewTag];
+
+  NSSet<NSString *> *propKeysManagedByAnimated = [componentView propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN];
+  [surfacePresenter schedulerDidSynchronouslyUpdateViewOnUIThread:viewTag props:props];
+  [componentView setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:propKeysManagedByAnimated];
+
+  // `schedulerDidSynchronouslyUpdateViewOnUIThread` does not flush some props (e.g. backgroundColor),
+  // so finalize updates explicitly.
+  [componentView finalizeUpdates:RNComponentViewUpdateMask{}];
+}
 #else
 
 - (void)updateProps:(nonnull NSDictionary *)props
