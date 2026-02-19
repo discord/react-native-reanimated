@@ -40,6 +40,12 @@
                        commandArgs:(NSArray<id> *)commandArgs;
 @end
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@interface REANodesManager (SynchronousUIProps)
+- (void)synchronouslyUpdateUIProps:(const int)viewTag props:(const folly::dynamic &)props;
+@end
+#endif
+
 namespace reanimated {
 
 using namespace facebook;
@@ -105,9 +111,8 @@ RequestRenderFunction makeRequestRender(REANodesManager *nodesManager)
 SynchronouslyUpdateUIPropsFunction makeSynchronouslyUpdateUIPropsFunction(REANodesManager *nodesManager)
 {
   auto synchronouslyUpdateUIPropsFunction = [nodesManager](jsi::Runtime &rt, Tag tag, const jsi::Object &props) -> void {
-    NSNumber *viewTag = @(tag);
-    NSDictionary *uiProps = convertJSIObjectToNSDictionary(rt, props);
-    [nodesManager synchronouslyUpdateViewOnUIThread:viewTag props:uiProps];
+    auto dynamicProps = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
+    [nodesManager synchronouslyUpdateUIProps:tag props:dynamicProps];
   };
   return synchronouslyUpdateUIPropsFunction;
 }

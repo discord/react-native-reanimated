@@ -704,7 +704,6 @@ void ReanimatedModuleProxy::unmarkNodeAsRemovable(
     jsi::Runtime &rt,
     const jsi::Object &props,
     Tag tag) {
-
     jsi::Object nonLayoutPropsJSI(rt);
     bool hasNonLayoutProps = false;
     bool hasLayoutProps = false;
@@ -727,9 +726,16 @@ void ReanimatedModuleProxy::unmarkNodeAsRemovable(
         }
     }
 
+    // Mirror upstream behavior: on iOS fast path, run synchronous updates only
+    // when the whole update can stay off the ShadowTree commit path.
+#if __APPLE__
+    // On iOS, synchronous updates are routed in performOperations after
+    // classifying the whole operation payload.
+#else
     if (hasNonLayoutProps) {
         synchronouslyUpdateUIPropsFunction_(rt, tag, nonLayoutPropsJSI);
     }
+#endif
 
     return hasLayoutProps;
 }
@@ -870,6 +876,69 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
 
   jsi::Runtime &rt = uiWorkletRuntime_->getJSIRuntime();
 
+#if __APPLE__
+  static const std::unordered_set<std::string> synchronousProps = {
+      "opacity",
+      "elevation",
+      "zIndex",
+      "shadowOpacity",
+      "shadowRadius",
+      "backgroundColor",
+      // "color", // TODO: fix animating color of Animated.Text
+      "tintColor",
+      "borderRadius",
+      "borderTopLeftRadius",
+      "borderTopRightRadius",
+      "borderTopStartRadius",
+      "borderTopEndRadius",
+      "borderBottomLeftRadius",
+      "borderBottomRightRadius",
+      "borderBottomStartRadius",
+      "borderBottomEndRadius",
+      "borderStartStartRadius",
+      "borderStartEndRadius",
+      "borderEndStartRadius",
+      "borderEndEndRadius",
+      "borderColor",
+      "borderTopColor",
+      "borderBottomColor",
+      "borderLeftColor",
+      "borderRightColor",
+      "borderStartColor",
+      "borderEndColor",
+      "transform",
+  };
+
+  decltype(copiedOperationsQueue) shadowTreeOperationsQueue;
+  std::unordered_set<Tag> forceShadowTreeUpdatesByTag;
+  shadowTreeOperationsQueue.reserve(copiedOperationsQueue.size());
+  forceShadowTreeUpdatesByTag.reserve(copiedOperationsQueue.size());
+  for (auto &operation : copiedOperationsQueue) {
+    const auto &shadowNode = operation.first;
+    auto &propsValue = operation.second;
+    const auto propsObject = propsValue->asObject(rt);
+    const auto propNames = propsObject.getPropertyNames(rt);
+    bool hasOnlySynchronousProps = propNames.size(rt) > 0;
+
+    for (size_t i = 0; i < propNames.size(rt); i++) {
+      const auto propName = propNames.getValueAtIndex(rt, i).asString(rt).utf8(rt);
+      const bool isLayoutProp = collection::contains(nativePropNames_, propName);
+      if (isLayoutProp || !synchronousProps.contains(propName)) {
+        hasOnlySynchronousProps = false;
+        break;
+      }
+    }
+
+    if (hasOnlySynchronousProps) {
+      synchronouslyUpdateUIPropsFunction_(rt, shadowNode->getTag(), propsObject);
+    } else {
+      forceShadowTreeUpdatesByTag.insert(shadowNode->getTag());
+      shadowTreeOperationsQueue.emplace_back(shadowNode, std::move(propsValue));
+    }
+  }
+  copiedOperationsQueue = std::move(shadowTreeOperationsQueue);
+#endif // __APPLE__
+
   std::unordered_set<Tag> layoutUpdatesByTag;
   {
     auto lock = propsRegistry_->createLock();
@@ -900,6 +969,11 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
         
         // Pass the JSI object directly
         bool hasLayoutUpdates = updateNoneLayoutProps(rt, props->asObject(rt), tag);
+#if __APPLE__
+        if (forceShadowTreeUpdatesByTag.contains(tag)) {
+            hasLayoutUpdates = true;
+        }
+#endif
         if (hasLayoutUpdates) {
             layoutUpdatesByTag.insert(tag);
         }
