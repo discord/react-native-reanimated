@@ -150,6 +150,8 @@ using namespace facebook::react;
 
 #endif // RCT_NEW_ARCH_ENABLED
 
+static BOOL _isPerformOperationsActive = NO;
+
 @implementation REANodesManager {
   READisplayLink *_displayLink;
   BOOL _wantRunUpdates;
@@ -279,6 +281,11 @@ using namespace facebook::react;
 {
   _performOperations = performOperations;
 }
+
++ (BOOL)isPerformOperationsActive
+{
+  return _isPerformOperationsActive;
+}
 #endif // RCT_NEW_ARCH_ENABLED
 
 - (void)startUpdatingOnAnimationFrame
@@ -313,7 +320,9 @@ using namespace facebook::react;
 - (void)performOperations
 {
 #ifdef RCT_NEW_ARCH_ENABLED
+  _isPerformOperationsActive = YES;
   _performOperations(); // calls ReanimatedModuleProxy::performOperations
+  _isPerformOperationsActive = NO;
   _wantRunUpdates = NO;
 #else
   if (_operationsInBatch.count != 0) {
