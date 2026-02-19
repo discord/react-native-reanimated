@@ -24,8 +24,6 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTSurfacePresenter.h>
-#include <jsi/JSIDynamic.h>
-#include <folly/dynamic.h>
 #import <react/renderer/core/ShadowNode.h>
 #import <react/renderer/uimanager/primitives.h>
 #endif
