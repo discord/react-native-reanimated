@@ -43,6 +43,7 @@ typedef void (^REAPerformOperations)();
 
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)registerPerformOperations:(REAPerformOperations)performOperations;
++ (BOOL)isPerformOperationsActive;
 #else
 - (void)configureUiProps:(nonnull NSSet<NSString *> *)uiPropsSet
           andNativeProps:(nonnull NSSet<NSString *> *)nativePropsSet;
