@@ -45,6 +45,7 @@ typedef void (^REAPerformOperations)();
 - (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 - (void)registerPerformOperations:(REAPerformOperations)performOperations;
 - (void)synchronouslyUpdateViewOnUIThread:(nonnull NSNumber *)viewTag props:(nonnull NSDictionary *)uiProps;
++ (BOOL)isPerformOperationsActive;
 #else
 - (void)configureUiProps:(nonnull NSSet<NSString *> *)uiPropsSet
           andNativeProps:(nonnull NSSet<NSString *> *)nativePropsSet;
