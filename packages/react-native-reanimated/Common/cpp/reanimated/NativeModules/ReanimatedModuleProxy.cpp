@@ -909,10 +909,8 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
       "transform",
   };
 
-  decltype(copiedOperationsQueue) shadowTreeOperationsQueue;
   std::unordered_set<Tag> forceShadowTreeUpdatesByTag;
-  shadowTreeOperationsQueue.reserve(copiedOperationsQueue.size());
-  forceShadowTreeUpdatesByTag.reserve(copiedOperationsQueue.size());
+  std::unordered_set<Tag> syncAppliedTags;
   for (auto &operation : copiedOperationsQueue) {
     const auto &shadowNode = operation.first;
     auto &propsValue = operation.second;
@@ -931,15 +929,17 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
 
     if (hasOnlySynchronousProps) {
       synchronouslyUpdateUIPropsFunction_(rt, shadowNode->getTag(), propsObject);
+      syncAppliedTags.insert(shadowNode->getTag());
     } else {
+      // Non-sync tags must go through the shadow tree commit path on iOS
+      // (updateNoneLayoutProps is a no-op for the actual apply on Apple).
       forceShadowTreeUpdatesByTag.insert(shadowNode->getTag());
-      shadowTreeOperationsQueue.emplace_back(shadowNode, std::move(propsValue));
     }
   }
-  copiedOperationsQueue = std::move(shadowTreeOperationsQueue);
 #endif // __APPLE__
 
   std::unordered_set<Tag> layoutUpdatesByTag;
+  std::unordered_set<SurfaceId> surfacesWithLayoutUpdates;
   {
     auto lock = propsRegistry_->createLock();
 
@@ -966,7 +966,7 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
     // `_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN`).
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
         auto tag = shadowNode->getTag();
-        
+
         // Pass the JSI object directly
         bool hasLayoutUpdates = updateNoneLayoutProps(rt, props->asObject(rt), tag);
 #if __APPLE__
@@ -976,8 +976,9 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
 #endif
         if (hasLayoutUpdates) {
             layoutUpdatesByTag.insert(tag);
+            surfacesWithLayoutUpdates.insert(shadowNode->getSurfaceId());
         }
-        
+
         // Still need to convert to dynamic for propsRegistry
         folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
 
@@ -1022,10 +1023,16 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
   for (auto const &[shadowNode, props] : copiedOperationsQueue) {
     SurfaceId surfaceId = shadowNode->getSurfaceId();
     auto family = &shadowNode->getFamily();
+    auto tag = shadowNode->getTag();
     react_native_assert(family->getSurfaceId() == surfaceId);
-    if (layoutUpdatesByTag.contains(shadowNode->getTag())) {
-      // Only push updates for updates that affect layout. Other updates
-      // were already handled by updateNoneLayoutProps above
+    // Include layout updates and sync-applied tags whose surface already has
+    // a pending commit. Reanimated's commit hook skips propsRegistry
+    // application for Reanimated-originated commits, so the committed tree
+    // must carry correct values for all animated tags on that surface.
+    bool includeInCommit = layoutUpdatesByTag.contains(tag) ||
+        (syncAppliedTags.contains(tag) &&
+         surfacesWithLayoutUpdates.contains(surfaceId));
+    if (includeInCommit) {
       propsMapBySurface[surfaceId][family].emplace_back(rt, std::move(*props));
     }
   }
