@@ -8,17 +8,30 @@ export interface ViewDescriptorsSet {
   add: (item: Descriptor) => void;
   remove: (viewTag: number) => void;
   has: (viewTag: number) => boolean;
+  setForceUpdate: (fn: (() => void) | null) => void;
 }
 
 export function makeViewDescriptorsSet(): ViewDescriptorsSet {
   const shareableViewDescriptors = makeMutable<Descriptor[]>([]);
   const viewTags = new Set<number>();
+  // Tracks tags that were previously mounted then removed — these need forceUpdate on re-add.
+  const removedTags = new Set<number>();
+  // Plain closure variable — NOT stored on the data object to avoid being frozen by Reanimated.
+  let forceUpdateFn: (() => void) | null = null;
 
   const data: ViewDescriptorsSet = {
     shareableViewDescriptors,
 
+    setForceUpdate: (fn: (() => void) | null) => {
+      forceUpdateFn = fn;
+    },
+
     add: (item: Descriptor) => {
-      viewTags.add(item.tag as number);
+      const tag = item.tag as number;
+      const isReregistration = removedTags.has(tag);
+      removedTags.delete(tag);
+      viewTags.add(tag);
+      const forceUpdate = isReregistration ? forceUpdateFn : null;
       shareableViewDescriptors.modify((descriptors) => {
         'worklet';
         const index = descriptors.findIndex(
@@ -28,6 +41,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
           descriptors[index] = item;
         } else {
           descriptors.push(item);
+          forceUpdate?.();
         }
         return descriptors;
       }, false);
@@ -35,6 +49,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
 
     remove: (viewTag: number) => {
       viewTags.delete(viewTag);
+      removedTags.add(viewTag);
       shareableViewDescriptors.modify((descriptors) => {
         'worklet';
         const index = descriptors.findIndex(

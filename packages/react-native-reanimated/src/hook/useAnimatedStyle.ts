@@ -531,6 +531,22 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
   const { initial, remoteState, viewDescriptors } = animatedUpdaterData.current;
   const shareableViewDescriptors = viewDescriptors.shareableViewDescriptors;
 
+  const forceUpdateStyle = () => {
+    'worklet';
+    // Reset last so shallowEqual fails and styleUpdater re-applies current values.
+    // This handles both plain values (sv.value) and animated values (withTiming etc.)
+    // correctly without passing raw animation objects to updateProps directly.
+    remoteState.last = {};
+    styleUpdater(
+      shareableViewDescriptors,
+      updater as WorkletFunction<[], AnimatedStyle<any>>,
+      remoteState,
+      areAnimationsActive,
+      isAnimatedProps
+    );
+  };
+  viewDescriptors.setForceUpdate(forceUpdateStyle as unknown as () => void);
+
   dependencies.push(shareableViewDescriptors);
 
   useEffect(() => {
