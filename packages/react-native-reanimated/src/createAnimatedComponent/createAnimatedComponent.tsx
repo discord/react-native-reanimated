@@ -581,11 +581,14 @@ export function createAnimatedComponent(
 
       // attach animatedProps property
       if (this.props.animatedProps?.viewDescriptors) {
-        this.props.animatedProps.viewDescriptors.add({
-          tag: viewTag as number,
-          name: viewName!,
-          shadowNodeWrapper: shadowNodeWrapper!,
-        });
+        this.props.animatedProps.viewDescriptors.add(
+          {
+            tag: viewTag as number,
+            name: viewName!,
+            shadowNodeWrapper: shadowNodeWrapper!,
+          },
+          this.props.animatedProps.styleUpdaterContainer
+        );
       }
     }
 
