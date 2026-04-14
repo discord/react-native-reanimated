@@ -267,6 +267,10 @@ export interface Mutable<Value = unknown> extends SharedValue<Value> {
   _value: Value;
 }
 
+export type StyleUpdaterContainer = {
+  current: ((forceUpdate: boolean) => void) | undefined;
+};
+
 // The below type is used for HostObjects returned by the JSI API that don't have
 // any accessible fields or methods but can carry data that is accessed from the
 // c++ side. We add a field to the type to make it possible for typescript to recognize
