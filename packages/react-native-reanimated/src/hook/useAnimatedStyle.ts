@@ -11,6 +11,7 @@ import type {
   NestedObjectValues,
   SharedValue,
   StyleProps,
+  StyleUpdaterContainer,
   Timestamp,
   WorkletFunction,
 } from '../commonTypes';
@@ -56,6 +57,7 @@ interface AnimatedUpdaterData {
   };
   remoteState: AnimatedState;
   viewDescriptors: ViewDescriptorsSet;
+  styleUpdaterContainer: StyleUpdaterContainer;
 }
 
 function prepareAnimation(
@@ -203,7 +205,8 @@ function styleUpdater(
   updater: WorkletFunction<[], AnimatedStyle<any>> | (() => AnimatedStyle<any>),
   state: AnimatedState,
   animationsActive: SharedValue<boolean>,
-  isAnimatedProps = false
+  isAnimatedProps = false,
+  forceUpdate?: boolean
 ): void {
   'worklet';
   const animations = state.animations ?? {};
@@ -301,7 +304,7 @@ function styleUpdater(
     state.isAnimationCancelled = true;
     state.animations = [];
 
-    if (!shallowEqual(oldValues, newValues)) {
+    if (!shallowEqual(oldValues, newValues) || forceUpdate) {
       updateProps(viewDescriptors, newValues, isAnimatedProps);
     }
   }
@@ -314,7 +317,8 @@ function jestStyleUpdater(
   state: AnimatedState,
   animationsActive: SharedValue<boolean>,
   animatedValues: MutableRefObject<AnimatedStyle<any>>,
-  adapters: AnimatedPropsAdapterFunction[]
+  adapters: AnimatedPropsAdapterFunction[],
+  forceUpdate?: boolean
 ): void {
   'worklet';
   const animations: AnimatedStyle<any> = state.animations ?? {};
@@ -398,7 +402,7 @@ function jestStyleUpdater(
   // calculate diff
   state.last = newValues;
 
-  if (!shallowEqual(oldValues, newValues)) {
+  if (!shallowEqual(oldValues, newValues) || forceUpdate) {
     updatePropsJestWrapper(
       viewDescriptors,
       newValues,
@@ -525,6 +529,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
         isFirstRun: true,
       }),
       viewDescriptors: makeViewDescriptorsSet(),
+      styleUpdaterContainer: { current: undefined },
     };
   }
 
@@ -548,7 +553,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
     }
 
     if (isJest()) {
-      fun = () => {
+      fun = (forceUpdate?: boolean) => {
         'worklet';
         jestStyleUpdater(
           shareableViewDescriptors,
@@ -556,18 +561,20 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
           remoteState,
           areAnimationsActive,
           jestAnimatedValues,
-          adaptersArray
+          adaptersArray,
+          forceUpdate
         );
       };
     } else {
-      fun = () => {
+      fun = (forceUpdate?: boolean) => {
         'worklet';
         styleUpdater(
           shareableViewDescriptors,
           updaterFn,
           remoteState,
           areAnimationsActive,
-          isAnimatedProps
+          isAnimatedProps,
+          forceUpdate
         );
       };
       if (
@@ -588,6 +595,9 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
           })();
         });
       }
+    }
+    if (animatedUpdaterData.current) {
+      animatedUpdaterData.current.styleUpdaterContainer.current = fun;
     }
     const mapperId = startMapper(fun, inputs);
     return () => {
@@ -615,14 +625,44 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
   >(null);
 
   if (!animatedStyleHandle.current) {
-    animatedStyleHandle.current = isJest()
-      ? {
-          viewDescriptors,
-          initial,
-          jestAnimatedValues,
-          toJSON: animatedStyleHandleToJSON,
-        }
-      : { viewDescriptors, initial };
+    const styleUpdaterContainer =
+      animatedUpdaterData.current.styleUpdaterContainer;
+    if (__DEV__) {
+      // In DEV, React Native's deepFreezeAndThrowOnMutationInDev recursively
+      // freezes every prop value of native views using Object.keys. If the
+      // animated handle is reachable from such a prop, styleUpdaterContainer
+      // gets frozen before useEffect can write `current = fun`.
+      // Making it non-enumerable hides it from Object.keys while keeping it
+      // fully accessible by name (e.g. in createAnimatedComponent).
+      // In production deepFreezeAndThrowOnMutationInDev is a no-op, so the
+      // plain object literal below is safe.
+      const handle = isJest()
+        ? {
+            viewDescriptors,
+            initial,
+            jestAnimatedValues,
+            toJSON: animatedStyleHandleToJSON,
+          }
+        : { viewDescriptors, initial };
+      Object.defineProperty(handle, 'styleUpdaterContainer', {
+        value: styleUpdaterContainer,
+        enumerable: false,
+        writable: false,
+        configurable: false,
+      });
+      animatedStyleHandle.current =
+        handle as typeof handle & { styleUpdaterContainer: StyleUpdaterContainer };
+    } else {
+      animatedStyleHandle.current = isJest()
+        ? {
+            viewDescriptors,
+            initial,
+            jestAnimatedValues,
+            toJSON: animatedStyleHandleToJSON,
+            styleUpdaterContainer,
+          }
+        : { viewDescriptors, initial, styleUpdaterContainer };
+    }
   }
 
   return animatedStyleHandle.current;

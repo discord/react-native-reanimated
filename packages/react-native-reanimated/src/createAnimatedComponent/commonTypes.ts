@@ -7,6 +7,7 @@ import type {
   ShadowNodeWrapper,
   SharedValue,
   StyleProps,
+  StyleUpdaterContainer,
 } from '../commonTypes';
 import type { SkipEnteringContext } from '../component/LayoutAnimationConfig';
 import type { ViewConfig } from '../ConfigHelper';
@@ -19,6 +20,7 @@ import type { ViewDescriptorsSet } from '../ViewDescriptorsSet';
 export interface AnimatedProps extends Record<string, unknown> {
   viewDescriptors?: ViewDescriptorsSet;
   initial?: SharedValue<StyleProps>;
+  styleUpdaterContainer?: StyleUpdaterContainer;
 }
 
 export interface ViewInfo {

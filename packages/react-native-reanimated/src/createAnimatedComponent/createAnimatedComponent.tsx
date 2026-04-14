@@ -550,11 +550,14 @@ export function createAnimatedComponent(
       }
 
       newStyles.forEach((style) => {
-        style.viewDescriptors.add({
-          tag: viewTag,
-          name: viewName,
-          shadowNodeWrapper,
-        });
+        style.viewDescriptors.add(
+          {
+            tag: viewTag,
+            name: viewName,
+            shadowNodeWrapper,
+          },
+          style.styleUpdaterContainer
+        );
         if (IS_JEST) {
           /**
            * We need to connect Jest's TestObject instance whose contains just
@@ -578,11 +581,14 @@ export function createAnimatedComponent(
 
       // attach animatedProps property
       if (this.props.animatedProps?.viewDescriptors) {
-        this.props.animatedProps.viewDescriptors.add({
-          tag: viewTag as number,
-          name: viewName!,
-          shadowNodeWrapper: shadowNodeWrapper!,
-        });
+        this.props.animatedProps.viewDescriptors.add(
+          {
+            tag: viewTag as number,
+            name: viewName!,
+            shadowNodeWrapper: shadowNodeWrapper!,
+          },
+          this.props.animatedProps.styleUpdaterContainer
+        );
       }
     }
 
