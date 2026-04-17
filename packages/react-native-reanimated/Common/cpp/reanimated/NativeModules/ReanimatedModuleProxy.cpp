@@ -896,14 +896,6 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
     // way but backgroundColor, shadowOpacity etc. would get overwritten (see
     // `_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN`).
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
-        auto tag = shadowNode->getTag();
-        
-        // Pass the JSI object directly
-        bool hasLayoutUpdates = updateNoneLayoutProps(rt, props->asObject(rt), tag);
-        if (hasLayoutUpdates) {
-            layoutUpdatesByTag.insert(tag);
-        }
-        
         // Still need to convert to dynamic for propsRegistry
         folly::dynamic propsDynamic = dynamicFromValue(rt, *props);
 
@@ -916,6 +908,15 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
   }
 
   for (const auto &[shadowNode, props] : copiedOperationsQueue) {
+    auto tag = shadowNode->getTag();
+
+    // Update layout props outside of the propsRegistry lock, as it can be re-entrant,
+    // see: https://app.asana.com/1/236888843494340/project/1199705967702853/task/1214021546045556?focus=true
+    bool hasLayoutUpdates = updateNoneLayoutProps(rt, props->asObject(rt), tag);
+    if (hasLayoutUpdates) {
+      layoutUpdatesByTag.insert(tag);
+    }
+
     const jsi::Value &nonAnimatableProps = filterNonAnimatableProps(rt, *props);
     if (nonAnimatableProps.isUndefined()) {
       continue;
