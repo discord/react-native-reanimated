@@ -6,15 +6,29 @@ import { useAnimatedStyle } from './useAnimatedStyle';
 
 // TODO: we should make sure that when useAP is used we are not assigning styles
 
-type UseAnimatedProps = <Props extends object>(
-  updater: () => Partial<Props>,
+/**
+ * Type for useAnimatedProps that preserves the exact return type of the updater.
+ * This allows TypeScript to know which specific props are being animated,
+ * enabling those props to become optional on the animated component.
+ *
+ * Usage patterns:
+ * 1. With explicit Props type: useAnimatedProps<MyProps>(() => ({ prop: value }))
+ *    Returns: Partial<MyProps>
+ * 2. Without type argument: useAnimatedProps(() => ({ prop: value }))
+ *    Returns: the exact type of the returned object
+ */
+type UseAnimatedProps = <
+  Props extends object,
+  TResult extends Partial<Props> = Partial<Props>
+>(
+  updater: () => TResult,
   dependencies?: DependencyList | null,
   adapters?:
     | AnimatedPropsAdapterFunction
     | AnimatedPropsAdapterFunction[]
     | null,
   isAnimatedProps?: boolean
-) => Partial<Props>;
+) => TResult;
 
 function useAnimatedPropsJS<Props extends object>(
   updater: () => Props,

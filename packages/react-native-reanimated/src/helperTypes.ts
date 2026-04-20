@@ -1,12 +1,13 @@
 'use strict';
 /*
-This file is a legacy remainder of manual types from react-native-reanimated.d.ts file. 
-I wasn't able to get rid of all of them from the code. 
+This file is a legacy remainder of manual types from react-native-reanimated.d.ts file.
+I wasn't able to get rid of all of them from the code.
 They should be treated as a temporary solution
-until time comes to refactor the code and get necessary types right. 
-This will not be easy though! 
+until time comes to refactor the code and get necessary types right.
+This will not be easy though!
 */
 
+import type React from 'react';
 import type { StyleProp } from 'react-native';
 
 import type {
@@ -115,22 +116,59 @@ type SharedTransitionProps = {
   sharedTransitionStyle?: SharedTransition;
 };
 
-type AnimatedPropsProp<Props extends object> = RestProps<Props> &
+export type AnimatedPropsProp<Props extends object> = RestProps<Props> &
   AnimatedStyleProps<Props> &
   LayoutProps &
   SharedTransitionProps;
 
-export type AnimatedProps<Props extends object> = RestProps<Props> &
-  AnimatedStyleProps<Props> &
-  LayoutProps &
-  SharedTransitionProps & {
-    /**
-     * Lets you animate component props.
-     *
-     * @see https://docs.swmansion.com/react-native-reanimated/docs/core/useAnimatedProps
-     */
-    animatedProps?: Partial<AnimatedPropsProp<Props>>;
-  };
+/**
+ * When animatedProps is provided, the keys it contains become optional on the component.
+ * This allows required props to be provided via animatedProps instead of directly.
+ */
+export type AnimatedProps<
+  Props extends object,
+  AP extends Partial<AnimatedPropsProp<Props>> = never
+> = [AP] extends [never]
+  ? // When AP is not provided (default usage), all props remain as-is
+    RestProps<Props> &
+      AnimatedStyleProps<Props> &
+      LayoutProps &
+      SharedTransitionProps & {
+        animatedProps?: Partial<AnimatedPropsProp<Props>>;
+      }
+  : // When AP is provided, props in AP become optional
+    Omit<RestProps<Props>, keyof AP> &
+      Partial<Pick<RestProps<Props>, keyof AP & keyof RestProps<Props>>> &
+      Omit<AnimatedStyleProps<Props>, keyof AP> &
+      Partial<
+        Pick<AnimatedStyleProps<Props>, keyof AP & keyof AnimatedStyleProps<Props>>
+      > &
+      LayoutProps &
+      SharedTransitionProps & {
+        /**
+         * Lets you animate component props.
+         *
+         * @see https://docs.swmansion.com/react-native-reanimated/docs/core/useAnimatedProps
+         */
+        animatedProps?: AP;
+      };
+
+/**
+ * A function component type that infers the animatedProps type and makes
+ * those props optional on the component.
+ *
+ * Uses ForwardRefExoticComponent for proper ref handling.
+ */
+export type AnimatedComponentType<
+  Props extends object,
+  RefType = unknown
+> = React.ForwardRefExoticComponent<
+  AnimatedProps<Props> & React.RefAttributes<RefType>
+> & {
+  <AP extends Partial<AnimatedPropsProp<Props>>>(
+    props: AnimatedProps<Props, AP> & React.RefAttributes<RefType>
+  ): React.ReactNode;
+};
 
 // THE LAND OF THE DEPRECATED
 

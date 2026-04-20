@@ -29,7 +29,7 @@ import {
 } from '../core';
 import { ReanimatedError } from '../errors';
 import { getShadowNodeWrapperFromRef } from '../fabricUtils';
-import type { AnimateProps } from '../helperTypes';
+import type { AnimatedComponentType } from '../helperTypes';
 import type { AnimatedStyleHandle } from '../hook/commonTypes';
 import type { BaseAnimationBuilder } from '../layoutReanimation';
 import { SharedTransition } from '../layoutReanimation';
@@ -130,19 +130,19 @@ type Options<P> = {
 export function createAnimatedComponent<P extends object>(
   component: FunctionComponent<P>,
   options?: Options<P>
-): FunctionComponent<AnimateProps<P>>;
+): AnimatedComponentType<P>;
 
 export function createAnimatedComponent<P extends object>(
   component: ComponentClass<P>,
   options?: Options<P>
-): ComponentClass<AnimateProps<P>>;
+): AnimatedComponentType<P>;
 
 export function createAnimatedComponent<P extends object>(
   // Actually ComponentType<P = {}> = ComponentClass<P> | FunctionComponent<P> but we need this overload too
   // since some external components (like FastImage) are typed just as ComponentType
   component: ComponentType<P>,
   options?: Options<P>
-): FunctionComponent<AnimateProps<P>> | ComponentClass<AnimateProps<P>>;
+): AnimatedComponentType<P>;
 
 /**
  * @deprecated Please use `Animated.FlatList` component instead of calling
@@ -152,16 +152,14 @@ export function createAnimatedComponent<P extends object>(
 export function createAnimatedComponent(
   component: typeof FlatList<unknown>,
   options?: Options<FlatListProps<unknown>>
-): ComponentClass<AnimateProps<FlatListProps<unknown>>>;
+): AnimatedComponentType<FlatListProps<unknown>>;
 
 let id = 0;
 
 export function createAnimatedComponent(
   Component: ComponentType<InitialComponentProps>,
   options?: Options<InitialComponentProps>
-):
-  | FunctionComponent<AnimateProps<InitialComponentProps>>
-  | ComponentClass<AnimateProps<InitialComponentProps>> {
+): AnimatedComponentType<InitialComponentProps> {
   if (!IS_REACT_19) {
     invariant(
       typeof Component !== 'function' ||
@@ -874,7 +872,10 @@ export function createAnimatedComponent(
   animatedComponent.displayName =
     Component.displayName || Component.name || 'Component';
 
-  return animatedComponent;
+  // Cast to AnimatedComponentType to enable generic animatedProps inference.
+  // The runtime behavior is correct; this cast just helps TypeScript understand
+  // that props provided via animatedProps should be optional on the component.
+  return animatedComponent as unknown as AnimatedComponentType<InitialComponentProps>;
 }
 
 function filterOutAnimatedStyles(
