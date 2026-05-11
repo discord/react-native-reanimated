@@ -24,7 +24,6 @@ import { adaptViewConfig } from '../ConfigHelper';
 import {
   enableLayoutAnimations,
   markNodeAsRemovable,
-  setNodeRemovalCallback,
   unmarkNodeAsRemovable,
 } from '../core';
 import { ReanimatedError } from '../errors';
@@ -54,7 +53,6 @@ import { PropsRegistryGarbageCollector } from '../PropsRegistryGarbageCollector'
 import { componentWithRef } from '../reactUtils';
 import type { ReanimatedHTMLElement } from '../ReanimatedModule/js-reanimated';
 import { updateLayoutAnimations } from '../UpdateLayoutAnimations';
-import { ComponentRegistry } from '../updateProps/ComponentRegistry';
 import type {
   AnimatedComponentProps,
   AnimatedComponentRef,
@@ -73,6 +71,7 @@ import { NativeEventsManager } from './NativeEventsManager';
 import { PropsFilter } from './PropsFilter';
 import setAndForwardRef from './setAndForwardRef';
 import { flattenArray } from './utils';
+import { ComponentRegistry } from '../updateProps/ComponentRegistry';
 
 const IS_WEB = isWeb();
 const IS_JEST = isJest();
@@ -83,27 +82,6 @@ if (IS_WEB) {
   configureWebLayoutAnimations();
 }
 
-// Register callback for freeze detection (Fabric only)
-// Extends PR #7316's markNodeAsRemovable infrastructure with Suspense-based freeze detection
-if (isFabric()) {
-  setNodeRemovalCallback((tag: number, isFrozen: boolean) => {
-    const component = ComponentRegistry.getComponent(tag);
-    if (!component || !component._willUnmount) {
-      // Skip if component doesn't exist or already handled (remounted before callback fired)
-      return;
-    }
-
-    if (!isFrozen) {
-      // Component truly unmounted - safe to clean up
-      component._detachStyles();
-      ComponentRegistry.unregister(tag);
-    }
-
-    // Always clear flag whether frozen or unmounted
-    component._willUnmount = false;
-  });
-}
-
 function onlyAnimatedStyles(styles: StyleProps[]): StyleProps[] {
   return styles.filter((style) => style?.viewDescriptors);
 }
@@ -111,9 +89,9 @@ function onlyAnimatedStyles(styles: StyleProps[]): StyleProps[] {
 type Options<P> = {
   setNativeProps?: (ref: AnimatedComponentRef, props: P) => void;
   /**
-   * Discord enables a performance improvement, which causes us to sync back any
-   * animated props from the UI thread back to react JS. Switching this to
-   * `true` disables this behavior. Default is `false`.
+   * Discord enables a performance improvement, which causes us to sync back any animated props from the UI thread
+   * back to react JS.
+   * Switching this to `true` disables this behavior. Default is `false`.
    */
   disableReactSync?: boolean;
 };
@@ -151,7 +129,7 @@ export function createAnimatedComponent<P extends object>(
 // @ts-ignore This is required to create this overload, since type of createAnimatedComponent is incorrect and doesn't include typeof FlatList
 export function createAnimatedComponent(
   component: typeof FlatList<unknown>,
-  options?: Options<FlatListProps<unknown>>
+  options?: Options<any>
 ): ComponentClass<AnimateProps<FlatListProps<unknown>>>;
 
 let id = 0;
@@ -159,9 +137,7 @@ let id = 0;
 export function createAnimatedComponent(
   Component: ComponentType<InitialComponentProps>,
   options?: Options<InitialComponentProps>
-):
-  | FunctionComponent<AnimateProps<InitialComponentProps>>
-  | ComponentClass<AnimateProps<InitialComponentProps>> {
+): any {
   if (!IS_REACT_19) {
     invariant(
       typeof Component !== 'function' ||
@@ -209,6 +185,7 @@ export function createAnimatedComponent(
 
       this.state = { settledProps: {}, reanimatedProps: {} };
 
+      const entering = this.props.entering;
       const skipEntering = this.context?.current;
       if (isFabric() && !skipEntering) {
         this._configureLayoutAnimation(
@@ -291,8 +268,6 @@ export function createAnimatedComponent(
         this._willUnmount &&
         typeof viewTag === 'number'
       ) {
-        // Component was frozen and is now remounting - cancel pending cleanup
-        this._willUnmount = false;
         unmarkNodeAsRemovable(viewTag);
       }
 
@@ -308,15 +283,7 @@ export function createAnimatedComponent(
         PropsRegistryGarbageCollector.unregisterView(viewTag);
       }
 
-      // Defer cleanup for Fabric (freeze detection via callback), immediate for Paper/Web
-      if (!SHOULD_BE_USE_WEB && isFabric()) {
-        // Mark as unmounting - callback will determine if frozen or truly unmounted
-        this._willUnmount = true;
-      } else {
-        // Paper/Web: Can't distinguish freeze from unmount, clean up immediately
-        this._detachStyles();
-      }
-
+      this._detachStyles();
       this._InlinePropManager.detachInlineProps();
       if (this.props.sharedTransitionTag) {
         this._configureSharedTransition(true);
@@ -327,9 +294,7 @@ export function createAnimatedComponent(
       );
 
       const exiting = this.props.exiting;
-
-      // Unregister from ComponentRegistry (Paper only - Fabric handled in callback)
-      if (!SHOULD_BE_USE_WEB && !isFabric() && viewTag !== -1) {
+      if (viewTag !== -1) {
         ComponentRegistry.unregister(viewTag);
       }
 
@@ -364,6 +329,8 @@ export function createAnimatedComponent(
         // remounted (e.g., when frozen) after componentWillUnmount is called.
         markNodeAsRemovable(wrapper);
       }
+
+      this._willUnmount = true;
     }
 
     _syncStylePropsBackToReact(props: StyleProps) {
@@ -398,31 +365,25 @@ export function createAnimatedComponent(
     }
 
     /**
-     * Mechanism to update this component's props from native.Add commentMore
-     * actions (As reanimated is changing the props only on the UI thread at
-     * some point we want to sync with the JS thread). Reanimated props can be
-     * animatedProps but also animated styles. Note that styles are flattened
-     * and passed as top level props.
+     * Mechanism to update this component's props from native.Add commentMore actions
+     * (As reanimated is changing the props only on the UI thread at some point we want to sync with the JS thread).
+     * Reanimated props can be animatedProps but also animated styles. Note that styles are flattened and passed as top level props.
      */
-    _updateReanimatedProps(props: { [key: string]: unknown }) {
+    _updateReanimatedProps(props: {[key: string]: unknown}) {
       if (options?.disableReactSync) {
         return;
       }
 
-      const transformedProps: { [key: string]: unknown } = {};
+      const transformedProps: {[key: string]: unknown} = {};
       for (const prop in props) {
         let value = props[prop];
-        if (
-          (prop === 'color' || prop.endsWith('Color')) &&
-          value &&
-          typeof value === 'string'
-        ) {
+        if ((prop === 'color' || prop.endsWith('Color')) && value && typeof value === 'string') {
           value = processColor(value);
         } else if (
-          prop === 'top' ||
-          prop === 'bottom' ||
-          prop.startsWith('margin') ||
-          prop.startsWith('padding')
+          prop == 'top'
+          || prop == 'bottom'
+          || prop.startsWith('margin')
+          || prop.startsWith('padding')
         ) {
           // if all reanimated props cannot be updated, there is no point in syncing them
           return;
@@ -460,9 +421,9 @@ export function createAnimatedComponent(
       } else {
         const hostInstance = findHostInstance(this);
         if (!hostInstance) {
-          /*
-            findHostInstance can return null for a component that doesn't render anything
-            (render function returns null). Example:
+          /* 
+            findHostInstance can return null for a component that doesn't render anything 
+            (render function returns null). Example: 
             svg Stop: https://github.com/react-native-svg/react-native-svg/blob/develop/src/elements/Stop.tsx
           */
           throw new ReanimatedError(
