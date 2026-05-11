@@ -1,5 +1,5 @@
 import type { Component, MutableRefObject, Ref } from 'react';
-import type { EntryExitAnimationFunction, ILayoutAnimationBuilder, ShadowNodeWrapper, SharedValue, StyleProps } from '../commonTypes';
+import type { EntryExitAnimationFunction, ILayoutAnimationBuilder, ShadowNodeWrapper, SharedValue, StyleProps, StyleUpdaterContainer } from '../commonTypes';
 import type { SkipEnteringContext } from '../component/LayoutAnimationConfig';
 import type { ViewConfig } from '../ConfigHelper';
 import type { BaseAnimationBuilder, SharedTransition } from '../layoutReanimation';
@@ -7,6 +7,7 @@ import type { ViewDescriptorsSet } from '../ViewDescriptorsSet';
 export interface AnimatedProps extends Record<string, unknown> {
     viewDescriptors?: ViewDescriptorsSet;
     initial?: SharedValue<StyleProps>;
+    styleUpdaterContainer?: StyleUpdaterContainer;
 }
 export interface ViewInfo {
     viewTag: number | AnimatedComponentRef | HTMLElement | null;
@@ -81,6 +82,7 @@ export interface IAnimatedComponentInternal {
     getComponentViewTag: () => number;
     /** A function that will update the components state (the state is used for the style prop) */
     _updateReanimatedProps: (props: StyleProps) => void;
+    _syncStylePropsBackToReact: (props: StyleProps) => void;
 }
 export type NestedArray<T> = T | NestedArray<T>[];
 export interface InitialComponentProps extends Record<string, unknown> {

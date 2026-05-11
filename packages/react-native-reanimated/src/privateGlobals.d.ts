@@ -123,5 +123,8 @@ declare global {
   var __reanimatedLoggerConfig: LoggerConfigInternal;
   // On UI Thread:Add commentMore actions
   var lastUpdateFrameTimeByTag: Record<number, number | undefined>;
-  var lastUpdateByTag: Record<number, StyleProps | AnimatedStyle<any> | undefined>;
+  var lastUpdateByTag: Record<
+    number,
+    StyleProps | AnimatedStyle<any> | undefined
+  >;
 }

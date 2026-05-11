@@ -7,23 +7,23 @@ type AllowlistsHolder = {
 const isFabric = (global as any)?.nativeFabricUIManager != null;
 
 const textProps = {
-    color: true,
-    tintColor: true,
-    shadowColor: true,
-    placeholderTextColor: true,
-}
+  color: true,
+  tintColor: true,
+  shadowColor: true,
+  placeholderTextColor: true,
+};
 
 const borderRadii = {
-    borderBottomEndRadius: true,
-    borderBottomLeftRadius: true,
-    borderBottomRightRadius: true,
-    borderBottomStartRadius: true,
-    borderRadius: true,
-    borderTopEndRadius: true,
-    borderTopLeftRadius: true,
-    borderTopRightRadius: true,
-    borderTopStartRadius: true,
-}
+  borderBottomEndRadius: true,
+  borderBottomLeftRadius: true,
+  borderBottomRightRadius: true,
+  borderBottomStartRadius: true,
+  borderRadius: true,
+  borderTopEndRadius: true,
+  borderTopLeftRadius: true,
+  borderTopRightRadius: true,
+  borderTopStartRadius: true,
+};
 
 export const PropsAllowlists: AllowlistsHolder = {
   /** Styles allowed to be direcly updated in UI thread */
@@ -50,7 +50,7 @@ export const PropsAllowlists: AllowlistsHolder = {
     translateX: true,
     translateY: true,
     /* text props */
-    ...(isFabric ? textProps : {})
+    ...(isFabric ? textProps : {}),
   },
   /**
    * Whitelist of view props that can be updated in native thread via

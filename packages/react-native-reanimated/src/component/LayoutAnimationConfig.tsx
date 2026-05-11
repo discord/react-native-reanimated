@@ -26,7 +26,11 @@ interface LayoutAnimationConfigProps {
   children: ReactNode;
 }
 
-function SkipEntering(props: { shouldSkip: boolean; itemKey?: string | number; children: ReactNode }) {
+function SkipEntering(props: {
+  shouldSkip: boolean;
+  itemKey?: string | number;
+  children: ReactNode;
+}) {
   const skipValueRef = useRef(props.shouldSkip);
   const lastItemKey = useRef(props.itemKey);
 
@@ -66,7 +70,9 @@ export class LayoutAnimationConfig extends Component<LayoutAnimationConfigProps>
   getMaybeWrappedChildren() {
     return Children.count(this.props.children) > 1 && this.props.skipExiting
       ? Children.map(this.props.children, (child) => (
-          <LayoutAnimationConfig itemKey={this.props.itemKey} skipExiting>{child}</LayoutAnimationConfig>
+          <LayoutAnimationConfig itemKey={this.props.itemKey} skipExiting>
+            {child}
+          </LayoutAnimationConfig>
         ))
       : this.props.children;
   }
@@ -94,7 +100,9 @@ export class LayoutAnimationConfig extends Component<LayoutAnimationConfigProps>
     }
 
     return (
-      <SkipEntering itemKey={this.props.itemKey} shouldSkip={this.props.skipEntering}>
+      <SkipEntering
+        itemKey={this.props.itemKey}
+        shouldSkip={this.props.skipEntering}>
         {children}
       </SkipEntering>
     );

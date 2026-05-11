@@ -1,15 +1,15 @@
-"use strict";
-import { isAndroid } from "react-native-reanimated/src/PlatformChecker";
-import { withStyleAnimation } from "../animation/styleAnimation";
+'use strict';
+import { isAndroid } from 'react-native-reanimated/src/PlatformChecker';
+import { withStyleAnimation } from '../animation/styleAnimation';
 import type {
   LayoutAnimation,
   LayoutAnimationStartFunction,
   SharedTransitionAnimationsValues,
   SharedValue,
-} from "../commonTypes";
-import { LayoutAnimationType } from "../commonTypes";
-import { makeMutableUI } from "../mutables";
-import { runOnUIImmediately } from "../threads";
+} from '../commonTypes';
+import { LayoutAnimationType } from '../commonTypes';
+import { makeMutableUI } from '../mutables';
+import { runOnUIImmediately } from '../threads';
 
 const TAG_OFFSET = 1e9;
 const IS_ANDROID = isAndroid();
@@ -19,7 +19,7 @@ function startObservingProgress(
   sharedValue: SharedValue<Record<string, unknown>>,
   animationType: LayoutAnimationType
 ): void {
-  "worklet";
+  'worklet';
   const isSharedTransition =
     animationType === LayoutAnimationType.SHARED_ELEMENT_TRANSITION;
   sharedValue.addListener(tag + TAG_OFFSET, () => {
@@ -32,7 +32,7 @@ function stopObservingProgress(
   sharedValue: SharedValue<number>,
   removeView = false
 ): void {
-  "worklet";
+  'worklet';
   sharedValue.removeListener(tag + TAG_OFFSET);
   global._notifyAboutEnd(tag, removeView);
 }
@@ -41,7 +41,7 @@ function createLayoutAnimationManager(): {
   start: LayoutAnimationStartFunction;
   stop: (tag: number) => void;
 } {
-  "worklet";
+  'worklet';
   const currentAnimationForTag = new Map();
   const mutableValuesForTag = new Map();
 
@@ -49,8 +49,8 @@ function createLayoutAnimationManager(): {
     tag: number,
     type: LayoutAnimationType,
     /**
-     * CreateLayoutAnimationManager creates an animation manager for both
-     * Layout animations and Shared Transition Elements animations.
+     * CreateLayoutAnimationManager creates an animation manager for both Layout
+     * animations and Shared Transition Elements animations.
      */
     yogaValues: Partial<SharedTransitionAnimationsValues>,
     config: (arg: Partial<SharedTransitionAnimationsValues>) => LayoutAnimation
@@ -122,7 +122,7 @@ function createLayoutAnimationManager(): {
 }
 
 runOnUIImmediately(() => {
-  "worklet";
+  'worklet';
   global.LayoutAnimationsManager = createLayoutAnimationManager();
 })();
 

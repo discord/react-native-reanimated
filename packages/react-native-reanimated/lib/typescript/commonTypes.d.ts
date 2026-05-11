@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import type { ImageStyle, TextStyle, TransformsStyle, ViewStyle } from 'react-native';
+import type { HostInstance, ImageStyle, ScrollView, TextStyle, TransformsStyle, ViewStyle } from 'react-native';
 import type { EasingFunctionFactory } from './Easing';
 import type { ReanimatedModuleProxy } from './ReanimatedModule';
 import type { WorkletsModuleProxy } from './worklets';
@@ -166,6 +166,9 @@ export interface Mutable<Value = unknown> extends SharedValue<Value> {
      */
     _value: Value;
 }
+export type StyleUpdaterContainer = {
+    current: ((forceUpdate: boolean) => void) | undefined;
+};
 export type ShareableRef<T = unknown> = {
     __hostObjectShareableJSRef: T;
 };
@@ -318,7 +321,11 @@ export declare enum InterfaceOrientation {
     ROTATION_270 = 270
 }
 export type ShadowNodeWrapper = {
-    __hostObjectShadowNodeWrapper: never;
+    __nativeStateShadowNodeWrapper: never;
+};
+export type SettledUpdate = {
+    viewTag: number;
+    styleProps: StyleProps;
 };
 export declare enum KeyboardState {
     UNKNOWN = 0,
@@ -379,5 +386,10 @@ export type AnimatedTransform = MaybeSharedValueRecursive<TransformsStyle['trans
 export type AnimateStyle<Style = DefaultStyle> = AnimatedStyle<Style>;
 /** @deprecated This type is no longer relevant. */
 export type StylesOrDefault<T> = 'style' extends keyof T ? MaybeSharedValueRecursive<T['style']> : Record<string, unknown>;
+export type InternalHostInstance = Partial<HostInstance & {
+    getNativeScrollRef: () => Partial<InternalHostInstance & typeof ScrollView> | undefined | null;
+    __internalInstanceHandle: Record<string, any>;
+    _reactInternals: unknown;
+}>;
 export {};
 //# sourceMappingURL=commonTypes.d.ts.map

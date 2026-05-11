@@ -135,7 +135,10 @@ export interface IAnimatedComponentInternal {
    * It is not related to event handling.
    */
   getComponentViewTag: () => number;
-  /** A function that will update the components state (the state is used for the style prop) */
+  /**
+   * A function that will update the components state (the state is used for the
+   * style prop)
+   */
   _updateReanimatedProps: (props: StyleProps) => void;
 
   _syncStylePropsBackToReact: (props: StyleProps) => void;

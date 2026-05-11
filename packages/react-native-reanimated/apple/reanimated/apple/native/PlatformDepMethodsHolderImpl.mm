@@ -104,7 +104,8 @@ RequestRenderFunction makeRequestRender(REANodesManager *nodesManager)
 #ifdef RCT_NEW_ARCH_ENABLED
 SynchronouslyUpdateUIPropsFunction makeSynchronouslyUpdateUIPropsFunction(REANodesManager *nodesManager)
 {
-  auto synchronouslyUpdateUIPropsFunction = [nodesManager](jsi::Runtime &rt, Tag tag, const jsi::Object &props) -> void {
+  auto synchronouslyUpdateUIPropsFunction = [nodesManager](
+                                                jsi::Runtime &rt, Tag tag, const jsi::Object &props) -> void {
     NSNumber *viewTag = @(tag);
     NSDictionary *uiProps = convertJSIObjectToNSDictionary(rt, props);
     [nodesManager synchronouslyUpdateViewOnUIThread:viewTag props:uiProps];
@@ -286,7 +287,7 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
 {
   auto requestRender = makeRequestRender(nodesManager);
 
-#ifdef RCT_NEW_ARCH_ENABLED    
+#ifdef RCT_NEW_ARCH_ENABLED
   auto synchronouslyUpdateUIPropsFunction = makeSynchronouslyUpdateUIPropsFunction(nodesManager);
 #else
   RCTUIManager *uiManager = nodesManager.uiManager;

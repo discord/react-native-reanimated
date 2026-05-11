@@ -1,4 +1,4 @@
-import type { LayoutAnimationBatchItem, ShadowNodeWrapper, ShareableRef, Value3D, ValueRotation, WorkletFunction } from '../commonTypes';
+import type { LayoutAnimationBatchItem, SettledUpdate, ShadowNodeWrapper, ShareableRef, Value3D, ValueRotation, WorkletFunction } from '../commonTypes';
 import type { WorkletRuntime } from '../runtimes';
 /** Type of `__reanimatedModuleProxy` injected with JSI. */
 export interface ReanimatedModuleProxy {
@@ -19,5 +19,6 @@ export interface ReanimatedModuleProxy {
     setShouldAnimateExitingForTag(viewTag: number, shouldAnimate: boolean): void;
     markNodeAsRemovable(shadowNodeWrapper: ShadowNodeWrapper): void;
     unmarkNodeAsRemovable(viewTag: number): void;
+    getSettledUpdates(): SettledUpdate[];
 }
 //# sourceMappingURL=reanimatedModuleProxy.d.ts.map

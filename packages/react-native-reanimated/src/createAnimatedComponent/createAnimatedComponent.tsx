@@ -89,9 +89,9 @@ function onlyAnimatedStyles(styles: StyleProps[]): StyleProps[] {
 type Options<P> = {
   setNativeProps?: (ref: AnimatedComponentRef, props: P) => void;
   /**
-   * Discord enables a performance improvement, which causes us to sync back any animated props from the UI thread
-   * back to react JS.
-   * Switching this to `true` disables this behavior. Default is `false`.
+   * Discord enables a performance improvement, which causes us to sync back any
+   * animated props from the UI thread back to react JS. Switching this to
+   * `true` disables this behavior. Default is `false`.
    */
   disableReactSync?: boolean;
 };
@@ -365,25 +365,31 @@ export function createAnimatedComponent(
     }
 
     /**
-     * Mechanism to update this component's props from native.Add commentMore actions
-     * (As reanimated is changing the props only on the UI thread at some point we want to sync with the JS thread).
-     * Reanimated props can be animatedProps but also animated styles. Note that styles are flattened and passed as top level props.
+     * Mechanism to update this component's props from native.Add commentMore
+     * actions (As reanimated is changing the props only on the UI thread at
+     * some point we want to sync with the JS thread). Reanimated props can be
+     * animatedProps but also animated styles. Note that styles are flattened
+     * and passed as top level props.
      */
-    _updateReanimatedProps(props: {[key: string]: unknown}) {
+    _updateReanimatedProps(props: { [key: string]: unknown }) {
       if (options?.disableReactSync) {
         return;
       }
 
-      const transformedProps: {[key: string]: unknown} = {};
+      const transformedProps: { [key: string]: unknown } = {};
       for (const prop in props) {
         let value = props[prop];
-        if ((prop === 'color' || prop.endsWith('Color')) && value && typeof value === 'string') {
+        if (
+          (prop === 'color' || prop.endsWith('Color')) &&
+          value &&
+          typeof value === 'string'
+        ) {
           value = processColor(value);
         } else if (
-          prop == 'top'
-          || prop == 'bottom'
-          || prop.startsWith('margin')
-          || prop.startsWith('padding')
+          prop == 'top' ||
+          prop == 'bottom' ||
+          prop.startsWith('margin') ||
+          prop.startsWith('padding')
         ) {
           // if all reanimated props cannot be updated, there is no point in syncing them
           return;

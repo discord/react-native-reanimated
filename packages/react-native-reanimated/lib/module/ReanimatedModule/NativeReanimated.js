@@ -107,6 +107,9 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
   unmarkNodeAsRemovable(viewTag) {
     this.#reanimatedModuleProxy.unmarkNodeAsRemovable(viewTag);
   }
+  getSettledUpdates() {
+    return this.#reanimatedModuleProxy.getSettledUpdates();
+  }
 }
 class DummyReanimatedModuleProxy {
   scheduleOnUI() {}
@@ -137,6 +140,9 @@ class DummyReanimatedModuleProxy {
   unregisterEventHandler() {}
   getViewProp() {
     return null;
+  }
+  getSettledUpdates() {
+    return [];
   }
 }
 //# sourceMappingURL=NativeReanimated.js.map

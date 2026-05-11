@@ -22,6 +22,7 @@ import Slider from '@react-native-community/slider';
  * for views that are already deleted.
  *
  * Root Cause (LayoutAnimationsProxy.cpp):
+ *
  * - Line 40: addOngoingAnimations() called BEFORE processing removals
  * - Line 53: handleRemovals() processes DELETE mutations
  * - Line 58: addOngoingAnimations() called AGAIN after deletions
@@ -29,18 +30,22 @@ import Slider from '@react-native-community/slider';
  *   if views were just deleted
  *
  * Race Condition Sequence:
+ *
  * 1. Items are reordered/repositioned, triggering layout animations on all items
- * 2. Layout animations start running, progressLayoutAnimation() updates updateMap on UI thread
- * 3. JS thread triggers view removal (user action) while layout animations are active
- * 4. pullTransaction() called with DELETE mutations
- * 5. addOngoingAnimations() reads stale updateMap and adds UPDATE for deleted tag
+ * 2. Layout animations start running, progressLayoutAnimation() updates updateMap
+ *    on UI thread
+ * 3. JS thread triggers view removal (user action) while layout animations are
+ *    active
+ * 4. PullTransaction() called with DELETE mutations
+ * 5. AddOngoingAnimations() reads stale updateMap and adds UPDATE for deleted tag
  * 6. Crash: "Unable to find viewState for tag [number]"
  *
  * Key: The layout prop causes items to animate their position changes. When we
  * reorder items or add items at the start, existing items animate to their new
- * positions. If we remove them during these layout animations, the race condition
- * occurs because progressLayoutAnimation() has populated updateMap with UPDATE
- * mutations for views that are being deleted in the same transaction.
+ * positions. If we remove them during these layout animations, the race
+ * condition occurs because progressLayoutAnimation() has populated updateMap
+ * with UPDATE mutations for views that are being deleted in the same
+ * transaction.
  *
  * Expected crash on Android: RetryableMountingLayerException
  */
@@ -91,7 +96,9 @@ export default function LayoutAnimationRaceCondition() {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
-      console.log(`[RaceCondition] Reordered ${shuffled.length} items. Layout animations starting...`);
+      console.log(
+        `[RaceCondition] Reordered ${shuffled.length} items. Layout animations starting...`
+      );
       return shuffled;
     });
   }, []);
@@ -108,7 +115,9 @@ export default function LayoutAnimationRaceCondition() {
     }
 
     const cycleNumber = operationCount + 1;
-    console.log(`[RaceCondition] Auto test cycle ${cycleNumber} started (items: ${items.length})`);
+    console.log(
+      `[RaceCondition] Auto test cycle ${cycleNumber} started (items: ${items.length})`
+    );
 
     // Step 1: Add items if we don't have enough
     // Step 2: Trigger layout animation (reorder or add more at start)
@@ -125,13 +134,17 @@ export default function LayoutAnimationRaceCondition() {
       // Wait a bit for items to render, then trigger animation
       setTimeout(() => {
         if (!autoTestRef.current) return;
-        console.log('[RaceCondition] Items rendered, now reordering to trigger layout animations...');
+        console.log(
+          '[RaceCondition] Items rendered, now reordering to trigger layout animations...'
+        );
         reorderItems();
 
         // Now remove while animation is running
         setTimeout(() => {
           if (!autoTestRef.current) return;
-          console.log('[RaceCondition] Removing all items while animations are running...');
+          console.log(
+            '[RaceCondition] Removing all items while animations are running...'
+          );
           removeAllItems();
 
           setTimeout(() => {
@@ -146,18 +159,24 @@ export default function LayoutAnimationRaceCondition() {
       // We have items, trigger layout animation
       if (cycleNumber % 2 === 0) {
         // Even cycles: Reorder items (triggers layout animations on ALL items)
-        console.log('[RaceCondition] Reordering items (triggers layout animations)...');
+        console.log(
+          '[RaceCondition] Reordering items (triggers layout animations)...'
+        );
         reorderItems();
       } else {
         // Odd cycles: Add items at start (causes existing items to shift)
-        console.log('[RaceCondition] Adding items at start (triggers layout animations)...');
+        console.log(
+          '[RaceCondition] Adding items at start (triggers layout animations)...'
+        );
         addItems(batchSize);
       }
 
       // Remove while animation is running
       setTimeout(() => {
         if (!autoTestRef.current) return;
-        console.log('[RaceCondition] Removing all items while animations are running...');
+        console.log(
+          '[RaceCondition] Removing all items while animations are running...'
+        );
         removeAllItems();
 
         setTimeout(() => {
@@ -168,7 +187,15 @@ export default function LayoutAnimationRaceCondition() {
         }, 100);
       }, removeDelay);
     }
-  }, [addItems, reorderItems, removeAllItems, batchSize, removeDelay, operationCount, items.length]);
+  }, [
+    addItems,
+    reorderItems,
+    removeAllItems,
+    batchSize,
+    removeDelay,
+    operationCount,
+    items.length,
+  ]);
 
   const startAutoTest = useCallback(() => {
     console.log('[RaceCondition] Starting auto test...');

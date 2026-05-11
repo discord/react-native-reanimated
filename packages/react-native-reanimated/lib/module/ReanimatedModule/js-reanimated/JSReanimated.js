@@ -200,6 +200,9 @@ class JSReanimated {
         return 'AbsoluteOrientationSensor';
     }
   }
+  getSettledUpdates() {
+    throw new ReanimatedError('`getSettledUpdates` is not available in JSReanimated.');
+  }
   detectPlatform() {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     if (userAgent === undefined) {

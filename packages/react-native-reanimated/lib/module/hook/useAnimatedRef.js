@@ -9,11 +9,11 @@ import { shareableMappingCache } from "../shareableMappingCache.js";
 import { makeShareableCloneRecursive } from "../shareables.js";
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
 function getComponentOrScrollable(component) {
-  if (component.getNativeScrollRef) {
-    return component.getNativeScrollRef();
-  }
   if (component.getScrollableNode) {
     return component.getScrollableNode();
+  }
+  if (component.getNativeScrollRef) {
+    return component.getNativeScrollRef();
   }
   return component;
 }
@@ -27,7 +27,8 @@ function useAnimatedRefBase(getWrapper) {
         tagOrWrapperRef.current = getWrapper(component);
 
         // We have to unwrap the tag from the shadow node wrapper.
-        fun.getTag = () => findNodeHandle(getComponentOrScrollable(component));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fun.getTag = () => findNodeHandle(component);
         fun.current = component;
         if (observers.size) {
           const currentTag = fun?.getTag?.() ?? null;
@@ -64,8 +65,8 @@ function useAnimatedRefNative() {
   !isFabric() && IS_APPLE ? makeMutable(null) : null);
   const [tagOrWrapper] = useState(() => makeMutable(null));
   const ref = useAnimatedRefBase(component => {
-    const getTagOrWrapper = isFabric() ? getShadowNodeWrapperFromRef : findNodeHandle;
-    tagOrWrapper.value = getTagOrWrapper(getComponentOrScrollable(component));
+    const getTagOrWrapper = isFabric() ? getShadowNodeWrapperFromRef : comp => findNodeHandle(getComponentOrScrollable(comp));
+    tagOrWrapper.value = getTagOrWrapper(component);
     if (viewName) {
       viewName.value = component?.viewConfig?.uiViewClassName || 'RCTView';
     }

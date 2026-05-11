@@ -118,7 +118,7 @@ function findDescendantWithExitingAnimation(node, root) {
   if (!(node instanceof HTMLElement)) {
     return;
   }
-  if (node.reanimatedDummy && node.removedAfterAnimation === undefined) {
+  if (node.isDummy && node.removedAfterAnimation === undefined) {
     reattachElementToAncestor(node, root);
   }
   const children = Array.from(node.children);

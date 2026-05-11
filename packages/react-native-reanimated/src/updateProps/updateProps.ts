@@ -41,12 +41,14 @@ if (shouldBeUseWeb()) {
     // processing is alternating the style props as RN expects them.
     viewDescriptors.value.forEach((viewDescriptor) => {
       // TODO: although its not a lot of data, this global map is never cleared when the component is unmounted.
-      const prevState = global.lastUpdateByTag[viewDescriptor.tag as number] ?? {};
+      const prevState =
+        global.lastUpdateByTag[viewDescriptor.tag as number] ?? {};
       global.lastUpdateByTag[viewDescriptor.tag as number] = {
         ...prevState, // its important to preserve previous state. When multiple style props are animated they might not all appear in one update.
-        ...updates // copy updates as process mutates inline
+        ...updates, // copy updates as process mutates inline
       };
-      global.lastUpdateFrameTimeByTag[viewDescriptor.tag as number] = global.__frameTimestamp;
+      global.lastUpdateFrameTimeByTag[viewDescriptor.tag as number] =
+        global.__frameTimestamp;
     });
 
     processColorsInProps(updates);
@@ -84,7 +86,6 @@ function updatePropsOnReactJS(tag: number, props: StyleProps) {
   }
 }
 
-
 const createUpdatePropsManager = isFabric()
   ? () => {
       'worklet';
@@ -107,7 +108,8 @@ const createUpdatePropsManager = isFabric()
           return;
         }
 
-        if (currentFrameTime - lastUpdateFrameTime >= 20) { // ~ 2x frames
+        if (currentFrameTime - lastUpdateFrameTime >= 20) {
+          // ~ 2x frames
           // Animation appears to have settled - update component props on JS
           runOnJS(updatePropsOnReactJS)(tag, global.lastUpdateByTag[tag]);
           global.lastUpdateByTag[tag] = undefined;

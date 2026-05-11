@@ -1,11 +1,11 @@
 #if __cplusplus
 
-#import <reanimated/apple/LayoutReanimation/REAAnimationsManager.h>
-#import <reanimated/apple/keyboardObserver/REAKeyboardEventObserver.h>
-#import <reanimated/apple/REAModule.h>
-#import <reanimated/apple/REANodesManager.h>
 #import <React/RCTEventDispatcher.h>
 #import <reanimated/NativeModules/ReanimatedModuleProxy.h>
+#import <reanimated/apple/LayoutReanimation/REAAnimationsManager.h>
+#import <reanimated/apple/REAModule.h>
+#import <reanimated/apple/REANodesManager.h>
+#import <reanimated/apple/keyboardObserver/REAKeyboardEventObserver.h>
 #import <reanimated/apple/sensor/ReanimatedSensorContainer.h>
 #import <memory>
 

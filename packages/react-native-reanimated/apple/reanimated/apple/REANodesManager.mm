@@ -243,7 +243,7 @@ static BOOL _isPerformOperationsActive = NO;
     [displayLink invalidate];
   }];
 }
-    
+
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {

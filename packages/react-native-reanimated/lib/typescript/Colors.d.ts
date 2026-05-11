@@ -25,6 +25,7 @@ export declare const rgbaColor: (r: number, g: number, b: number, alpha?: number
  */
 export declare function RGBtoHSV(r: number, g: number, b: number): HSV;
 export declare const hsvToColor: (h: number, s: number, v: number, a: number) => number | string;
+export declare function processColorInitially(color: unknown): number | null | undefined;
 export declare function isColor(value: unknown): boolean;
 export declare function processColor(color: unknown): number | null | undefined;
 export declare function processColorsInProps(props: StyleProps): void;

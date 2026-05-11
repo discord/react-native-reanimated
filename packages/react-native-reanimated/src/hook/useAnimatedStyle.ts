@@ -590,7 +590,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
               remoteState,
               areAnimationsActive,
               isAnimatedProps
-            )
+            );
             remoteState.isFirstRun = false;
           })();
         });
@@ -650,8 +650,9 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
         writable: false,
         configurable: false,
       });
-      animatedStyleHandle.current =
-        handle as typeof handle & { styleUpdaterContainer: StyleUpdaterContainer };
+      animatedStyleHandle.current = handle as typeof handle & {
+        styleUpdaterContainer: StyleUpdaterContainer;
+      };
     } else {
       animatedStyleHandle.current = isJest()
         ? {
