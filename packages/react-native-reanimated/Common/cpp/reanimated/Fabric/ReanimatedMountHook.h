@@ -12,15 +12,11 @@ namespace reanimated {
 
 using namespace facebook::react;
 
-// Forward declaration
-class ReanimatedModuleProxy;
-
 class ReanimatedMountHook : public UIManagerMountHook {
  public:
   ReanimatedMountHook(
       const std::shared_ptr<PropsRegistry> &propsRegistry,
-      const std::shared_ptr<UIManager> &uiManager,
-      const std::shared_ptr<ReanimatedModuleProxy> &moduleProxy);
+      const std::shared_ptr<UIManager> &uiManager);
   ~ReanimatedMountHook() noexcept override;
 
   void shadowTreeDidMount(
@@ -35,7 +31,6 @@ class ReanimatedMountHook : public UIManagerMountHook {
  private:
   const std::shared_ptr<PropsRegistry> propsRegistry_;
   const std::shared_ptr<UIManager> uiManager_;
-  const std::weak_ptr<ReanimatedModuleProxy> moduleProxy_;
 };
 
 } // namespace reanimated

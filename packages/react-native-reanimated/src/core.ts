@@ -230,11 +230,3 @@ export function markNodeAsRemovable(shadowNodeWrapper: ShadowNodeWrapper) {
 export function unmarkNodeAsRemovable(viewTag: number) {
   ReanimatedModule.unmarkNodeAsRemovable(viewTag);
 }
-
-export function setNodeRemovalCallback(
-  callback: (tag: number, isFrozen: boolean) => void
-) {
-  if (isFabric()) {
-    ReanimatedModule.setNodeRemovalCallback(callback);
-  }
-}

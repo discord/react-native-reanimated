@@ -197,10 +197,6 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
     this.#reanimatedModuleProxy.unmarkNodeAsRemovable(viewTag);
   }
 
-  setNodeRemovalCallback(callback: (tag: number, isFrozen: boolean) => void) {
-    this.#reanimatedModuleProxy.setNodeRemovalCallback(callback);
-  }
-
   getSettledUpdates(): SettledUpdate[] {
     return this.#reanimatedModuleProxy.getSettledUpdates();
   }
@@ -228,7 +224,6 @@ class DummyReanimatedModuleProxy implements ReanimatedModuleProxy {
   unsubscribeFromKeyboardEvents(): void {}
   markNodeAsRemovable(): void {}
   unmarkNodeAsRemovable(): void {}
-  setNodeRemovalCallback(): void {}
 
   registerSensor(): number {
     return -1;

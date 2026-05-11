@@ -71,9 +71,5 @@ export interface ReanimatedModuleProxy {
   markNodeAsRemovable(shadowNodeWrapper: ShadowNodeWrapper): void;
   unmarkNodeAsRemovable(viewTag: number): void;
 
-  setNodeRemovalCallback(
-    callback: (tag: number, isFrozen: boolean) => void
-  ): void;
-
   getSettledUpdates(): SettledUpdate[];
 }
