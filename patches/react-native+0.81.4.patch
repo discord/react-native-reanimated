@@ -1,0 +1,284 @@
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp
+index 961a8bb..19fdbca 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/view/YogaLayoutableShadowNode.cpp
+@@ -25,8 +25,53 @@
+ #include <limits>
+ #include <memory>
+ 
++#ifdef __ANDROID__
++#include <android/log.h>
++#endif
++
+ namespace facebook::react {
+ 
++namespace {
++
++const char* displayTypeString(DisplayType displayType) {
++  switch (displayType) {
++    case DisplayType::None:
++      return "none";
++    case DisplayType::Flex:
++      return "flex";
++    case DisplayType::Contents:
++      return "contents";
++  }
++}
++
++void logFreezeYogaChild(
++    const char* phase,
++    const YogaLayoutableShadowNode& childNode) {
++#ifdef __ANDROID__
++  const auto& nativeId = childNode.getProps()->nativeId;
++  if (nativeId.rfind("freeze-", 0) != 0) {
++    return;
++  }
++
++  const auto layoutMetrics = childNode.getLayoutMetrics();
++  __android_log_print(
++      ANDROID_LOG_INFO,
++      "RNFreezeDebug",
++      "%s tag=%d nativeId=%s display=%s height=%f width=%f",
++      phase,
++      childNode.getTag(),
++      nativeId.c_str(),
++      displayTypeString(layoutMetrics.displayType),
++      layoutMetrics.frame.size.height,
++      layoutMetrics.frame.size.width);
++#else
++  (void)phase;
++  (void)childNode;
++#endif
++}
++
++} // namespace
++
+ static int FabricDefaultYogaLog(
+     const YGConfigConstRef /*unused*/,
+     const YGNodeConstRef /*unused*/,
+@@ -696,6 +741,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
+ 
+     // Verifying that the Yoga node belongs to the ShadowNode.
+     react_native_assert(&childNode.yogaNode_ == childYogaNode);
++    logFreezeYogaChild("yoga child visit", childNode);
+ 
+     if (childYogaNode->getHasNewLayout()) {
+       childYogaNode->setHasNewLayout(false);
+@@ -726,9 +772,13 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
+       }
+ 
+       childNode.setLayoutMetrics(newLayoutMetrics);
++      logFreezeYogaChild("yoga child setLayoutMetrics", childNode);
+ 
+       if (newLayoutMetrics.displayType != DisplayType::None) {
++        logFreezeYogaChild("yoga child recurse", childNode);
+         childNode.layout(layoutContext);
++      } else {
++        logFreezeYogaChild("yoga child skip display none", childNode);
+       }
+     }
+   }
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.cpp b/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.cpp
+index 483a191..f1145bf 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTree.cpp
+@@ -11,6 +11,7 @@
+ #include <react/debug/react_native_assert.h>
+ #include <react/renderer/components/root/RootComponentDescriptor.h>
+ #include <react/renderer/components/view/ViewShadowNode.h>
++#include <react/renderer/core/LayoutableShadowNode.h>
+ #include <react/renderer/core/LayoutContext.h>
+ #include <react/renderer/core/LayoutPrimitives.h>
+ #include <react/renderer/mounting/ShadowTreeRevision.h>
+@@ -20,10 +21,72 @@
+ 
+ #include "ShadowTreeDelegate.h"
+ 
++#ifdef __ANDROID__
++#include <android/log.h>
++#endif
++
++// Discord - Wrap with ScopeGuard for a function to run on the end of the scope:
++#include <functional>
++struct ScopeGuard {
++  std::function<void()> fn;
++  ~ScopeGuard() { fn(); }
++};
++#define CONCAT_IMPL(x, y) x##y
++#define CONCAT(x, y) CONCAT_IMPL(x, y)
++#define defer(code) ScopeGuard CONCAT(defer, LINE)([&](){code;})
++
+ namespace facebook::react {
+ 
+ namespace {
+ const int MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING = 3;
++
++const char* displayTypeString(DisplayType displayType) {
++  switch (displayType) {
++    case DisplayType::None:
++      return "none";
++    case DisplayType::Flex:
++      return "flex";
++    case DisplayType::Contents:
++      return "contents";
++  }
++}
++
++void logFreezeNode(const char* phase, const ShadowNode& shadowNode) {
++#ifdef __ANDROID__
++  const auto& nativeId = shadowNode.getProps()->nativeId;
++  if (nativeId.rfind("freeze-", 0) == 0) {
++    if (auto layoutableShadowNode =
++            dynamic_cast<const LayoutableShadowNode*>(&shadowNode)) {
++      auto layoutMetrics = layoutableShadowNode->getLayoutMetrics();
++      __android_log_print(
++          ANDROID_LOG_INFO,
++          "RNFreezeDebug",
++          "%s tag=%d nativeId=%s display=%s height=%f width=%f",
++          phase,
++          shadowNode.getTag(),
++          nativeId.c_str(),
++          displayTypeString(layoutMetrics.displayType),
++          layoutMetrics.frame.size.height,
++          layoutMetrics.frame.size.width);
++    } else {
++      __android_log_print(
++          ANDROID_LOG_INFO,
++          "RNFreezeDebug",
++          "%s tag=%d nativeId=%s non-layoutable",
++          phase,
++          shadowNode.getTag(),
++          nativeId.c_str());
++    }
++  }
++
++  for (const auto& child : shadowNode.getChildren()) {
++    logFreezeNode(phase, *child);
++  }
++#else
++  (void)phase;
++  (void)shadowNode;
++#endif
++}
+ } // namespace
+ 
+ using CommitStatus = ShadowTree::CommitStatus;
+@@ -301,6 +364,8 @@ CommitStatus ShadowTree::tryCommit(
+     return CommitStatus::Cancelled;
+   }
+ 
++  logFreezeNode("before layout", *newRootShadowNode);
++
+   if (commitOptions.enableStateReconciliation) {
+     auto updatedNewRootShadowNode =
+         progressState(*newRootShadowNode, *oldRootShadowNode);
+@@ -315,6 +380,7 @@ CommitStatus ShadowTree::tryCommit(
+       *this, oldRootShadowNode, newRootShadowNode, commitOptions);
+ 
+   if (!newRootShadowNode) {
++    delegate_.shadowTreeCommitFinalized(commitOptions);
+     return CommitStatus::Cancelled;
+   }
+ 
+@@ -328,9 +394,19 @@ CommitStatus ShadowTree::tryCommit(
+   telemetry.unsetAsThreadLocal();
+   telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
+ 
++#ifdef __ANDROID__
++  __android_log_print(
++      ANDROID_LOG_INFO,
++      "RNFreezeDebug",
++      "after layout affected=%zu",
++      affectedLayoutableNodes.size());
++#endif
++  logFreezeNode("after layout", *newRootShadowNode);
++
+   {
+     // Updating `currentRevision_` in unique manner if it hasn't changed.
+     UniqueLock lock = uniqueCommitLock();
++    defer(delegate_.shadowTreeCommitFinalized(commitOptions));
+ 
+     if (currentRevision_.number != oldRevision.number) {
+       return CommitStatus::Failed;
+@@ -338,6 +414,8 @@ CommitStatus ShadowTree::tryCommit(
+ 
+     auto newRevisionNumber = currentRevision_.number + 1;
+ 
++    delegate_.shadowTreeCommitSucceeded(commitOptions);
++
+     {
+       std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
+       updateMountedFlag(
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h b/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h
+index 1440272..ed73511 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h
+@@ -38,6 +38,11 @@ class ShadowTreeDelegate {
+       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
+       bool mountSynchronously) const = 0;
+ 
++  // Called after a commit is known to succeed, however, still under the commit lock
++  virtual void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) const = 0;
++  // Will be called in each case once we are done with the current commit attempt
++  virtual void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) const = 0;
++
+   virtual ~ShadowTreeDelegate() noexcept = default;
+ };
+ 
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.cpp b/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.cpp
+index edee8ac..b47f224 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.cpp
++++ b/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.cpp
+@@ -626,6 +626,22 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
+   return resultRootShadowNode;
+ }
+ 
++void UIManager::shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) const {
++  std::shared_lock lock(commitHookMutex_);
++
++  for (auto* commitHook : commitHooks_) {
++    commitHook->shadowTreeCommitSucceeded(commitOptions);
++  }
++}
++
++void UIManager::shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) const {
++  std::shared_lock lock(commitHookMutex_);
++
++  for (auto* commitHook : commitHooks_) {
++    commitHook->shadowTreeCommitFinalized(commitOptions);
++  }
++}
++
+ void UIManager::shadowTreeDidFinishTransaction(
+     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
+     bool mountSynchronously) const {
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.h b/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.h
+index 43de6ef..5b794fc 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManager.h
+@@ -135,6 +135,9 @@ class UIManager final : public ShadowTreeDelegate {
+       const RootShadowNode::Unshared& newRootShadowNode,
+       const ShadowTree::CommitOptions& commitOptions) const override;
+ 
++  void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) const override;
++  void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) const override;
++
+   std::shared_ptr<ShadowNode> createNode(
+       Tag tag,
+       const std::string& componentName,
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h b/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h
+index 2e15c6c..e01238b 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h
+@@ -54,6 +54,11 @@ class UIManagerCommitHook {
+     return newRootShadowNode;
+   }
+ 
++  // Discord - Called after a commit is known to succeed, however, still under the commit lock
++  virtual void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) = 0;
++  // Discord - Will be called in each case once we are done with the current commit attempt
++  virtual void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) = 0;
++
+   virtual ~UIManagerCommitHook() noexcept = default;
+ };
+ 
