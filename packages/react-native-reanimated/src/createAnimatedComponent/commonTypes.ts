@@ -130,19 +130,13 @@ export interface IAnimatedComponentInternal {
   _NativeEventsManager?: INativeEventsManager;
   _viewInfo?: ViewInfo;
   context: React.ContextType<typeof SkipEnteringContext>;
-  _willUnmount: boolean;
   /**
    * Used for Shared Element Transitions, Layout Animations and Animated Styles.
    * It is not related to event handling.
    */
   getComponentViewTag: () => number;
-  /**
-   * A function that will update the components state (the state is used for the
-   * style prop)
-   */
+  /** A function that will update the components state (the state is used for the style prop) */
   _updateReanimatedProps: (props: StyleProps) => void;
-  /** Detach styles from view descriptors */
-  _detachStyles: () => void;
 
   _syncStylePropsBackToReact: (props: StyleProps) => void;
 }

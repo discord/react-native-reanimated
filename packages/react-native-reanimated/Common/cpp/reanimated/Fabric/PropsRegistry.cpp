@@ -2,7 +2,6 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 
 #include <reanimated/Fabric/PropsRegistry.h>
-#include <cstring>
 
 namespace reanimated {
 
@@ -65,43 +64,18 @@ void PropsRegistry::unmarkNodeAsRemovable(Tag viewTag) {
   removableShadowNodes_.erase(viewTag);
 }
 
-void PropsRegistry::handleNodeRemovals(
-    const RootShadowNode &rootShadowNode,
-    const NodeRemovalCallback &callback) {
+void PropsRegistry::handleNodeRemovals(const RootShadowNode &rootShadowNode) {
   RemovableShadowNodes remainingShadowNodes;
 
   for (const auto &[tag, shadowNode] : removableShadowNodes_) {
     if (!shadowNode) {
-      // Stopgap for bad shadowNode
-      map_.erase(tag);
       continue;
     }
 
-    const auto &family = shadowNode->getFamily();
-    const auto &ancestors = family.getAncestors(rootShadowNode);
-
-    // Determine if component is frozen
-    // isFrozen=true means component still has parents (with Suspense parent being one of them)
-    // isFrozen=false means component is truly unmounting
-    bool isFrozen = false;
-    for (const auto &[parentNode, _] : ancestors) {
-      const auto parentComponentName = parentNode.get().getComponentName();
-      if (strstr(parentComponentName, "Suspense") != nullptr) {
-        isFrozen = true;
-        break;
-      }
-    }
-
-    // Notify JavaScript about the freeze decision
-    if (callback) {
-      callback(tag, isFrozen);
-    }
-
-    // PropsRegistry decision: keep if has ancestors, remove if no ancestors
-    if (!ancestors.empty()) {
-      remainingShadowNodes.emplace(tag, shadowNode);
-    } else {
+    if (shadowNode->getFamily().getAncestors(rootShadowNode).empty()) {
       map_.erase(tag);
+    } else {
+      remainingShadowNodes.emplace(tag, shadowNode);
     }
   }
 

@@ -1107,7 +1107,7 @@ void ReanimatedModuleProxy::initializeFabric(
   initializeLayoutAnimationsProxy();
 
   mountHook_ =
-      std::make_shared<ReanimatedMountHook>(propsRegistry_, uiManager_, shared_from_this());
+      std::make_shared<ReanimatedMountHook>(propsRegistry_, uiManager_);
   commitHook_ = std::make_shared<ReanimatedCommitHook>(
       propsRegistry_, uiManager_, layoutAnimationsProxy_);
 }
@@ -1191,27 +1191,5 @@ void ReanimatedModuleProxy::unsubscribeFromKeyboardEvents(
     const jsi::Value &listenerId) {
   unsubscribeFromKeyboardEventsFunction_(listenerId.asNumber());
 }
-
-#ifdef RCT_NEW_ARCH_ENABLED
-void ReanimatedModuleProxy::setNodeRemovalCallback(
-    jsi::Runtime &rt,
-    const jsi::Value &callback) {
-  if (callback.isObject() && callback.asObject(rt).isFunction(rt)) {
-    nodeRemovalCallback_ = react::AsyncCallback<>(
-        rt,
-        callback.asObject(rt).asFunction(rt),
-        jsInvoker_);
-  }
-}
-
-void ReanimatedModuleProxy::onNodeRemovalDecision(Tag tag, bool isFrozen) {
-  if (nodeRemovalCallback_) {
-    // Use custom lambda to manually convert to JSI values (JSI supports int/bool via jsi::Value)
-    nodeRemovalCallback_->call([tag, isFrozen](jsi::Runtime& rt, jsi::Function& callback) {
-      callback.call(rt, jsi::Value(static_cast<int>(tag)), jsi::Value(isFrozen));
-    });
-  }
-}
-#endif // RCT_NEW_ARCH_ENABLED
 
 } // namespace reanimated
