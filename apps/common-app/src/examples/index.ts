@@ -33,6 +33,7 @@ import EmptyExample from './EmptyExample';
 import ExtrapolationExample from './ExtrapolationExample';
 import FrameCallbackExample from './FrameCallbackExample';
 import FreezeExample from './FreezeExample';
+import FreezeMissingUpdateExample from './FreezeMissingUpdateExample';
 import Game2048Example from './Game2048Example';
 import GestureHandlerExample from './GestureHandlerExample';
 import GetViewPropExample from './GetViewPropExample';
@@ -168,6 +169,11 @@ export const EXAMPLES: Record<string, Example> = {
     icon: '❄️',
     title: 'React freeze',
     screen: FreezeExample,
+  },
+  FreezeMissingUpdateExample: {
+    icon: '❄️',
+    title: 'React freeze missing update',
+    screen: FreezeMissingUpdateExample,
   },
   WorkletRuntimeExample: {
     icon: '🏃‍♂️',

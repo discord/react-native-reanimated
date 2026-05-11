@@ -169,8 +169,7 @@ function BackButton(props: HeaderBackButtonProps) {
 
 export default function App() {
   const [nuked, setNuked] = useState(false);
-  const { isReady, navigationState, updateNavigationState } =
-    useNavigationState();
+  const { isReady, updateNavigationState } = useNavigationState();
 
   const shouldReduceMotion = useReducedMotion();
 
@@ -195,9 +194,9 @@ export default function App() {
       <GestureHandlerRootView style={styles.container}>
         <NavigationContainer
           linking={linking}
-          initialState={navigationState}
+          initialState={undefined}
           onStateChange={updateNavigationState}>
-          <Stack.Navigator>
+          <Stack.Navigator initialRouteName="FreezeMissingUpdateExample">
             <Stack.Screen
               name="Home"
               component={HomeScreen}
