@@ -472,19 +472,34 @@ export function createAnimatedComponent(
       const isStyleAttached = (style: StyleProps) =>
         style.viewDescriptors.has(viewTag);
 
+      // PERF: compute up-front whether the styles array AND animatedProps are
+      // both unchanged compared to the previous render. This generalizes the
+      // original `hasOneSameStyle` bailout to:
+      //   - any number of animated styles (not just length === 1)
+      //   - the animatedProps slot too
+      // Each `viewDescriptors.add()` call invokes `updater?.(true)`, which
+      // re-runs the user's worklet and writes its output into the Fabric
+      // PropsRegistry. On Fabric, that round-trips back to React as
+      // `setState({settledProps})` ~1.5s later, causing redundant commits on
+      // every parent re-render of any component with animatedProps or with a
+      // multi-animated-style array.
+      const stylesUnchanged =
+        prevStyles != null &&
+        styles.length === prevStyles.length &&
+        styles.every(
+          (style, i) => style === prevStyles[i] && isStyleAttached(style)
+        );
+      const animatedPropsUnchanged =
+        !this.props.animatedProps?.viewDescriptors ||
+        (prevAnimatedProps === this.props.animatedProps &&
+          this.props.animatedProps.viewDescriptors.has(viewTag as number));
+      if (stylesUnchanged && animatedPropsUnchanged) {
+        return;
+      }
+
       // remove old styles
       if (prevStyles) {
-        // in most of the cases, views have only a single animated style and it remains unchanged
-        const hasOneSameStyle =
-          styles.length === 1 &&
-          prevStyles.length === 1 &&
-          styles[0] === prevStyles[0];
-
-        if (hasOneSameStyle && isStyleAttached(prevStyles[0])) {
-          return;
-        }
-
-        // otherwise, remove each style that is not present in new styles
+        // remove each style that is not present in new styles
         for (const prevStyle of prevStyles) {
           const isPresent = styles.some((style) => {
             if (style === prevStyle && isStyleAttached(style)) {
@@ -510,38 +525,41 @@ export function createAnimatedComponent(
         }
       }
 
-      newStyles.forEach((style) => {
-        style.viewDescriptors.add(
-          {
-            tag: viewTag,
-            name: viewName,
-            shadowNodeWrapper,
-          },
-          style.styleUpdaterContainer
-        );
-        if (IS_JEST) {
-          /**
-           * We need to connect Jest's TestObject instance whose contains just
-           * props object with the updateProps() function where we update the
-           * properties of the component. We can't update props object directly
-           * because TestObject contains a copy of props - look at render
-           * function: const props = this._filterNonAnimatedProps(this.props);
-           */
-          this.jestAnimatedStyle.value = {
-            ...this.jestAnimatedStyle.value,
-            ...style.initial.value,
-          };
-          style.jestAnimatedValues.current = this.jestAnimatedStyle;
-        }
-      });
+      // Only re-attach styles if they actually changed.
+      if (!stylesUnchanged) {
+        newStyles.forEach((style) => {
+          style.viewDescriptors.add(
+            {
+              tag: viewTag,
+              name: viewName,
+              shadowNodeWrapper,
+            },
+            style.styleUpdaterContainer
+          );
+          if (IS_JEST) {
+            /**
+             * We need to connect Jest's TestObject instance whose contains just
+             * props object with the updateProps() function where we update the
+             * properties of the component. We can't update props object directly
+             * because TestObject contains a copy of props - look at render
+             * function: const props = this._filterNonAnimatedProps(this.props);
+             */
+            this.jestAnimatedStyle.value = {
+              ...this.jestAnimatedStyle.value,
+              ...style.initial.value,
+            };
+            style.jestAnimatedValues.current = this.jestAnimatedStyle;
+          }
+        });
+      }
 
       // detach old animatedProps
       if (prevAnimatedProps && prevAnimatedProps !== this.props.animatedProps) {
         prevAnimatedProps.viewDescriptors!.remove(viewTag as number);
       }
 
-      // attach animatedProps property
-      if (this.props.animatedProps?.viewDescriptors) {
+      // attach animatedProps property — only if it actually changed.
+      if (!animatedPropsUnchanged && this.props.animatedProps?.viewDescriptors) {
         this.props.animatedProps.viewDescriptors.add(
           {
             tag: viewTag as number,
