@@ -18,7 +18,6 @@ import {
   criticallyDampedSpringCalculations,
   initialCalculations,
   isAnimationTerminatingCalculation,
-  overDampedSpringCalculations,
   scaleZetaToMatchClamps,
   underDampedSpringCalculations,
 } from './springUtils';
