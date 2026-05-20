@@ -18,6 +18,7 @@ import {
   criticallyDampedSpringCalculations,
   initialCalculations,
   isAnimationTerminatingCalculation,
+  overDampedSpringCalculations,
   scaleZetaToMatchClamps,
   underDampedSpringCalculations,
 } from './springUtils';
@@ -121,6 +122,14 @@ export const withSpring = ((
               omega1,
               t,
             })
+          : zeta > 1
+          ? overDampedSpringCalculations(animation, {
+              zeta,
+              v0,
+              x0,
+              omega0,
+              t,
+            })
           : criticallyDampedSpringCalculations(animation, {
               v0,
               x0,
@@ -188,6 +197,18 @@ export const withSpring = ((
             : previousAnimation?.velocity + config.velocity) || 0;
       } else {
         animation.velocity = config.velocity || 0;
+      }
+
+      // When the inherited velocity is directed away from the new target it causes
+      // the first rendered frame to move backward (further from toValue than the
+      // starting position). Clip that component to zero so inertia is only
+      // preserved when it already points toward the target.
+      const toValueNum = Number(animation.toValue);
+      if (
+        (toValueNum > value && animation.velocity < 0) ||
+        (toValueNum < value && animation.velocity > 0)
+      ) {
+        animation.velocity = 0;
       }
 
       if (triggeredTwice) {
