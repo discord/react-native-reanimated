@@ -386,44 +386,6 @@ export function criticallyDampedSpringCalculations(
   };
 }
 
-export function underDampedSpringCalculations(
-  animation: InnerSpringAnimation,
-  precalculatedValues: {
-    zeta: number;
-    v0: number;
-    x0: number;
-    omega0: number;
-    omega1: number;
-    t: number;
-  }
-): { position: number; velocity: number } {
-  'worklet';
-  const { toValue, current, velocity } = animation;
-
-  const { zeta, t, omega0, omega1 } = precalculatedValues;
-
-  const v0 = -velocity;
-  const x0 = toValue - current;
-
-  const sin1 = Math.sin(omega1 * t);
-  const cos1 = Math.cos(omega1 * t);
-
-  // under damped
-  const underDampedEnvelope = Math.exp(-zeta * omega0 * t);
-  const underDampedFrag1 =
-    underDampedEnvelope *
-    (sin1 * ((v0 + zeta * omega0 * x0) / omega1) + x0 * cos1);
-
-  const underDampedPosition = toValue - underDampedFrag1;
-  // This looks crazy -- it's actually just the derivative of the oscillation function
-  const underDampedVelocity =
-    zeta * omega0 * underDampedFrag1 -
-    underDampedEnvelope *
-      (cos1 * (v0 + zeta * omega0 * x0) - omega1 * x0 * sin1);
-
-  return { position: underDampedPosition, velocity: underDampedVelocity };
-}
-
 export function isAnimationTerminatingCalculation(
   animation: InnerSpringAnimation,
   config: DefaultSpringConfig
