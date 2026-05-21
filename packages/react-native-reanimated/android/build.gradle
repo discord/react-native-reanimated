@@ -362,10 +362,6 @@ android {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedNativeHierarchyManager/latest"
             }
 
-            // RN 0.85 COMPAT [NOT APPLICABLE]: LayoutAnimationController and
-            // LayoutAnimationListener were removed in RN >= 0.83. Stub classes are
-            // provided so paper-arch ReaLayoutAnimator compiles in new-arch builds.
-            // In upstream reanimated 4, ReaLayoutAnimator does not exist at all.
             if (REACT_NATIVE_MINOR_VERSION >= 83) {
                 srcDirs += "src/reactNativeVersionPatch/LayoutAnimationClasses/latest"
             }

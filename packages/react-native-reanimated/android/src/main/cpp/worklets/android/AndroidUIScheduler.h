@@ -1,9 +1,5 @@
 #pragma once
 
-// RN 0.85 COMPAT [EQUIVALENT]: react/jni/CxxModuleWrapper.h was removed in
-// RN 0.85. The include was dead code (CxxModuleWrapper was never used here).
-// Upstream worklets' AndroidUIScheduler.h also has no CxxModuleWrapper include.
-
 #include <worklets/Tools/UIScheduler.h>
 
 #include <fbjni/fbjni.h>

@@ -1,9 +1,5 @@
 #pragma once
 
-// RN 0.85 COMPAT [EQUIVALENT]: react/jni/CxxModuleWrapper.h was removed in
-// RN 0.85. The include was dead code here. Upstream reanimated 4's NativeProxy.h
-// uses CallInvokerHolder.h and JFabricUIManager.h instead; no CxxModuleWrapper.
-
 #include <reanimated/NativeModules/ReanimatedModuleProxy.h>
 #include <reanimated/android/JNIHelper.h>
 #include <reanimated/android/LayoutAnimations.h>

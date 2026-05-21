@@ -138,9 +138,6 @@ public class NodesManager implements EventDispatcherListener {
 
   private NativeProxy mNativeProxy;
 
-  // RN 0.85 COMPAT [DIFFERENT APPROACH -> EQUIVALENT]: replaces removed
-  // Event.isDrawing() with a ViewTreeObserver-based draw-pass detector.
-  // See DrawPassDetector.java; mirrors upstream reanimated 4 DrawPassDetector.kt.
   private DrawPassDetector mDrawPassDetector;
 
   public AnimationsManager getAnimationsManager() {
@@ -416,12 +413,6 @@ public class NodesManager implements EventDispatcherListener {
        */
       String eventName = event.getEventName();
       if (eventName.contains("GestureHandler") || eventName.contains("Scroll")) {
-        // RN 0.85 COMPAT [EQUIVALENT]: event.isDrawing() was removed in RN 0.85.
-        // We now use DrawPassDetector (a port of upstream reanimated 4's
-        // DrawPassDetector.kt) to accurately track draw passes via
-        // ViewTreeObserver.OnDrawListener. When in a draw pass, mountSync is set
-        // to false to avoid layout-during-draw crashes (same semantics as the
-        // old event.isDrawing() == true path).
         if (mDrawPassDetector != null) {
           mDrawPassDetector.initialize();
         }
