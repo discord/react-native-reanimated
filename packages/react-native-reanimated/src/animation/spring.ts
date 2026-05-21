@@ -190,10 +190,8 @@ export const withSpring = ((
         animation.velocity = config.velocity || 0;
       }
 
-      // When the inherited velocity is directed away from the new target it causes
-      // the first rendered frame to move backward (further from toValue than the
-      // starting position). Clip that component to zero so inertia is only
-      // preserved when it already points toward the target.
+      // Clip velocity that would drive the first frame away from the new target.
+      // Inertia is only preserved when it already points toward toValue.
       const toValueNum = Number(animation.toValue);
       if (
         (toValueNum > value && animation.velocity < 0) ||
