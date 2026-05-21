@@ -4,9 +4,13 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.swmansion.reanimated.layoutReanimation.ReanimatedNativeHierarchyManager;
 import java.util.List;
 
+// RN 0.85 COMPAT [NOT APPLICABLE]: UIViewOperationQueue(ctx, hierMgr, timeout)
+// 3-arg constructor was removed; RN 0.85 has only UIViewOperationQueue(ctx, timeout).
+// The NativeViewHierarchyManager argument was dropped from the constructor call.
+// In upstream reanimated 4, ReanimatedUIImplementation does not exist —
+// the paper UIImplementation subclass was removed with the paper architecture.
 public class ReanimatedUIImplementation extends UIImplementation {
   public ReanimatedUIImplementation(
       ReactApplicationContext reactContext,
@@ -42,7 +46,6 @@ public class ReanimatedUIImplementation extends UIImplementation {
         viewManagerRegistry,
         new UIViewOperationQueue(
             reactContext,
-            new ReanimatedNativeHierarchyManager(viewManagerRegistry, reactContext),
             minTimeLeftInFrameForNonBatchedOperationMs),
         eventDispatcher);
   }

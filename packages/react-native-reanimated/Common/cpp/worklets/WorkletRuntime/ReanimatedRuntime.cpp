@@ -26,12 +26,18 @@ std::shared_ptr<jsi::Runtime> ReanimatedRuntime::make(
     const std::string &name) {
   (void)rnRuntime; // used only for V8
 #if JS_RUNTIME_HERMES
-  // We don't call `jsQueue->quitSynchronous()` here, since it will be done
-  // later in ReanimatedHermesRuntime
+  // RN 0.85 COMPAT [NOT APPLICABLE]: jsQueue->quitSynchronous() is now called
+  // here (before creating the runtime) because the constructor no longer takes
+  // jsQueue and therefore cannot call it internally. In upstream reanimated 4
+  // this entire MessageQueueThread/jsQueue pattern was removed — WorkletRuntime
+  // uses a different async queue abstraction and never calls quitSynchronous().
+
+  // This is required by iOS, because there is an assertion in the destructor
+  // that the thread was indeed `quit` before.
+  jsQueue->quitSynchronous();
 
   auto runtime = facebook::hermes::makeHermesRuntime();
-  return std::make_shared<ReanimatedHermesRuntime>(
-      std::move(runtime), jsQueue, name);
+  return std::make_shared<ReanimatedHermesRuntime>(std::move(runtime));
 #elif JS_RUNTIME_V8
   // This is required by iOS, because there is an assertion in the destructor
   // that the thread was indeed `quit` before.

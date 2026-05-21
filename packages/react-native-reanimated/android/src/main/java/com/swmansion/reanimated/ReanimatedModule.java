@@ -9,8 +9,6 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.UIManagerModuleListener;
 import com.swmansion.worklets.WorkletsModule;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,7 +16,7 @@ import javax.annotation.Nullable;
 
 @ReactModule(name = ReanimatedModule.NAME)
 public class ReanimatedModule extends NativeReanimatedModuleSpec
-    implements LifecycleEventListener, UIManagerModuleListener, UIManagerListener {
+    implements LifecycleEventListener, UIManagerListener {
 
   public void didDispatchMountItems(@NonNull UIManager uiManager) {
     // Keep: Required for UIManagerListener
@@ -74,27 +72,24 @@ public class ReanimatedModule extends NativeReanimatedModuleSpec
     return mWorkletsModule;
   }
 
+  // RN 0.85 COMPAT [EQUIVALENT]: UIManagerModuleListener interface and
+  // addUIManagerListener/removeUIManagerListener were removed in RN 0.85 along
+  // with the paper architecture. The paper else-branch in initialize() and the
+  // willDispatchViewUpdates(UIManagerModule) override were removed. Upstream
+  // reanimated 4's ReanimatedModule.kt is Fabric-only with the same pattern.
   @Override
   public void initialize() {
     ReactApplicationContext reactCtx = getReactApplicationContext();
 
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      UIManager uiManager = reactCtx.getFabricUIManager();
-      if (uiManager instanceof FabricUIManager) {
-        ((FabricUIManager) uiManager).addUIManagerEventListener(this);
-        mUnsubscribe =
-            Utils.combineRunnables(
-                mUnsubscribe,
-                () -> ((FabricUIManager) uiManager).removeUIManagerEventListener(this));
-      } else {
-        throw new RuntimeException("[Reanimated] Failed to obtain instance of FabricUIManager.");
-      }
-    } else {
-      UIManagerModule uiManager =
-          Objects.requireNonNull(reactCtx.getNativeModule(UIManagerModule.class));
-      uiManager.addUIManagerListener(this);
+    UIManager uiManager = reactCtx.getFabricUIManager();
+    if (uiManager instanceof FabricUIManager) {
+      ((FabricUIManager) uiManager).addUIManagerEventListener(this);
       mUnsubscribe =
-          Utils.combineRunnables(mUnsubscribe, () -> uiManager.removeUIManagerListener(this));
+          Utils.combineRunnables(
+              mUnsubscribe,
+              () -> ((FabricUIManager) uiManager).removeUIManagerEventListener(this));
+    } else {
+      throw new RuntimeException("[Reanimated] Failed to obtain instance of FabricUIManager.");
     }
     reactCtx.addLifecycleEventListener(this);
     mUnsubscribe =
@@ -118,24 +113,6 @@ public class ReanimatedModule extends NativeReanimatedModuleSpec
   @Override
   public void onHostDestroy() {
     // do nothing
-  }
-
-  @Override
-  public void willDispatchViewUpdates(final UIManagerModule uiManager) {
-    // This method is called for the interface of UIManagerModuleListener on
-    // Paper. The below function with the same name won't be called.
-    if (mOperations.isEmpty()) {
-      return;
-    }
-    final ArrayList<UIThreadOperation> operations = mOperations;
-    mOperations = new ArrayList<>();
-    uiManager.addUIBlock(
-        nativeViewHierarchyManager -> {
-          NodesManager nodesManager = getNodesManager();
-          for (UIThreadOperation operation : operations) {
-            operation.execute(nodesManager);
-          }
-        });
   }
 
   /*package*/

@@ -6,7 +6,6 @@
 // don't support hermes and it causes the compilation to fail.
 #if JS_RUNTIME_HERMES
 
-#include <cxxreact/MessageQueueThread.h>
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
 #include <jsi/jsi.h>
@@ -16,17 +15,9 @@
 #include <string>
 #include <thread>
 
-#if HERMES_ENABLE_DEBUGGER
-#include <hermes/inspector-modern/chrome/Registration.h>
-#endif // HERMES_ENABLE_DEBUGGER
-
 namespace worklets {
 
 using namespace facebook;
-using namespace react;
-#if HERMES_ENABLE_DEBUGGER
-using namespace facebook::hermes::inspector_modern;
-#endif // HERMES_ENABLE_DEBUGGER
 
 // ReentrancyCheck is copied from React Native
 // from ReactCommon/hermes/executor/HermesExecutorFactory.cpp
@@ -98,6 +89,14 @@ struct ReanimatedReentrancyCheck {
 #endif // NDEBUG
 };
 
+// RN 0.85 COMPAT [EQUIVALENT]: The Hermes V1 inspector API
+// (hermes/inspector/RuntimeAdapter.h, chrome::enableDebugging) was removed in
+// RN >= 0.82. We dropped the HERMES_ENABLE_DEBUGGER-gated HermesExecutorRuntimeAdapter,
+// debugToken_ member, and the jsQueue/name constructor parameters.
+// Upstream reanimated 4 made the same change: WorkletHermesRuntime (in
+// packages/react-native-worklets) has no debugger registration and a
+// single-argument constructor taking only the HermesRuntime.
+
 // This is in fact a subclass of jsi::Runtime! WithRuntimeDecorator is a
 // template class that is a subclass of DecoratedRuntime which is also a
 // template class that then inherits its template, which in this case is
@@ -108,18 +107,13 @@ struct ReanimatedReentrancyCheck {
 class ReanimatedHermesRuntime
     : public jsi::WithRuntimeDecorator<ReanimatedReentrancyCheck> {
  public:
-  ReanimatedHermesRuntime(
-      std::unique_ptr<facebook::hermes::HermesRuntime> runtime,
-      const std::shared_ptr<MessageQueueThread> &jsQueue,
-      const std::string &name);
+  explicit ReanimatedHermesRuntime(
+      std::unique_ptr<facebook::hermes::HermesRuntime> runtime);
   ~ReanimatedHermesRuntime();
 
  private:
   std::unique_ptr<facebook::hermes::HermesRuntime> runtime_;
   ReanimatedReentrancyCheck reentrancyCheck_;
-#if HERMES_ENABLE_DEBUGGER
-  chrome::DebugSessionToken debugToken_;
-#endif // HERMES_ENABLE_DEBUGGER
 };
 
 } // namespace worklets

@@ -1,5 +1,9 @@
 #pragma once
 
+// RN 0.85 COMPAT [EQUIVALENT]: react/jni/CxxModuleWrapper.h was removed in
+// RN 0.85. The include was dead code here. Upstream WorkletsModule.h uses
+// CallInvokerHolder.h instead and has no CxxModuleWrapper reference.
+
 #ifdef RCT_NEW_ARCH_ENABLED
 #include <react/fabric/JFabricUIManager.h>
 #include <react/jni/JRuntimeExecutor.h>
@@ -9,7 +13,6 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/WritableNativeMap.h>
 
