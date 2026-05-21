@@ -2,12 +2,6 @@
 #import <reanimated/apple/REAUIKit.h>
 #import <reanimated/apple/native/NativeMethods.h>
 
-// RN 0.85 COMPAT [NOT APPLICABLE]: RCTScrollView is guarded by
-// RCT_REMOVE_LEGACY_ARCH in the prebuilt RN 0.85 framework and is absent from
-// its module interface. The scrollTo() function is paper-arch only and its
-// caller (makeScrollToFunction) is already guarded by #else RCT_NEW_ARCH_ENABLED.
-// In upstream reanimated 4, NativeMethods.mm does not exist at all — scrollTo
-// is implemented in JS via dispatchCommand on the Fabric side.
 #ifndef RCT_NEW_ARCH_ENABLED
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED

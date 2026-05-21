@@ -221,11 +221,6 @@ std::atomic<bool> hasPendingBlocks;
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
         if ([rootView isKindOfClass:[RCTRootView class]]) {
-          // RN 0.85 COMPAT [NOT APPLICABLE]: In RN 0.85 the prebuilt React
-          // framework was compiled with RCT_REMOVE_LEGACY_ARCH, which removes
-          // the readwrite `intrinsicContentSize` setter from RCTRootView.
-          // In upstream reanimated 4, REASwizzledUIManager does not exist at
-          // all — layout animations use Fabric MountingOverrideDelegate instead.
 #ifndef RCT_NEW_ARCH_ENABLED
           rootView.intrinsicContentSize = contentSize;
 #endif // RCT_NEW_ARCH_ENABLED

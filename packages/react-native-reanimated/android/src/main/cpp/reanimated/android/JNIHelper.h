@@ -1,9 +1,5 @@
 #pragma once
 
-// RN 0.85 COMPAT [NOT APPLICABLE]: react/jni/CxxModuleWrapper.h was removed
-// in RN 0.85. The include was dead code here. JNIHelper.h has no equivalent
-// in upstream reanimated 4 — the file was removed entirely.
-
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>

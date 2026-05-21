@@ -15,10 +15,6 @@ namespace worklets {
 
 using namespace facebook;
 
-// RN 0.85 COMPAT [EQUIVALENT]: Constructor simplified to drop jsQueue, name,
-// and all HERMES_ENABLE_DEBUGGER-gated Hermes V1 inspector registration.
-// Upstream WorkletHermesRuntime.cpp (react-native-worklets) is identical in
-// structure — only the HermesRuntime is owned here; no debugger token.
 ReanimatedHermesRuntime::ReanimatedHermesRuntime(
     std::unique_ptr<facebook::hermes::HermesRuntime> runtime)
     : jsi::WithRuntimeDecorator<ReanimatedReentrancyCheck>(

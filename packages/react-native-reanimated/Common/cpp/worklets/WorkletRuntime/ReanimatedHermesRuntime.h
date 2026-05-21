@@ -89,14 +89,6 @@ struct ReanimatedReentrancyCheck {
 #endif // NDEBUG
 };
 
-// RN 0.85 COMPAT [EQUIVALENT]: The Hermes V1 inspector API
-// (hermes/inspector/RuntimeAdapter.h, chrome::enableDebugging) was removed in
-// RN >= 0.82. We dropped the HERMES_ENABLE_DEBUGGER-gated HermesExecutorRuntimeAdapter,
-// debugToken_ member, and the jsQueue/name constructor parameters.
-// Upstream reanimated 4 made the same change: WorkletHermesRuntime (in
-// packages/react-native-worklets) has no debugger registration and a
-// single-argument constructor taking only the HermesRuntime.
-
 // This is in fact a subclass of jsi::Runtime! WithRuntimeDecorator is a
 // template class that is a subclass of DecoratedRuntime which is also a
 // template class that then inherits its template, which in this case is

@@ -72,11 +72,6 @@ public class ReanimatedModule extends NativeReanimatedModuleSpec
     return mWorkletsModule;
   }
 
-  // RN 0.85 COMPAT [EQUIVALENT]: UIManagerModuleListener interface and
-  // addUIManagerListener/removeUIManagerListener were removed in RN 0.85 along
-  // with the paper architecture. The paper else-branch in initialize() and the
-  // willDispatchViewUpdates(UIManagerModule) override were removed. Upstream
-  // reanimated 4's ReanimatedModule.kt is Fabric-only with the same pattern.
   @Override
   public void initialize() {
     ReactApplicationContext reactCtx = getReactApplicationContext();
