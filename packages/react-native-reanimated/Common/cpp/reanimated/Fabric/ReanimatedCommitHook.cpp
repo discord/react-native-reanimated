@@ -80,8 +80,9 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
   PropsMap propsMap;
 
   {
-    // Fork specific change, since this is used only in Discord's fork of react native.
-//    propRegistryLock_ = std::unique_lock(propsRegistry_->mutex_);
+   // Note: If testing outside the Discord app, comment out this line to avoid deadlocks. 
+   // Only Discord's custom React Native fork utilizes this specific lock.
+   propRegistryLock_ = std::unique_lock(propsRegistry_->mutex_);
 
     propsRegistry_->for_each(
         [&](const ShadowNodeFamily &family, const folly::dynamic &props) {
