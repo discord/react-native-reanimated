@@ -57,7 +57,15 @@ else()
 endif()
 
 if(${JS_RUNTIME} STREQUAL "hermes")
-  target_link_libraries(worklets hermes-engine::libhermes)
+  # RN 0.85 COMPAT [EQUIVALENT]: The Hermes CMake target was renamed from
+  # hermes-engine::libhermes to hermes-engine::hermesvm in RN >= 0.82.
+  # Upstream react-native-worklets/android/CMakeLists.txt uses the identical
+  # conditional (ReactAndroid_VERSION_MINOR GREATER_EQUAL 82).
+  if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 82)
+    target_link_libraries(worklets hermes-engine::hermesvm)
+  else()
+    target_link_libraries(worklets hermes-engine::libhermes)
+  endif()
 
   if(${HERMES_ENABLE_DEBUGGER})
     string(APPEND CMAKE_CXX_FLAGS " -DHERMES_ENABLE_DEBUGGER=1")

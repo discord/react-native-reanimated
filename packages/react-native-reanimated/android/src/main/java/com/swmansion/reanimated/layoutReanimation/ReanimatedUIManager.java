@@ -11,6 +11,10 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.List;
 
+// RN 0.85 COMPAT [NOT APPLICABLE]: UIManagerModule.onBatchComplete() was
+// removed in RN 0.85. The override calling super.onBatchComplete() was deleted.
+// In upstream reanimated 4, ReanimatedUIManager does not exist at all —
+// the paper UIManager subclass was removed along with the paper architecture.
 @ReactModule(name = UIManagerModule.NAME)
 public class ReanimatedUIManager extends UIManagerModule {
 
@@ -19,10 +23,6 @@ public class ReanimatedUIManager extends UIManagerModule {
       List<ViewManager> viewManagersList,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext, viewManagersList, minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  public void onBatchComplete() {
-    super.onBatchComplete();
   }
 
   @Override

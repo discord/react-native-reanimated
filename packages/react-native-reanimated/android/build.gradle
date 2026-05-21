@@ -273,6 +273,8 @@ android {
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
+            // Reanimated 4 uses version 3.22.1, but since discord uses 3.30.5, we need to use the same version, lets leave it for now
+            version System.getenv("CMAKE_VERSION") ?: "3.30.5"
         }
     }
     buildTypes {
@@ -358,6 +360,14 @@ android {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedNativeHierarchyManager/75"
             } else {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedNativeHierarchyManager/latest"
+            }
+
+            // RN 0.85 COMPAT [NOT APPLICABLE]: LayoutAnimationController and
+            // LayoutAnimationListener were removed in RN >= 0.83. Stub classes are
+            // provided so paper-arch ReaLayoutAnimator compiles in new-arch builds.
+            // In upstream reanimated 4, ReaLayoutAnimator does not exist at all.
+            if (REACT_NATIVE_MINOR_VERSION >= 83) {
+                srcDirs += "src/reactNativeVersionPatch/LayoutAnimationClasses/latest"
             }
         }
     }
