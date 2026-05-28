@@ -334,7 +334,9 @@ export function createAnimatedComponent(
     }
 
     _syncStylePropsBackToReact(props: StyleProps) {
-      this.setState({ settledProps: props });
+      this.setState((state) => ({
+        settledProps: { ...state.settledProps, ...props },
+      }));
     }
 
     getComponentViewTag() {
