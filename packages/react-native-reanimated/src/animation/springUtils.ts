@@ -178,7 +178,7 @@ export function initialCalculations(
      * https://courses.lumenlearning.com/suny-osuniversityphysics/chapter/15-5-damped-oscillations/
      */
     const omega0 = Math.sqrt(k / mass);
-    const omega1 = omega0 * Math.sqrt(1 - zeta ** 2);
+    const omega1 = zeta < 1 ? omega0 * Math.sqrt(1 - zeta ** 2) : 0;
 
     return { zeta, omega0, omega1 };
   } else {
@@ -186,7 +186,7 @@ export function initialCalculations(
 
     const zeta = c / (2 * Math.sqrt(k * m)); // damping ratio
     const omega0 = Math.sqrt(k / m); // undamped angular frequency of the oscillator (rad/ms)
-    const omega1 = omega0 * Math.sqrt(1 - zeta ** 2); // exponential decay
+    const omega1 = zeta < 1 ? omega0 * Math.sqrt(1 - zeta ** 2) : 0; // exponential decay
 
     return { zeta, omega0, omega1 };
   }
