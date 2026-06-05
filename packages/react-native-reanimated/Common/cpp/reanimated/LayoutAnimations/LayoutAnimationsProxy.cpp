@@ -9,6 +9,10 @@
 #include <set>
 #include <utility>
 
+#ifdef ANDROID
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#endif // ANDROID
+
 namespace reanimated {
 
 // We never modify the Shadow Tree, we just send some additional
@@ -427,35 +431,30 @@ void LayoutAnimationsProxy::addOngoingAnimations(
   }
 
 #ifdef ANDROID
-  std::vector<int> tagsToUpdate;
-  tagsToUpdate.reserve(updateMap.size());
-  for (auto &[tag, updateValues] : updateMap) {
-    tagsToUpdate.push_back(tag);
-  }
-
-  auto correctedTags = preserveMountedTags_(tagsToUpdate);
-  if (!correctedTags.has_value()) {
-    // this is nullopt if this is being called from the JS thread.
-    return;
-  }
-
   // since the map is not updated, we can assume that the ordering of tags in
   // correctedTags matches the iterator
   int i = -1;
-#endif
-  for (auto &[tag, updateValues] : updateMap) {
-#ifdef ANDROID
-    i++;
-    if (correctedTags && (*correctedTags)[i] == -1) {
-      // skip views that have not been mounted yet
-      // on Android we start entering animations from the JS thread
-      // so it might happen, that the first frame of the animation goes through
-      // before the view is first mounted
-      // https://github.com/software-mansion/react-native-reanimated/issues/7493
-      continue;
-    }
+  std::optional<std::unique_ptr<int[]>> correctedTags;
+
+  const bool usePullModelOnAndroid =
+          ReactNativeFeatureFlags::usePullModelOnAndroid();
+
+  if (!usePullModelOnAndroid) {
+      std::vector<int> tagsToUpdate;
+      tagsToUpdate.reserve(updateMap.size());
+      for (auto &[tag, updateValues]: updateMap) {
+          tagsToUpdate.push_back(tag);
+      }
+
+      correctedTags = preserveMountedTags_(tagsToUpdate);
+      if (!correctedTags.has_value()) {
+          return;
+      }
+  }
+
 #endif
 
+  for (auto &[tag, updateValues] : updateMap) {
     auto layoutAnimationIt = layoutAnimations_.find(tag);
 
     if (layoutAnimationIt == layoutAnimations_.end()) {
@@ -463,6 +462,21 @@ void LayoutAnimationsProxy::addOngoingAnimations(
     }
 
     auto &layoutAnimation = layoutAnimationIt->second;
+
+#ifdef ANDROID
+  if (!usePullModelOnAndroid) {
+      i++;
+      if (correctedTags && (*correctedTags)[i] == -1) {
+          // skip views that have not been mounted yet
+          // on Android we start entering animations from the JS thread
+          // so it might happen, that the first frame of the animation goes through
+          // before the view is first mounted
+          // https://github.com/software-mansion/react-native-reanimated/issues/7493
+          continue;
+      }
+  }
+#endif
+
     layoutAnimation.isViewAlreadyMounted = true;
     auto newView = std::make_shared<ShadowView>(*layoutAnimation.finalView);
     newView->props = updateValues.newProps;
