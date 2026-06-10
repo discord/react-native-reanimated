@@ -36,8 +36,11 @@ class ReanimatedCommitHook
       RootShadowNode::Unshared const &newRootShadowNode,
       const ShadowTreeCommitOptions& commitOptions) noexcept override;
 
+  // Note: If testing outside the Discord app, comment out these lines. The signature of these methods changed in Discord's fork of react native.
   void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) override;
   void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) override;
+  // void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions);
+  // void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions);
 
  private:
   std::shared_ptr<PropsRegistry> propsRegistry_;

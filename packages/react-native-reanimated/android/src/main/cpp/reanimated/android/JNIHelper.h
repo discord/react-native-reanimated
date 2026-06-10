@@ -3,7 +3,6 @@
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/WritableNativeMap.h>
 #include <string>

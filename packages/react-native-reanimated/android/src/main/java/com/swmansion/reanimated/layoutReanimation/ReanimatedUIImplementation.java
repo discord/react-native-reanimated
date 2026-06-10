@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.swmansion.reanimated.layoutReanimation.ReanimatedNativeHierarchyManager;
 import java.util.List;
 
 public class ReanimatedUIImplementation extends UIImplementation {
@@ -42,7 +41,6 @@ public class ReanimatedUIImplementation extends UIImplementation {
         viewManagerRegistry,
         new UIViewOperationQueue(
             reactContext,
-            new ReanimatedNativeHierarchyManager(viewManagerRegistry, reactContext),
             minTimeLeftInFrameForNonBatchedOperationMs),
         eventDispatcher);
   }

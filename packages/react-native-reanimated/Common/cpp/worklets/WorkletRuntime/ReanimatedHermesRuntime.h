@@ -6,7 +6,6 @@
 // don't support hermes and it causes the compilation to fail.
 #if JS_RUNTIME_HERMES
 
-#include <cxxreact/MessageQueueThread.h>
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
 #include <jsi/jsi.h>
@@ -16,17 +15,9 @@
 #include <string>
 #include <thread>
 
-#if HERMES_ENABLE_DEBUGGER
-#include <hermes/inspector-modern/chrome/Registration.h>
-#endif // HERMES_ENABLE_DEBUGGER
-
 namespace worklets {
 
 using namespace facebook;
-using namespace react;
-#if HERMES_ENABLE_DEBUGGER
-using namespace facebook::hermes::inspector_modern;
-#endif // HERMES_ENABLE_DEBUGGER
 
 // ReentrancyCheck is copied from React Native
 // from ReactCommon/hermes/executor/HermesExecutorFactory.cpp
@@ -108,18 +99,13 @@ struct ReanimatedReentrancyCheck {
 class ReanimatedHermesRuntime
     : public jsi::WithRuntimeDecorator<ReanimatedReentrancyCheck> {
  public:
-  ReanimatedHermesRuntime(
-      std::unique_ptr<facebook::hermes::HermesRuntime> runtime,
-      const std::shared_ptr<MessageQueueThread> &jsQueue,
-      const std::string &name);
+  explicit ReanimatedHermesRuntime(
+      std::unique_ptr<facebook::hermes::HermesRuntime> runtime);
   ~ReanimatedHermesRuntime();
 
  private:
   std::unique_ptr<facebook::hermes::HermesRuntime> runtime_;
   ReanimatedReentrancyCheck reentrancyCheck_;
-#if HERMES_ENABLE_DEBUGGER
-  chrome::DebugSessionToken debugToken_;
-#endif // HERMES_ENABLE_DEBUGGER
 };
 
 } // namespace worklets

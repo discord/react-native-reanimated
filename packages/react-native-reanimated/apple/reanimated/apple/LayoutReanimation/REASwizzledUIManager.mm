@@ -221,7 +221,9 @@ std::atomic<bool> hasPendingBlocks;
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
         if ([rootView isKindOfClass:[RCTRootView class]]) {
+#ifndef RCT_NEW_ARCH_ENABLED
           rootView.intrinsicContentSize = contentSize;
+#endif // RCT_NEW_ARCH_ENABLED
         }
       });
     }

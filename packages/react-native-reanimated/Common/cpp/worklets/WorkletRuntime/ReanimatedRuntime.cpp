@@ -26,12 +26,12 @@ std::shared_ptr<jsi::Runtime> ReanimatedRuntime::make(
     const std::string &name) {
   (void)rnRuntime; // used only for V8
 #if JS_RUNTIME_HERMES
-  // We don't call `jsQueue->quitSynchronous()` here, since it will be done
-  // later in ReanimatedHermesRuntime
+  // This is required by iOS, because there is an assertion in the destructor
+  // that the thread was indeed `quit` before.
+  jsQueue->quitSynchronous();
 
   auto runtime = facebook::hermes::makeHermesRuntime();
-  return std::make_shared<ReanimatedHermesRuntime>(
-      std::move(runtime), jsQueue, name);
+  return std::make_shared<ReanimatedHermesRuntime>(std::move(runtime));
 #elif JS_RUNTIME_V8
   // This is required by iOS, because there is an assertion in the destructor
   // that the thread was indeed `quit` before.

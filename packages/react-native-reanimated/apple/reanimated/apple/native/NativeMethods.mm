@@ -1,7 +1,10 @@
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTScrollView.h>
 #import <reanimated/apple/REAUIKit.h>
 #import <reanimated/apple/native/NativeMethods.h>
+
+#ifndef RCT_NEW_ARCH_ENABLED
+#import <React/RCTScrollView.h>
+#endif // RCT_NEW_ARCH_ENABLED
 
 namespace reanimated {
 
@@ -36,12 +39,14 @@ std::vector<std::pair<std::string, double>> measure(int viewTag, RCTUIManager *u
   };
 }
 
+#ifndef RCT_NEW_ARCH_ENABLED
 void scrollTo(int scrollViewTag, RCTUIManager *uiManager, double x, double y, bool animated)
 {
   REAUIView *view = [uiManager viewForReactTag:@(scrollViewTag)];
   RCTScrollView *scrollView = (RCTScrollView *)view;
   [scrollView scrollToOffset:(CGPoint){(CGFloat)x, (CGFloat)y} animated:animated];
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 void setGestureState(id<RNGestureHandlerStateManager> gestureHandlerStateManager, int handlerTag, int newState)
 {

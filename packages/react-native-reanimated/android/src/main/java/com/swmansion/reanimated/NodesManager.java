@@ -138,6 +138,8 @@ public class NodesManager implements EventDispatcherListener {
 
   private NativeProxy mNativeProxy;
 
+  private DrawPassDetector mDrawPassDetector;
+
   public AnimationsManager getAnimationsManager() {
     return mAnimationManager;
   }
@@ -152,6 +154,11 @@ public class NodesManager implements EventDispatcherListener {
       mNativeProxy = null;
     }
 
+    if (mDrawPassDetector != null) {
+      mDrawPassDetector.invalidate();
+      mDrawPassDetector = null;
+    }
+
     if (compatibility != null) {
       compatibility.unregisterFabricEventListener(this);
     }
@@ -163,6 +170,7 @@ public class NodesManager implements EventDispatcherListener {
   }
 
   public void initWithContext(ReactApplicationContext reactApplicationContext) {
+    mDrawPassDetector = new DrawPassDetector(reactApplicationContext);
     mNativeProxy = new NativeProxy(reactApplicationContext, mWorkletsModule);
     mAnimationManager.setAndroidUIScheduler(mWorkletsModule.getAndroidUIScheduler());
     compatibility = new ReaCompatibility(reactApplicationContext);
@@ -405,7 +413,11 @@ public class NodesManager implements EventDispatcherListener {
        */
       String eventName = event.getEventName();
       if (eventName.contains("GestureHandler") || eventName.contains("Scroll")) {
-        performOperations(true, event.isDrawing());
+        if (mDrawPassDetector != null) {
+          mDrawPassDetector.initialize();
+        }
+        boolean isInDrawPass = mDrawPassDetector != null && mDrawPassDetector.isInDrawPass();
+        performOperations(true, isInDrawPass);
         // Note(@hannojg): there has been a new edit in
         // https://github.com/software-mansion/react-native-reanimated/pull/8459
         // This will prevent to run scheduled layout animation synchronously here when triggered by

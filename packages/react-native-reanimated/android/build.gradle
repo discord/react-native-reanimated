@@ -273,6 +273,8 @@ android {
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
+            // Reanimated 4 uses version 3.22.1, but since discord uses 3.30.5, we need to use the same version, lets leave it for now
+            version System.getenv("CMAKE_VERSION") ?: "3.30.5"
         }
     }
     buildTypes {
@@ -358,6 +360,10 @@ android {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedNativeHierarchyManager/75"
             } else {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedNativeHierarchyManager/latest"
+            }
+
+            if (REACT_NATIVE_MINOR_VERSION >= 83) {
+                srcDirs += "src/reactNativeVersionPatch/LayoutAnimationClasses/latest"
             }
         }
     }
