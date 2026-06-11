@@ -1,6 +1,7 @@
-/* eslint-disable no-useless-constructor */
-/* eslint-disable no-inline-styles/no-inline-styles */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { FlashList } from '@shopify/flash-list';
 import {
   ActivityIndicator,
@@ -14,7 +15,6 @@ import {
   RefreshControl,
   ScrollView,
   SectionList,
-  StyleSheet,
   Switch,
   Text,
   TextInput,
@@ -24,10 +24,11 @@ import {
   // TouchableWithoutFeedback,
   View,
   VirtualizedList,
+  StyleSheet,
 } from 'react-native';
 import { ScrollView as RNGHScrollView } from 'react-native-gesture-handler';
+import { Path as RNSVGPath } from 'react-native-svg';
 import { makeMutable } from 'react-native-reanimated';
-import SVG, { Path as RNSVGPath } from 'react-native-svg';
 
 // Make sure Reanimated and Worklets are initialized.
 makeMutable(() => {
@@ -50,7 +51,6 @@ class Node {
   ['scrollTo()']?: string;
   ['__internalInstanceHandle']?: string | Node;
   ['findHostInstance_DEPRECATED()']?: string | Node;
-  ['_hasAnimatedRef']?: string;
   ['_componentRef']?: string | Node;
   ['stateNode.node']?: string | Node;
   ['_reactInternals']?: string | undefined;
@@ -59,7 +59,7 @@ class Node {
 let refId = 1;
 let foundRefToId = new Map<any, number>();
 
-let rootNode: Node | undefined;
+let rootNode: Node | undefined = undefined;
 
 function getRefChecker(name: string) {
   return (ref: any) => {
@@ -154,23 +154,18 @@ function comparator(node: Node) {
     }
   }
 
-  if (ref._hasAnimatedRef) {
-    node._hasAnimatedRef = '"YES"';
-    const derivedRef = ref._componentRef;
-    if (derivedRef) {
-      if (foundRefToId.has(derivedRef)) {
-        node._componentRef = `"OBJECT ${foundRefToId.get(derivedRef)}"`;
-      } else {
-        const id = refId++;
-        foundRefToId.set(derivedRef, id);
-        const propName = '_componentRef';
-        const derivedSource = `${source}.${propName}`;
-        const newNode = new Node(id, derivedSource, derivedRef);
-        node[propName] = newNode;
-        nodesToCheck.push(newNode);
-      }
+  const derivedRef = ref._componentRef;
+  if (derivedRef) {
+    if (foundRefToId.has(derivedRef)) {
+      node['_componentRef'] = `"OBJECT ${foundRefToId.get(derivedRef)}"`;
     } else {
-      node._componentRef = '"NO"';
+      const id = refId++;
+      foundRefToId.set(derivedRef, id);
+      const propName = '_componentRef';
+      const derivedSource = `${source}.${propName}`;
+      const newNode = new Node(id, derivedSource, derivedRef);
+      node[propName] = newNode;
+      nodesToCheck.push(newNode);
     }
   }
 }
@@ -192,7 +187,6 @@ const printableProps = [
   'getScrollRef()',
   'scrollTo()',
   '__internalInstanceHandle',
-  '_hasAnimatedRef',
   '_componentRef',
   'stateNode.node',
   '_reactInternals',
@@ -226,9 +220,8 @@ function printNode(node: Node | number | string, prop?: string) {
   increaseIndent();
 
   printableProps.forEach((key) => {
-    const value = node[key];
-    if (value) {
-      printNode(value, key);
+    if (node[key]) {
+      printNode(node[key], key);
     }
   });
 
@@ -321,15 +314,13 @@ export default function InstanceDiscoveryExample() {
       <RNGHScrollView ref={getRefChecker('RNGHScrollView')}>
         <Text>RNGH ScrollView Content</Text>
       </RNGHScrollView>
-      <SVG>
-        <RNSVGPath
-          ref={getRefChecker('SVG Path')}
-          d="M150 0 L75 200 L225 200 Z"
-          fill="lime"
-          stroke="purple"
-          strokeWidth="1"
-        />
-      </SVG>
+      <RNSVGPath
+        ref={getRefChecker('SVG Path')}
+        d="M150 0 L75 200 L225 200 Z"
+        fill="lime"
+        stroke="purple"
+        strokeWidth="1"
+      />
     </>
   );
 }

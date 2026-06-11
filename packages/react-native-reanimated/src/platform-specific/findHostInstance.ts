@@ -4,12 +4,11 @@
 import type { InternalHostInstance } from '../commonTypes';
 import type { IAnimatedComponentInternal } from '../createAnimatedComponent/commonTypes';
 import { ReanimatedError } from '../errors';
-import { isFabric } from '../PlatformChecker';
 
 type HostInstanceFabric = {
   __internalInstanceHandle?: Record<string, unknown>;
   __nativeTag?: number;
-  _viewConfig?: Record<string, unknown>;
+  __viewConfig?: Record<string, unknown>;
 };
 
 type HostInstancePaper = {
@@ -26,7 +25,7 @@ function findHostInstanceFastPath(maybeNativeRef: HostInstance | undefined) {
   if (
     maybeNativeRef.__internalInstanceHandle &&
     maybeNativeRef.__nativeTag &&
-    maybeNativeRef._viewConfig
+    maybeNativeRef.__viewConfig
   ) {
     // This is a native ref to a Fabric component
     return maybeNativeRef;
@@ -73,13 +72,11 @@ export function findHostInstance(
   resolveFindHostInstance_DEPRECATED();
   /*
     The Fabric implementation of `findHostInstance_DEPRECATED` requires a React ref as an argument
-    rather than a native ref. If a component implements the `getAnimatableRef` method, it must use 
-    the ref provided by this method. It is the component's responsibility to ensure that this is 
-    a valid React ref.
+    rather than a native ref. Prefer the resolved component ref when available so components can
+    forward their ref to the host view that should be animated. Components that expose an animatable
+    ref via `getAnimatableRef` already have it resolved into `_componentRef`.
   */
   return findHostInstance_DEPRECATED(
-    !isFabric() || (component as IAnimatedComponentInternal)._hasAnimatedRef
-      ? (component as IAnimatedComponentInternal)._componentRef
-      : component
+    (component as IAnimatedComponentInternal)._componentRef ?? component
   );
 }
