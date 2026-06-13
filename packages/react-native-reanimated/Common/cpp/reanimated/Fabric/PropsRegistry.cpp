@@ -19,15 +19,40 @@ void PropsRegistry::update(
   if (it == map_.cend()) {
     // we need to store ShadowNode because `ShadowNode::getFamily`
     // returns `ShadowNodeFamily const &` which is non-owning
+    // First time we see this tag — insert and timestamp it.
     map_[tag] = std::make_pair(shadowNode, props);
-    timestampMap_[shadowNode->getTag()] = timestamp;
-  } else {
-    // no need to update `.first` because ShadowNode's family never changes
-    // merge new props with old props
-    it->second.second.update(props);
-
-    timestampMap_[shadowNode->getTag()] = timestamp;
+    timestampMap_[tag] = timestamp;
+    return;
   }
+
+  // PERF: drop redundant updates. Many writers (UI-thread worklets that
+  // re-run on every parent React re-render, gestures emitting frame-rate
+  // updates, springs that round-trip to the same float, etc.) end up calling
+  // PropsRegistry::update() with the same props that are already stored.
+  //
+  // Without this bailout we still:
+  //   * move the merged folly::dynamic into the map (allocation + ref churn),
+  //   * refresh `timestampMap_[tag]` so the entry stays "fresh",
+  //   * keep `getUpdatesOlderThanTimestamp()` returning this tag on every
+  //     GC tick until something else clears it,
+  //   * which fires `setState({settledProps: ...})` on the AnimatedComponent
+  //     in JS for no observable change.
+  //
+  // We compute the merged props here so the equality check sees the same
+  // bytes the JS observer would have received. This costs one extra
+  // folly::dynamic clone per write but saves the JS-side React commit on
+  // every redundant write.
+  folly::dynamic merged = it->second.second;
+  merged.update(props);
+  if (merged == it->second.second) {
+    // Bail out — nothing changed. Do NOT refresh the timestamp; the existing
+    // entry will age out naturally via removeUpdatesOlderThanTimestamp once
+    // the writer stops sending redundant data.
+    return;
+  }
+
+  it->second.second = std::move(merged);
+  timestampMap_[tag] = timestamp;
 }
 #else
 void PropsRegistry::update(
