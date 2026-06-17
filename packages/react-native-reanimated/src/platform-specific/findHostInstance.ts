@@ -9,6 +9,8 @@ type HostInstanceFabric = {
   __internalInstanceHandle?: Record<string, unknown>;
   __nativeTag?: number;
   __viewConfig?: Record<string, unknown>;
+  // Legacy ReactFabricHostComponent key (e.g. react-native-macos).
+  _viewConfig?: Record<string, unknown>;
 };
 
 type HostInstancePaper = {
@@ -25,7 +27,9 @@ function findHostInstanceFastPath(maybeNativeRef: HostInstance | undefined) {
   if (
     maybeNativeRef.__internalInstanceHandle &&
     maybeNativeRef.__nativeTag &&
-    maybeNativeRef.__viewConfig
+    // ReactFabricHostComponent (e.g. react-native-macos) exposes `_viewConfig`;
+    // ReactNativeElement uses `__viewConfig`.
+    (maybeNativeRef.__viewConfig || maybeNativeRef._viewConfig)
   ) {
     // This is a native ref to a Fabric component
     return maybeNativeRef;

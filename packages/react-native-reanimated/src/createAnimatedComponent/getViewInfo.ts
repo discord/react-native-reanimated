@@ -34,9 +34,12 @@ function getViewInfo73(element: any) {
 }
 
 function getViewInfoLatest(element: any) {
+  // ReactNativeElement uses `__viewConfig`, while legacy
+  // ReactFabricHostComponent implementations expose `_viewConfig`.
+  const viewConfig = element?.__viewConfig ?? element?._viewConfig;
   return {
-    viewName: element?.__viewConfig?.uiViewClassName,
+    viewName: viewConfig?.uiViewClassName,
     viewTag: element?.__nativeTag,
-    viewConfig: element?.__viewConfig,
+    viewConfig,
   };
 }
