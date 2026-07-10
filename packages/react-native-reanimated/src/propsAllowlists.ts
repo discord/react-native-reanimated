@@ -50,7 +50,8 @@ export const PropsAllowlists: AllowlistsHolder = {
     translateX: true,
     translateY: true,
     /* text props */
-    ...(isFabric ? textProps : {})
+    ...(isFabric ? textProps : {}),
+    fill: true,
   },
   /**
    * Whitelist of view props that can be updated in native thread via
