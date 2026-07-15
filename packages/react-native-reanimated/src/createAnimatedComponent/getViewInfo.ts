@@ -37,6 +37,6 @@ function getViewInfoLatest(element: any) {
   return {
     viewName: element?._viewConfig?.uiViewClassName,
     viewTag: element?.__nativeTag,
-    viewConfig: element?._viewConfig,
+    viewConfig: (element?.__viewConfig || element?._viewConfig),
   };
 }

@@ -9,6 +9,8 @@ import { isFabric } from '../PlatformChecker';
 type HostInstanceFabric = {
   __internalInstanceHandle?: Record<string, unknown>;
   __nativeTag?: number;
+  __viewConfig?: Record<string, unknown>;
+  // Legacy ReactFabricHostComponent key (e.g. react-native-macos).
   _viewConfig?: Record<string, unknown>;
 };
 
@@ -26,9 +28,10 @@ function findHostInstanceFastPath(maybeNativeRef: HostInstance | undefined) {
   if (
     maybeNativeRef.__internalInstanceHandle &&
     maybeNativeRef.__nativeTag &&
-    maybeNativeRef._viewConfig
+    // ReactFabricHostComponent (e.g. react-native-macos) exposes `_viewConfig`;
+    // ReactNativeElement uses `__viewConfig`.
+    (maybeNativeRef.__viewConfig || maybeNativeRef._viewConfig)
   ) {
-    // This is a native ref to a Fabric component
     return maybeNativeRef;
   }
   if (maybeNativeRef._nativeTag && maybeNativeRef.viewConfig) {
