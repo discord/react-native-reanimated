@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable no-useless-constructor */
+/* eslint-disable no-inline-styles/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { FlashList } from '@shopify/flash-list';
 import {
   ActivityIndicator,
@@ -15,6 +14,7 @@ import {
   RefreshControl,
   ScrollView,
   SectionList,
+  StyleSheet,
   Switch,
   Text,
   TextInput,
@@ -24,11 +24,10 @@ import {
   // TouchableWithoutFeedback,
   View,
   VirtualizedList,
-  StyleSheet,
 } from 'react-native';
 import { ScrollView as RNGHScrollView } from 'react-native-gesture-handler';
-import { Path as RNSVGPath } from 'react-native-svg';
 import { makeMutable } from 'react-native-reanimated';
+import SVG, { Path as RNSVGPath } from 'react-native-svg';
 
 // Make sure Reanimated and Worklets are initialized.
 makeMutable(() => {
@@ -59,7 +58,7 @@ class Node {
 let refId = 1;
 let foundRefToId = new Map<any, number>();
 
-let rootNode: Node | undefined = undefined;
+let rootNode: Node | undefined;
 
 function getRefChecker(name: string) {
   return (ref: any) => {
@@ -157,7 +156,7 @@ function comparator(node: Node) {
   const derivedRef = ref._componentRef;
   if (derivedRef) {
     if (foundRefToId.has(derivedRef)) {
-      node['_componentRef'] = `"OBJECT ${foundRefToId.get(derivedRef)}"`;
+      node._componentRef = `"OBJECT ${foundRefToId.get(derivedRef)}"`;
     } else {
       const id = refId++;
       foundRefToId.set(derivedRef, id);
@@ -220,8 +219,9 @@ function printNode(node: Node | number | string, prop?: string) {
   increaseIndent();
 
   printableProps.forEach((key) => {
-    if (node[key]) {
-      printNode(node[key], key);
+    const value = node[key];
+    if (value) {
+      printNode(value, key);
     }
   });
 
@@ -314,13 +314,15 @@ export default function InstanceDiscoveryExample() {
       <RNGHScrollView ref={getRefChecker('RNGHScrollView')}>
         <Text>RNGH ScrollView Content</Text>
       </RNGHScrollView>
-      <RNSVGPath
-        ref={getRefChecker('SVG Path')}
-        d="M150 0 L75 200 L225 200 Z"
-        fill="lime"
-        stroke="purple"
-        strokeWidth="1"
-      />
+      <SVG>
+        <RNSVGPath
+          ref={getRefChecker('SVG Path')}
+          d="M150 0 L75 200 L225 200 Z"
+          fill="lime"
+          stroke="purple"
+          strokeWidth="1"
+        />
+      </SVG>
     </>
   );
 }

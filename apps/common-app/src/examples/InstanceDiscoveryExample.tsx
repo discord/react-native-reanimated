@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable no-inline-styles/no-inline-styles */
+/* eslint-disable no-useless-constructor */
+/* eslint-disable camelcase */
 import { FlashList } from '@shopify/flash-list';
 import {
   ActivityIndicator,
@@ -17,6 +16,7 @@ import {
   RefreshControl,
   ScrollView,
   SectionList,
+  StyleSheet,
   Switch,
   Text,
   TextInput,
@@ -26,50 +26,33 @@ import {
   // TouchableWithoutFeedback,
   View,
   VirtualizedList,
-  StyleSheet,
-  type ScrollViewProps,
 } from 'react-native';
 import { ScrollView as RNGHScrollView } from 'react-native-gesture-handler';
-import { Path as RNSVGPath } from 'react-native-svg';
 import { makeMutable } from 'react-native-reanimated';
-// @ts-expect-error No types for deep import.
-import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
-import { useCallback } from 'react';
+import { Path as RNSVGPath } from 'react-native-svg';
 
-const findHostInstance_DEPRECATED = ReactFabric.findHostInstance_DEPRECATED as (
-  ref: any
-) => any;
+function isFabric(): boolean {
+  return !!(global as Record<string, unknown>)._IS_FABRIC;
+}
+
+// Conditionally import ReactFabric only on Fabric architecture
+let ReactFabric: any = null;
+if (isFabric()) {
+  try {
+    ReactFabric = require('react-native/Libraries/Renderer/shims/ReactFabric');
+  } catch {
+    // ReactFabric not available
+  }
+}
+
+const findHostInstance_DEPRECATED =
+  ReactFabric?.findHostInstance_DEPRECATED as (ref: any) => any;
 
 // Make sure Reanimated and Worklets are initialized.
 makeMutable(() => {
   'worklet';
   return undefined;
 });
-
-const CustomScrollComponent = (props: ScrollViewProps) => (
-  <View>
-    <ScrollView {...props} />
-  </View>
-);
-
-function FlatListWithCustomRenderer({ data, ref }: { data: any[]; ref: any }) {
-  const renderItem = useCallback((info: any) => {
-    return <Text>{info.item}</Text>;
-  }, []);
-
-  const renderScrollComponent = useCallback((props: ScrollViewProps) => {
-    return <CustomScrollComponent {...props} />;
-  }, []);
-
-  return (
-    <FlatList
-      data={data}
-      ref={ref}
-      renderItem={renderItem}
-      renderScrollComponent={renderScrollComponent}
-    />
-  );
-}
 
 type ImperativeShadowNodeWrapper = {
   source: string;
@@ -108,14 +91,12 @@ let handleToHandleId = new Map<number, number>();
 let shadowNodeWrapperId = 1;
 let shadowNodeWrapperToShadowNodeWrapperId = new Map<any, number>();
 
-let rootNode: Node | undefined = undefined;
+let rootNode: Node | undefined;
 
 let visited = new Set<any>();
 
 function getRefChecker(name: string) {
   return (ref: any) => {
-    console.log('equality check', ref === ref.getScrollResponder());
-
     refId = 1;
     foundRefToId = new Map<any, number>();
 
@@ -240,7 +221,7 @@ function comparator(node: Node) {
   const derivedRef = ref._componentRef;
   if (derivedRef) {
     if (foundRefToId.has(derivedRef)) {
-      node['_componentRef'] = `"OBJECT ${foundRefToId.get(derivedRef)}"`;
+      node._componentRef = `"OBJECT ${foundRefToId.get(derivedRef)}"`;
     } else {
       const id = refId++;
       foundRefToId.set(derivedRef, id);
@@ -298,8 +279,9 @@ function printNode(node: Node | number | string, prop?: string) {
   increaseIndent();
 
   printableProps.forEach((key) => {
-    if (node[key]) {
-      printNode(node[key], key);
+    const value = node[key];
+    if (value) {
+      printNode(value, key);
     }
   });
 
@@ -365,7 +347,6 @@ function checkFindNodeHandle(node: Node) {
     node['findNodeHandle()'] = `"TAG ${id}"`;
   } catch {
     node['findNodeHandle()'] = '"ERROR"';
-    return;
   }
 }
 
@@ -458,6 +439,14 @@ function findNativeStateObjects(node: Node, ref: any, source: string = '') {
 }
 
 export default function InstanceDiscoveryExample() {
+  if (!isFabric()) {
+    return (
+      <Text style={styles.notSupportedText}>
+        This example works only on Fabric (the New Architecture)
+      </Text>
+    );
+  }
+
   return (
     <>
       <Text style={styles.headingText}>
@@ -549,10 +538,6 @@ export default function InstanceDiscoveryExample() {
         stroke="purple"
         strokeWidth="1"
       />
-      <FlatListWithCustomRenderer
-        ref={getRefChecker('FlatListWithCustomRenderer')}
-        data={[]}
-      />
     </>
   );
 }
@@ -562,6 +547,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  notSupportedText: {
+    marginTop: 20,
+    marginHorizontal: 20,
+    fontSize: 16,
     textAlign: 'center',
   },
 });
