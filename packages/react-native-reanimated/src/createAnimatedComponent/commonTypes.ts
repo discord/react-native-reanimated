@@ -122,7 +122,6 @@ export interface IAnimatedComponentInternal {
   jestAnimatedProps: { value: AnimatedProps };
   _componentRef: AnimatedComponentRef | HTMLElement | null;
   _sharedElementTransition: SharedTransition | null;
-  _hasAnimatedRef: boolean;
   _jsPropsUpdater: IJSPropsUpdater;
   _InlinePropManager: IInlinePropManager;
   _PropsFilter: IPropsFilter;
