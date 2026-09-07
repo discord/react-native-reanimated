@@ -15,17 +15,12 @@ using namespace react;
 
 namespace reanimated {
 
-struct CloneResult {
-    RootShadowNode::Unshared newRoot;
-    std::vector<Tag> tagsToRemove;
-};
-
 using PropsMap =
     std::unordered_map<const ShadowNodeFamily *, std::vector<RawProps>>;
 using ChildrenMap =
     std::unordered_map<const ShadowNodeFamily *, std::unordered_set<int>>;
 
-CloneResult cloneShadowTreeWithNewProps(
+RootShadowNode::Unshared cloneShadowTreeWithNewProps(
     const RootShadowNode &oldRootNode,
     const PropsMap &propsMap);
 

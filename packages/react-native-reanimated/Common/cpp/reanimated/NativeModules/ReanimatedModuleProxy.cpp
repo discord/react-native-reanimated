@@ -973,7 +973,7 @@ void ReanimatedModuleProxy::performOperations(const bool isTriggeredByEvent, con
             }
 
             auto rootNode =
-              std::move(cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot);
+              cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap);
 
             // Mark the commit as Reanimated commit so that we can distinguish
             // it in ReanimatedCommitHook.

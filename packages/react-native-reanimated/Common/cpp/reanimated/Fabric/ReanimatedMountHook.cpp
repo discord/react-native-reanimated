@@ -70,7 +70,7 @@ void ReanimatedMountHook::shadowTreeDidMount(
                 });
 
                 rootNode =
-                    std::move(cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap).newRoot);
+                    cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap);
               }
 
               // Mark the commit as Reanimated commit so that we can

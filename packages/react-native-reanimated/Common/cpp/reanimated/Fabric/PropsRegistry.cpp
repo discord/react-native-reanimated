@@ -86,21 +86,6 @@ void PropsRegistry::remove(const Tag tag) {
   map_.erase(tag);
 }
 
-void PropsRegistry::markNodeAsImmediateRemovable(Tag tag) {
-  immediateRemovableShadowNodes_.emplace(tag);
-}
-
-void PropsRegistry::unmarkNodeAsImmediateRemovable(Tag tag) {
-  immediateRemovableShadowNodes_.erase(tag);
-}
-
-void PropsRegistry::removeImmediateRemovableNodes() {
-  for (auto& tag : immediateRemovableShadowNodes_) {
-      map_.erase(tag);
-  }
-  immediateRemovableShadowNodes_.clear();
-}
-
 #ifdef RCT_NEW_ARCH_ENABLED
 jsi::Value PropsRegistry::getUpdatesOlderThanTimestamp(jsi::Runtime &rt, const double timestamp) {
   std::vector<std::pair<Tag, std::reference_wrapper<const folly::dynamic>>> updates;
