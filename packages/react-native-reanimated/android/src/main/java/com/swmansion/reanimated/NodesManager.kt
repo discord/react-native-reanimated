@@ -46,6 +46,13 @@ class NodesManager(
 
     private var mNativeProxy: NativeProxy? = null
 
+    // Discord-only. True while Reanimated is flushing its own prop updates, which lets
+    // ReanimatedViewManager.allowUpdating tell a Reanimated-driven prop update apart from a
+    // React-driven one and drop the latter. Ported from Discord's Reanimated 3 fork
+    // (discord/react-native-reanimated#34); upstream has no equivalent public API.
+    var isPerformOperationsActive: Boolean = false
+        private set
+
     fun getNativeProxy(): NativeProxy? = mNativeProxy
 
     init {
@@ -118,12 +125,24 @@ class NodesManager(
 
     fun performOperations() {
         UiThreadUtil.assertOnUiThread()
-        mNativeProxy?.performOperations()
+        isPerformOperationsActive = true
+        try {
+            mNativeProxy?.performOperations()
+        } finally {
+            isPerformOperationsActive = false
+        }
     }
 
     internal fun performNonLayoutOperations() {
         UiThreadUtil.assertOnUiThread()
-        mNativeProxy?.performNonLayoutOperations()
+        // Reanimated 4 split the non-layout props flush out of performOperations; both are
+        // Reanimated applying its own update, so both set the flag.
+        isPerformOperationsActive = true
+        try {
+            mNativeProxy?.performNonLayoutOperations()
+        } finally {
+            isPerformOperationsActive = false
+        }
     }
 
     internal fun performOperationsRespectingDrawPass() {

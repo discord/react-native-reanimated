@@ -11,6 +11,12 @@
 
 using namespace facebook::react;
 
+// Discord-only. True while Reanimated is flushing its own prop updates, so that Discord's
+// ReanimatedView can tell a Reanimated-driven prop update apart from a React-driven one and drop the
+// latter. Ported from Discord's Reanimated 3 fork (discord/react-native-reanimated#34); upstream has
+// no equivalent public API.
+static BOOL _isPerformOperationsActive = NO;
+
 @implementation REANodesManager {
   READisplayLink *_displayLink;
   NSMutableArray<REAOnAnimationCallback> *_onAnimationCallbacks;
@@ -129,7 +135,14 @@ using namespace facebook::react;
   if (performOperations == nil) {
     return;
   }
+  _isPerformOperationsActive = YES;
   performOperations(); // calls ReanimatedModuleProxy::performOperations
+  _isPerformOperationsActive = NO;
+}
+
++ (BOOL)isPerformOperationsActive
+{
+  return _isPerformOperationsActive;
 }
 
 - (void)dispatchEvent:(id<RCTEvent>)event

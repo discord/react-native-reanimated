@@ -22,4 +22,7 @@ typedef void (^REAPerformOperations)();
 - (void)registerPerformOperations:(REAPerformOperations)performOperations;
 - (void)maybeFlushUIUpdatesQueue;
 
+// Discord-only; see the implementation for why this exists.
++ (BOOL)isPerformOperationsActive;
+
 @end
