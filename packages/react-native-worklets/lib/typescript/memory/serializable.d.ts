@@ -1,0 +1,24 @@
+import type { FlatSerializableRef, RegistrationData, SerializableRef } from './types';
+export declare function isSerializableRef<TValue = unknown>(_value: unknown): _value is SerializableRef<TValue>;
+export declare function createSerializable<TValue>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableArray<TValue extends unknown[]>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableObject<TValue extends object>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableMap<TKey, TValue>(value: Map<TKey, TValue>): SerializableRef<Map<TKey, TValue>>;
+export declare function createSerializableSet<TValue>(value: Set<TValue>): SerializableRef<Set<TValue>>;
+export declare function createSerializableError<TValue extends Error>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableRegExp(value: RegExp): SerializableRef<RegExp>;
+export declare function createSerializableArrayBuffer(value: ArrayBuffer): SerializableRef<ArrayBuffer>;
+export declare function createSerializableArrayBufferView<TValue extends ArrayBufferView>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableHostObject<TValue extends object>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableString(value: string): SerializableRef<string>;
+export declare function createSerializableNumber(value: number): SerializableRef<number>;
+export declare function createSerializableBoolean(value: boolean): SerializableRef<boolean>;
+export declare function createSerializableBigInt(value: bigint): SerializableRef<bigint>;
+export declare function createSerializableNull(value: null): SerializableRef<null>;
+export declare function createSerializableUndefined(value: undefined): SerializableRef<undefined>;
+export declare function createSerializableWorklet<TValue extends (...args: never[]) => unknown>(value: TValue): SerializableRef<TValue>;
+export declare function createSerializableRemoteFunction<TValue extends (...args: never[]) => unknown>(value: TValue): SerializableRef<TValue>;
+export declare function makeShareableCloneOnUIRecursive<TValue>(value: TValue): FlatSerializableRef<TValue>;
+export declare function makeShareable<TValue>(value: TValue): TValue;
+export declare function registerCustomSerializable<TValue extends object, TPacked extends object>(_registrationData: RegistrationData<TValue, TPacked>): void;
+//# sourceMappingURL=serializable.d.ts.map
